@@ -2,11 +2,11 @@
 from django.db import models
 
 # Create your models here.
-class Buyder(models.Model):
+class Buyer(models.Model):
 
 	class Meta:
-		verbose_name = "Buyder"
-		verbose_name_plural = "Buyders"
+		verbose_name = "Buyer"
+		verbose_name_plural = "Buyers"
 
 	def __str__(self):
 		pass
@@ -51,16 +51,16 @@ class Sku(models.Model):
     def __str__(self):
         pass
     provider = models.ForeignKey(Provider, required=True)
-    buyder = models.ForeignKey(Buyder)
-    FORDATE = 1
-    HASDATE = 2
-    HASDEAL = 3
-    HASOVER = 4
+    buyer = models.ForeignKey(Buyer)
+    FORBOOK = 1
+    PREBOOKED = 2
+    BOOKED = 3
+    FINISHED = 4
     STATUES_OF_SKU_CHOICES = (
-    	(FORDATE,'可预约'),
-    	(HASDATE,'已预约'),
-    	(HASDEAL,'已定'),
-    	(HASOVER,'已结束'),
+    	(FORBOOK,'可预约'),
+    	(PREBOOKED,'已预约'),
+    	(BOOKED,'已定'),
+    	(FINISHED,'已结束'),
     )
     statue = models.IntegerField(required=True,
     	max_length=2,
