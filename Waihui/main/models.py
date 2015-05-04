@@ -44,29 +44,39 @@ class Provider(models.Model):
 
 class Sku(models.Model):
 
-    class Meta:
-        verbose_name = "Sku"
-        verbose_name_plural = "Skus"
+	class Meta:
+		verbose_name = "Sku"
+		verbose_name_plural = "Skus"
 
-    def __str__(self):
-        pass
-    provider = models.ForeignKey(Provider, required=True)
-    buyer = models.ForeignKey(Buyer)
-    FORBOOK = 1
-    PREBOOKED = 2
-    BOOKED = 3
-    FINISHED = 4
-    STATUES_OF_SKU_CHOICES = (
-    	(FORBOOK,'可预约'),
-    	(PREBOOKED,'已预约'),
-    	(BOOKED,'已定'),
-    	(FINISHED,'已结束'),
-    )
-    statue = models.IntegerField(required=True,
-    	max_length=2,
-    	choices='STATUES_OF_SKU_CHOICES',
-    )
-    	start_time = models.DateTimeField()
-    	end_time = models.DateTimeField()
-    	topic = models.ForeignKey(Topic)
+	def __str__(self):
+		pass
+	provider = models.ForeignKey(Provider, required=True)
+	buyer = models.ForeignKey(Buyer)
+	FORBOOK = 1
+	PREBOOKED = 2
+	BOOKED = 3
+	FINISHED = 4
+	STATUES_OF_SKU_CHOICES = (
+		(FORBOOK,'可预约'),
+		(PREBOOKED,'已预约'),
+		(BOOKED,'已定'),
+		(FINISHED,'已结束'),
+	)
+	statue = models.IntegerField(required=True,
+		max_length=2,
+		choices='STATUES_OF_SKU_CHOICES',
+	)
+		start_time = models.DateTimeField()
+		end_time = models.DateTimeField()
+		topic = models.ForeignKey(Topic)
 
+class Language(models.Model):
+
+	class Meta:
+		verbose_name = "Language"
+		verbose_name_plural = "Languages"
+
+	def __str__(self):
+		pass
+	name = models.CharField(required=True, max_length=50)
+	
