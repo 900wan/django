@@ -78,5 +78,5 @@ class Language(models.Model):
 
 	def __str__(self):
 		pass
-	name = models.CharField(required=True, max_length=50)
+	chinese_name = models.CharField(required=True, max_length=50)
 	
