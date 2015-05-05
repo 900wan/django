@@ -80,5 +80,17 @@ class Language(models.Model):
 		pass
 	chinese_name = models.CharField(required=True, max_length=50)
 	english_name = models.CharField(required=True, max_length=50)
+	local_name = models.CharField(required=True, max_length=50)
+
+class Topic(models.Model):
+	
+	    class Meta:
+	        verbose_name = "Topic"
+	        verbose_name_plural = "Topics"
+	
+	    def __str__(self):
+	        pass
+    name = models.CharField(required=True, null=False, max_length=50)
+	category = models.CharField(required=True, max_length=50)
 
 	
