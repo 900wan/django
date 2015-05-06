@@ -84,51 +84,52 @@ class Language(models.Model):
 
 class Topic(models.Model):
 	
-	    class Meta:
-	        verbose_name = "Topic"
-	        verbose_name_plural = "Topics"
+		class Meta:
+			verbose_name = "Topic"
+			verbose_name_plural = "Topics"
 	
-	    def __str__(self):
-	        pass
-    name = models.CharField(required=True, null=False, max_length=50)
+		def __str__(self):
+			pass
+	name = models.CharField(required=True, null=False, max_length=50)
 	category = models.ForeignKey(TopicCategory)
 
 class TopicCategory(models.Model):
 
-    class Meta:
-        verbose_name = "TopicCategory"
-        verbose_name_plural = "TopicCategorys"
+	class Meta:
+		verbose_name = "TopicCategory"
+		verbose_name_plural = "TopicCategorys"
 
-    def __str__(self):
-        pass
-    name = models.CharField(required=True, max_length=50)
-    background_image = models.URLField()
+	def __str__(self):
+		pass
+	name = models.CharField(required=True, max_length=50)
+	background_image = models.URLField()
 
 class Wallet(models.Model):
 
-    class Meta:
-        verbose_name = "Wallet"
-        verbose_name_plural = "Wallets"
+	class Meta:
+		verbose_name = "Wallet"
+		verbose_name_plural = "Wallets"
 
-    def __str__(self):
-        pass
-    user = models.ForeignKey(User)
-    cny_balance = models.FloatField(required=True, default=0)
-    display_currency = models.CharField(required=True, default= "cny" , max_length=50)
-    
+	def __str__(self):
+		pass
+	user = models.ForeignKey(User)
+	cny_balance = models.FloatField(required=True, default=0)
+	display_currency = models.CharField(required=True, default= "cny" , max_length=50)
+	
 class ReviewTovProvider(models.Model):
 
-    class Meta:
-        verbose_name = "ReviewTovProvider"
-        verbose_name_plural = "ReviewTovProviders"
+	class Meta:
+		verbose_name = "ReviewTovProvider"
+		verbose_name_plural = "ReviewTovProviders"
 
-    def __str__(self):
-        pass
-    from = models.ForeignKey(User)
-    to = models.ForeignKey(User)
-    sku = models.ForeignKey(Sku)
-    questionnaire = models.CharField(required=True, max_length=50)
-    comment = models.CharField(max_length=50)
-    score = models.FloatField(required=True)
+	def __str__(self):
+		pass
+	from = models.ForeignKey(User)
+	to = models.ForeignKey(User)
+	sku = models.ForeignKey(Sku)
+	questionnaire = models.CharField(required=True, max_length=50)
+	comment = models.CharField(max_length=50)
+	score = models.FloatField(required=True)
+
 
 	
