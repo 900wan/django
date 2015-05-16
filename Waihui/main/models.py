@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.contrib.auth.models import all
 
 # Create your models here.
 class Buyer(models.Model):
@@ -76,6 +77,28 @@ class Sku(models.Model):
     topic = models.ForeignKey(Topic)
 
 
+class Plan(models.Model):
+
+    class Meta:
+        verbose_name = "Plan"
+        verbose_name_plural = "Plans"
+
+    def __str__(self):
+        pass
+    sku = models.OneToOneField()
+    topic = models.ForeignKey(required=True)
+    status = models.IntegerField(required=True)
+    content = models.TextField(required=True)
+    assignment = models.TextField()
+    slides = models.TextField()
+    materiallinks = models.TextField()
+    materialhtml = models.TextField()
+    voc = models.TextField()
+    copy_from = models.ForeignKey(Plan)
+    # summary 
+    sumy = models.TextField()
+
+
 class Language(models.Model):
 
     class Meta:
@@ -99,6 +122,10 @@ class Topic(models.Model):
         return self.name
     name = models.CharField(required=True, null=False, max_length=50)
     category = models.ForeignKey(TopicCategory)
+    default_plan = models.ForeignKey()
+    status = models.IntegerField(required=True)
+    creator = models.ForeignKey(User)
+
 
 
 class TopicCategory(models.Model):
@@ -134,12 +161,43 @@ class ReviewTovProvider(models.Model):
 
     def __unicode__(self):
         return self.score
-    from = models.ForeignKey(User)
-    to = models.ForeignKey(User)
-    sku = models.ForeignKey(Sku)
+    provider = models.ForeignKey(Provider)
+    buyer = models.ForeignKey(Buyer)
+    sku = models.OneToOneField(Sku)
     questionnaire = models.CharField(required=True, max_length=50)
     comment = models.CharField(max_length=50)
     score = models.FloatField(required=True)
+
+class ReviewTobBuyer(models.Model):
+
+    class Meta:
+        verbose_name = "ReviewTobBuyer"
+        verbose_name_plural = "ReviewTobBuyers"
+
+    def __str__(self):
+        pass
+    provider = models.ForeignKey(Provider)
+    buyer = models.ForeignKey(Buyer)
+    sku = models.OneToOneField(Sku)
+    questionnaire = models.CharField(, max_length=50)
+    comment = models.CharField(, max_length=50)
+
+
+class ReplyToSku(models.Model):
+
+    class Meta:
+        verbose_name = "ReplyToSku"
+        verbose_name_plural = "ReplyToSkus"
+
+    def __str__(self):
+        pass
+    from_user = models.ForeignKey(User)
+    from_type = models.IntegerField(required=True)
+    content = models.TextField(required=True)
+    to_reply = models.ForeignKey(Reply)
+    # 不懂，还没学
+    unknown = models.DateTimeField()
+
 
 
     
