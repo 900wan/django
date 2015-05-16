@@ -95,7 +95,7 @@ class Plan(models.Model):
     materialhtml = models.TextField()
     voc = models.TextField()
     copy_from = models.ForeignKey(Plan)
-    # summary 
+    # summary 写sum我怕出问题
     sumy = models.TextField()
 
 
