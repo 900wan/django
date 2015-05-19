@@ -60,17 +60,17 @@ class Sku(models.Model):
     PREBOOKED = 2
     BOOKED = 3
     FINISHED = 4
-    STATUES_OF_SKU_CHOICES = (
+    STATUS_OF_SKU_CHOICES = (
         (FORBOOK,'可预约'),
         (PREBOOKED,'已预约'),
         (BOOKED,'已定'),
         (FINISHED,'已结束'),
     )
     
-    statue = models.IntegerField(
+    status = models.IntegerField(
         required=True,
         max_length=2,
-        choices='STATUES_OF_SKU_CHOICES',
+        choices='STATUS_OF_SKU_CHOICES',
     )
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
@@ -150,7 +150,7 @@ class Wallet(models.Model):
         return self.cny_balance
     user = models.ForeignKey(User)
     cny_balance = models.FloatField(required=True, default=0)
-    display_currency = models.CharField(required=True, default= "cny" , max_length=50)
+    display_currency = models.CharField(required=True, default= "CNY" , max_length=50)
     
 
 class ReviewTovProvider(models.Model):
@@ -168,11 +168,11 @@ class ReviewTovProvider(models.Model):
     comment = models.CharField(max_length=50)
     score = models.FloatField(required=True)
 
-class ReviewTobBuyer(models.Model):
+class ReviewToBuyer(models.Model):
 
     class Meta:
-        verbose_name = "ReviewTobBuyer"
-        verbose_name_plural = "ReviewTobBuyers"
+        verbose_name = "ReviewToBuyer"
+        verbose_name_plural = "ReviewToBuyers"
 
     def __str__(self):
         pass
@@ -195,9 +195,14 @@ class ReplyToSku(models.Model):
     from_type = models.IntegerField(required=True)
     content = models.TextField(required=True)
     to_reply = models.ForeignKey(Reply)
-    # 不懂，还没学
-    unknown = models.DateTimeField()
 
-
+# TODO 有空时咱们一起进行：
+# 调整 modles 的顺序（被引用到的应该先现）
+# str 改 unicode
+# ForeignKey 有些没有填写
+# 默认值、是否必填等有些还需要再调整
+# max_length长度有些字段可能不够
+# 添加日期、修改日期回头统一给每一个 model 加
+# 最后再根据文档过一遍，看看还有哪里有遗漏
 
     
