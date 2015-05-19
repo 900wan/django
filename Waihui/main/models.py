@@ -83,10 +83,10 @@ class Plan(models.Model):
         verbose_name = "Plan"
         verbose_name_plural = "Plans"
 
-    def __str__(self):
+    def __unicode__(self):
         pass
     sku = models.OneToOneField()
-    topic = models.ForeignKey(required=True)
+    topic = models.ForeignKey(Topic, required=True)
     status = models.IntegerField(required=True)
     content = models.TextField(required=True)
     assignment = models.TextField()
@@ -122,7 +122,7 @@ class Topic(models.Model):
         return self.name
     name = models.CharField(required=True, null=False, max_length=50)
     category = models.ForeignKey(TopicCategory)
-    default_plan = models.ForeignKey()
+    default_plan = models.ForeignKey(Plan)
     status = models.IntegerField(required=True)
     creator = models.ForeignKey(User)
 
@@ -174,7 +174,7 @@ class ReviewToBuyer(models.Model):
         verbose_name = "ReviewToBuyer"
         verbose_name_plural = "ReviewToBuyers"
 
-    def __str__(self):
+    def __unicode__(self):
         pass
     provider = models.ForeignKey(Provider)
     buyer = models.ForeignKey(Buyer)
@@ -189,7 +189,7 @@ class ReplyToSku(models.Model):
         verbose_name = "ReplyToSku"
         verbose_name_plural = "ReplyToSkus"
 
-    def __str__(self):
+    def __unicode__(self):
         pass
     from_user = models.ForeignKey(User)
     from_type = models.IntegerField(required=True)
