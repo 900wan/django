@@ -206,4 +206,5 @@ class ReplyToSku(models.Model):
 # 添加日期、修改日期回头统一给每一个 model 加
 # 最后再根据文档过一遍，看看还有哪里有遗漏
 
+# TODO 添加方法（coolgene 将写出文档）
     
