@@ -3,6 +3,19 @@ from django.db import models
 from django.contrib.auth.models import *
 
 # Create your models here.
+class Language(models.Model):
+
+    class Meta:
+        verbose_name = "Language"
+        verbose_name_plural = "Languages"
+
+    def __unicode__(self):
+        return self.english_name
+    chinese_name = models.CharField( max_length=50)
+    english_name = models.CharField( max_length=50)
+    local_name = models.CharField( max_length=50)
+
+
 class Provider(models.Model):
 
     class Meta:
@@ -32,23 +45,8 @@ class Provider(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     def get_fee_rate(self):
-        "对该老师的fee_rate进行更新（在需要时）"
-        pass
+        # "对该老师的fee_rate进行更新（在需要时）"
         return fee_rate
-
-
-
-class Language(models.Model):
-
-    class Meta:
-        verbose_name = "Language"
-        verbose_name_plural = "Languages"
-
-    def __unicode__(self):
-        return self.english_name
-    chinese_name = models.CharField( max_length=50)
-    english_name = models.CharField( max_length=50)
-    local_name = models.CharField( max_length=50)
 
 
 class Buyer(models.Model):
@@ -113,14 +111,22 @@ class Sku(models.Model):
     
     FORBOOK = 1
     PREBOOKED = 2
-    BOOKED = 3
-    FINISHED = 4
-    REFUSED = 5
+    REFUSED = 3
+    LOSTED = 4
+    BOOKED = 5
+    PREPARED = 6
+    FORVOTE = 7
+    FINISHED = 8
+
     STATUS_OF_SKU_CHOICES = (
         (FORBOOK,'可预约'),
         (PREBOOKED,'已预约'),
+        (REFUSED, '被拒绝扔池子的'),
+        (LOSETD, '彻底没人教'),
         (BOOKED,'已定'),
-        (FINISHED,'已结束'),
+        (PREPARED, '已备课'),
+        (FORVOTE, '已结束代评价'),
+        (FINISHED,'已彻底结束 '),
     )
     
     status = models.IntegerField(
@@ -143,7 +149,7 @@ class Plan(models.Model):
 
     def __unicode__(self):
         pass
-    sku = models.OneToOneField(Sku)
+    sku = models.OneToOneField(Sku ,blank=True, null=True)
     topic = models.ForeignKey(Topic, )
     status = models.IntegerField()
     content = models.TextField()
@@ -189,7 +195,9 @@ class ReviewTovProvider(models.Model):
     score = models.FloatField()
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
-
+    def get_score(self):
+        # questionnaire =
+        pass 
 
 class ReviewToBuyer(models.Model):
 
