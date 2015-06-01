@@ -27,8 +27,15 @@ class Provider(models.Model):
         default=ROOKIE)
     name = models.CharField(max_length=50, )
     weekday_pattern = models.CommaSeparatedIntegerField(max_length=200)
+    fee_rate = models.FloatField()
+    hp = models.FloatField()
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
+    def get_fee_rate(self):
+        "对该老师的fee_rate进行更新（在需要时）"
+        pass
+        return fee_rate
+
 
 
 class Language(models.Model):
@@ -58,9 +65,11 @@ class Buyer(models.Model):
     mother_tongue = models.ForeignKey(Language)
     time_zone = models.CharField(max_length=50)
     hp = models.IntegerField()
-    create_time = models.DateTimeField()
-    modity_time = models.DateTimeField()
-
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    def set_provider(self):
+        new_provider = Provider;
+        return 
 
 class TopicCategory(models.Model):
 
@@ -87,6 +96,8 @@ class Topic(models.Model):
     # default_plan = models.ForeignKey(Plan)
     status = models.IntegerField()
     creator = models.ForeignKey(User)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)    
 
 
 class Sku(models.Model):
@@ -104,6 +115,7 @@ class Sku(models.Model):
     PREBOOKED = 2
     BOOKED = 3
     FINISHED = 4
+    REFUSED = 5
     STATUS_OF_SKU_CHOICES = (
         (FORBOOK,'可预约'),
         (PREBOOKED,'已预约'),
@@ -119,6 +131,8 @@ class Sku(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     topic = models.ForeignKey(Topic)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
 
 
 class Plan(models.Model):
@@ -141,6 +155,8 @@ class Plan(models.Model):
     copy_from = models.ForeignKey('self')
     # summary 写sum我怕出问题
     sumy = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
 
 
 class Wallet(models.Model):
@@ -154,7 +170,8 @@ class Wallet(models.Model):
     user = models.ForeignKey(User)
     cny_balance = models.FloatField(default=0)
     display_currency = models.CharField( default= "CNY" , max_length=50)
-    
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)    
 
 class ReviewTovProvider(models.Model):
 
@@ -170,6 +187,8 @@ class ReviewTovProvider(models.Model):
     questionnaire = models.CharField( max_length=50)
     comment = models.CharField(max_length=50)
     score = models.FloatField()
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
 
 
 class ReviewToBuyer(models.Model):
@@ -185,6 +204,8 @@ class ReviewToBuyer(models.Model):
     sku = models.OneToOneField(Sku)
     questionnaire = models.CharField( max_length=50)
     comment = models.CharField(max_length=50)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
 
 
 class ReplyToSku(models.Model):
@@ -199,7 +220,8 @@ class ReplyToSku(models.Model):
     from_type = models.IntegerField()
     content = models.TextField()
     to_reply = models.ForeignKey('self')
-
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
 # TODO 有空时咱们一起进行：
 # 默认值、是否必填等有些还需要再调整
 # max_length长度有些字段可能不够
