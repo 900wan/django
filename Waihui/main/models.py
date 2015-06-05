@@ -151,6 +151,10 @@ class Plan(models.Model):
         pass
     sku = models.OneToOneField(Sku ,blank=True, null=True)
     topic = models.ForeignKey(Topic, )
+# 给sku：
+# 已备课；已上完；
+# 给topic：
+# 待审核；成功通过；失败待修改
     status = models.IntegerField()
     content = models.TextField()
     assignment = models.TextField()
@@ -230,6 +234,34 @@ class ReplyToSku(models.Model):
     to_reply = models.ForeignKey('self')
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
+
+class Order(models.Model):
+
+    class Meta:
+        verbose_name = "Order"
+        verbose_name_plural = "Orders"
+
+    def __str__(self):
+        pass
+    buyer = models.ForeignKey(Buyer)
+    provider = models.ForeignKey(Provider, null=True)
+    cny_price = models.FloatField()
+    cny_paid = models.FloatField(default=0)
+    pay_method = models.CharField(null=True, max_length=50)
+    skus = models.ForeignKey(Sku, null=True)
+    type = models.OneToOneField(Order_type)
+# 不可支付、未支付、已支付、已完成、申请退款、已退款……
+    status = models.IntegerField()
+
+class Order_type(models.Model):
+
+    class Meta:
+        verbose_name = "Order_type"
+        verbose_name_plural = "Order_types"
+
+    def __str__(self):
+        pass
+    
 # TODO 有空时咱们一起进行：
 # 默认值、是否必填等有些还需要再调整
 # max_length长度有些字段可能不够
