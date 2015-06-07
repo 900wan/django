@@ -10,7 +10,7 @@ class Language(models.Model):
         verbose_name_plural = "Languages"
 
     def __unicode__(self):
-        return self.english_name
+        return u'%s' % self.english_name
     chinese_name = models.CharField( max_length=50)
     english_name = models.CharField( max_length=50)
     local_name = models.CharField( max_length=50)
@@ -23,7 +23,7 @@ class Provider(models.Model):
         verbose_name_plural = "Providers"
 
     def __unicode__(self):
-        return self.name
+        return u'%s' % self.name
     user = models.OneToOneField(User)
     ROOKIE = 1
     APPLIED = 2
@@ -35,7 +35,7 @@ class Provider(models.Model):
         (INTERN,'实习'),
         (FORMAL,'正式'),
     )
-    status = models.IntegerField(max_length=2,
+    status = models.IntegerField(
         choices=LEVELS_OF_TEACHER_CHOICES, 
         default=ROOKIE)
     name = models.CharField(max_length=50, )
@@ -56,7 +56,7 @@ class Buyer(models.Model):
         verbose_name_plural = "Buyers"
 
     def __unicode__(self):
-        return self.nickname
+        return u'%s' % self.nickname
     user = models.OneToOneField(User)
     nickname = models.CharField(max_length=50)
     brithday = models.DateField()
@@ -65,9 +65,9 @@ class Buyer(models.Model):
     hp = models.IntegerField()
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
-    def set_provider(self):
+    def set_provider(self, Provider):
         new_provider = Provider;
-        return 
+        return new_provider
 
 class TopicCategory(models.Model):
 
@@ -76,7 +76,7 @@ class TopicCategory(models.Model):
         verbose_name_plural = "TopicCategorys"
 
     def __unicode__(self):
-        return self.name
+        return u'%s' % self.name
     name = models.CharField( max_length=50)
     background_image = models.URLField()
 
@@ -87,8 +87,8 @@ class Topic(models.Model):
         verbose_name = "Topic"
         verbose_name_plural = "Topics"
 
-    def __str__(self):
-        pass
+    def __unicode__(self):
+        return u'%s' % self.name
     name = models.CharField(max_length=50)
     category = models.ForeignKey(TopicCategory)
     # default_plan = models.ForeignKey(Plan)
@@ -107,8 +107,8 @@ class Sku(models.Model):
     def __unicode__(self):
         return "("+u(self.start_time)+")"+self.topic
     provider = models.ForeignKey(Provider, )
-    buyer = models.ForeignKey(Buyer)
-    
+    buyer = models.ManyToManyField(Buyer, )
+        
     FORBOOK = 1
     PREBOOKED = 2
     REFUSED = 3
@@ -122,7 +122,7 @@ class Sku(models.Model):
         (FORBOOK,'可预约'),
         (PREBOOKED,'已预约'),
         (REFUSED, '被拒绝扔池子的'),
-        (LOSETD, '彻底没人教'),
+        (LOSTED, '彻底没人教'),
         (BOOKED,'已定'),
         (PREPARED, '已备课'),
         (FORVOTE, '已结束代评价'),
@@ -130,7 +130,6 @@ class Sku(models.Model):
     )
     
     status = models.IntegerField(
-        max_length=2,
         choices=STATUS_OF_SKU_CHOICES,
         default=FORBOOK,
     )
@@ -176,7 +175,7 @@ class Wallet(models.Model):
         verbose_name_plural = "Wallets"
 
     def __unicode__(self):
-        return self.cny_balance
+        return u'%s' % self.cny_balance
     user = models.ForeignKey(User)
     cny_balance = models.FloatField(default=0)
     display_currency = models.CharField( default= "CNY" , max_length=50)
@@ -190,7 +189,7 @@ class ReviewTovProvider(models.Model):
         verbose_name_plural = "ReviewTovProviders"
 
     def __unicode__(self):
-        return self.score
+        return u'%s' % self.score
     provider = models.ForeignKey(Provider)
     buyer = models.ForeignKey(Buyer)
     sku = models.OneToOneField(Sku)
@@ -249,18 +248,18 @@ class Order(models.Model):
     cny_paid = models.FloatField(default=0)
     pay_method = models.CharField(null=True, max_length=50)
     skus = models.ForeignKey(Sku, null=True)
-    type = models.OneToOneField(Order_type)
-# 不可支付、未支付、已支付、已完成、申请退款、已退款……
-    status = models.IntegerField()
+#     type = models.OneToOneField(Order_type)
+# # 不可支付、未支付、已支付、已完成、申请退款、已退款……
+#     status = models.IntegerField()
 
-class Order_type(models.Model):
+# class Order_type(models.Model):
 
-    class Meta:
-        verbose_name = "Order_type"
-        verbose_name_plural = "Order_types"
+#     class Meta:
+#         verbose_name = "Order_type"
+#         verbose_name_plural = "Order_types"
 
-    def __str__(self):
-        pass
+#     def __str__(self):
+#         pass
     
 # TODO 有空时咱们一起进行：
 # 默认值、是否必填等有些还需要再调整
