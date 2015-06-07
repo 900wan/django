@@ -15,7 +15,7 @@ class Language(models.Model):
     english_name = models.CharField( max_length=50)
     local_name = models.CharField( max_length=50)
 
-
+# index 2
 class Provider(models.Model):
 
     class Meta:
@@ -39,16 +39,20 @@ class Provider(models.Model):
         choices=LEVELS_OF_TEACHER_CHOICES, 
         default=ROOKIE)
     name = models.CharField(max_length=50, )
-    weekday_pattern = models.CommaSeparatedIntegerField(max_length=200)
+    weekday_pattern = models.CommaSeparatedIntegerField(max_length=200, blank=True,null=True)
     fee_rate = models.FloatField()
     hp = models.FloatField()
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     def get_fee_rate(self):
         # "对该老师的fee_rate进行更新（在需要时）"
+        if self.fee_rate == '':
+            return "empty value"
+        else :
+            return '%s' %(self.fee_rate)
         return fee_rate
 
-
+# index 3
 class Buyer(models.Model):
 
     class Meta:
@@ -59,8 +63,18 @@ class Buyer(models.Model):
         return u'%s' % self.nickname
     user = models.OneToOneField(User)
     nickname = models.CharField(max_length=50)
-    brithday = models.DateField()
-    mother_tongue = models.ForeignKey(Language)
+    
+    MALE = 1
+    FEMALE = 2
+
+    CHOICES_OF_GENDER = (
+        (MALE,'男'),
+        (FEMALE,'女'),
+        )
+
+    gender = models.IntegerField(choices=CHOICES_OF_GENDER,blank=True,null=True)
+    brithday = models.DateField(blank=True,null=True)
+    mother_tongue = models.ForeignKey(Language,blank=True,null=True)
     time_zone = models.CharField(max_length=50)
     hp = models.IntegerField()
     created = models.DateTimeField(auto_now_add=True)
@@ -248,18 +262,21 @@ class Order(models.Model):
     cny_paid = models.FloatField(default=0)
     pay_method = models.CharField(null=True, max_length=50)
     skus = models.ForeignKey(Sku, null=True)
-#     type = models.OneToOneField(Order_type)
-# # 不可支付、未支付、已支付、已完成、申请退款、已退款……
-#     status = models.IntegerField()
 
-# class Order_type(models.Model):
+    # type = models.OneToOneField(OrderType)
+# 不可支付、未支付、已支付、已完成、申请退款、已退款……
+    status = models.IntegerField()
+
+# class OrderType(models.Model):
 
 #     class Meta:
-#         verbose_name = "Order_type"
-#         verbose_name_plural = "Order_types"
+#         verbose_name = "OrderType"
+#         verbose_name_plural = "OrderTypes"
 
 #     def __str__(self):
 #         pass
+#     type = models.CharField( max_length=50)
+
     
 # TODO 有空时咱们一起进行：
 # 默认值、是否必填等有些还需要再调整
