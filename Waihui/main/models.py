@@ -51,7 +51,6 @@ class Provider(models.Model):
         else :
             return '%s' %(self.fee_rate)
         return fee_rate
-
 # index 3
 class Buyer(models.Model):
 
@@ -82,7 +81,7 @@ class Buyer(models.Model):
     def set_provider(self, Provider):
         new_provider = Provider;
         return new_provider
-
+# index 4
 class TopicCategory(models.Model):
 
     class Meta:
