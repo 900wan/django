@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import *
 
 # Create your models here.
+# index 1
 class Language(models.Model):
 
     class Meta:
@@ -34,10 +35,11 @@ class Provider(models.Model):
         (APPLIED,'已申请'),
         (INTERN,'实习'),
         (FORMAL,'正式'),
-    )
+        )
     status = models.IntegerField(
         choices=LEVELS_OF_TEACHER_CHOICES, 
-        default=ROOKIE)
+        default=ROOKIE,
+        )
     name = models.CharField(max_length=50, )
     weekday_pattern = models.CommaSeparatedIntegerField(max_length=200, blank=True,null=True)
     fee_rate = models.FloatField()
@@ -51,6 +53,7 @@ class Provider(models.Model):
         else :
             return '%s' %(self.fee_rate)
         return fee_rate
+
 # index 3
 class Buyer(models.Model):
 
@@ -62,25 +65,28 @@ class Buyer(models.Model):
         return u'%s' % self.nickname
     user = models.OneToOneField(User)
     nickname = models.CharField(max_length=50)
-    
     MALE = 1
     FEMALE = 2
-
     CHOICES_OF_GENDER = (
         (MALE,'男'),
         (FEMALE,'女'),
         )
-
-    gender = models.IntegerField(choices=CHOICES_OF_GENDER,blank=True,null=True)
+    gender = models.IntegerField(
+        choices=CHOICES_OF_GENDER,
+        blank=True,null=True,
+        )
     brithday = models.DateField(blank=True,null=True)
     mother_tongue = models.ForeignKey(Language,blank=True,null=True)
     time_zone = models.CharField(max_length=50)
     hp = models.IntegerField()
+    provider = models.ForeignKey(Provider)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     def set_provider(self, Provider):
-        new_provider = Provider;
-        return new_provider
+        new_provider = Provider
+        self.provider = new_provider
+        return u'%s' %self.provider
+
 # index 4
 class TopicCategory(models.Model):
 
