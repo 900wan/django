@@ -79,7 +79,7 @@ class Buyer(models.Model):
     mother_tongue = models.ForeignKey(Language,blank=True,null=True)
     time_zone = models.CharField(max_length=50)
     hp = models.IntegerField()
-    provider = models.ForeignKey(Provider)
+    provider = models.ForeignKey(Provider,blank=True,null=True,)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     def set_provider(self, Provider):
@@ -96,10 +96,10 @@ class TopicCategory(models.Model):
 
     def __unicode__(self):
         return u'%s' % self.name
-    name = models.CharField( max_length=50)
+    name = models.CharField( max_length=50,blank=True,null=True)
     background_image = models.URLField()
 
-
+# index 5
 class Topic(models.Model):
 
     class Meta:
@@ -110,13 +110,13 @@ class Topic(models.Model):
         return u'%s' % self.name
     name = models.CharField(max_length=50)
     category = models.ForeignKey(TopicCategory)
-    # default_plan = models.ForeignKey(Plan)
+    # default_plan = models.ForeignKey(Plan,blank=True,null=True)
     status = models.IntegerField()
     creator = models.ForeignKey(User)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)    
 
-
+# index 6
 class Sku(models.Model):
 
     class Meta:
@@ -124,9 +124,12 @@ class Sku(models.Model):
         verbose_name_plural = "Skus"
 
     def __unicode__(self):
-        return "("+u(self.start_time)+")"+self.topic
+        if self.topic is None:
+            return u'%s' % str("("+self.start_time.strftime("%c")+")"+"no topic")
+        else:
+            return u'%s' % str("("+self.start_time.strftime("%c")+")"+str(self.topic))
     provider = models.ForeignKey(Provider, )
-    buyer = models.ManyToManyField(Buyer, )
+    buyer = models.ManyToManyField(Buyer, blank=True,null=True)
         
     FORBOOK = 1
     PREBOOKED = 2
@@ -154,11 +157,11 @@ class Sku(models.Model):
     )
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
-    topic = models.ForeignKey(Topic)
+    topic = models.ForeignKey(Topic,blank=True,null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
-
+# index 7
 class Plan(models.Model):
 
     class Meta:
@@ -175,18 +178,18 @@ class Plan(models.Model):
 # 待审核；成功通过；失败待修改
     status = models.IntegerField()
     content = models.TextField()
-    assignment = models.TextField()
-    slides = models.TextField()
-    materiallinks = models.TextField()
-    materialhtml = models.TextField()
-    voc = models.TextField()
-    copy_from = models.ForeignKey('self')
+    assignment = models.TextField(blank=True,null=True)
+    slides = models.TextField(blank=True,null=True)
+    materiallinks = models.TextField(blank=True,null=True)
+    materialhtml = models.TextField(blank=True,null=True)
+    voc = models.TextField(blank=True,null=True)
+    copy_from = models.ForeignKey('self',blank=True,null=True)
     # summary 写sum我怕出问题
-    sumy = models.TextField()
+    sumy = models.TextField(blank=True,null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
-
+# index 8
 class Wallet(models.Model):
 
     class Meta:
@@ -201,6 +204,7 @@ class Wallet(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)    
 
+# index 9
 class ReviewTovProvider(models.Model):
 
     class Meta:
@@ -213,7 +217,7 @@ class ReviewTovProvider(models.Model):
     buyer = models.ForeignKey(Buyer)
     sku = models.OneToOneField(Sku)
     questionnaire = models.CharField( max_length=50)
-    comment = models.CharField(max_length=50)
+    comment = models.CharField(max_length=250,blank=True,null=True)
     score = models.FloatField()
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -221,6 +225,7 @@ class ReviewTovProvider(models.Model):
         # questionnaire =
         pass 
 
+# index 10
 class ReviewToBuyer(models.Model):
 
     class Meta:
@@ -232,12 +237,12 @@ class ReviewToBuyer(models.Model):
     provider = models.ForeignKey(Provider)
     buyer = models.ForeignKey(Buyer)
     sku = models.OneToOneField(Sku)
-    questionnaire = models.CharField( max_length=50)
-    comment = models.CharField(max_length=50)
+    questionnaire = models.CharField( max_length=50,blank=True,null=True)
+    comment = models.CharField(max_length=50,blank=True,null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
-
+# index 11
 class ReplyToSku(models.Model):
 
     class Meta:
@@ -249,7 +254,7 @@ class ReplyToSku(models.Model):
     from_user = models.ForeignKey(User)
     from_type = models.IntegerField()
     content = models.TextField()
-    to_reply = models.ForeignKey('self')
+    to_reply = models.ForeignKey('self',blank=True,null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
