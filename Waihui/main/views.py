@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 
 # Create your views here.
 def ds_checkrequest_form():
@@ -14,5 +14,5 @@ def url_signup_post(request):
     act_signup
     ds_
 
-def url_index():
-    return "This is index."
+def url_index(request):
+    return render(request, "This is index.")
