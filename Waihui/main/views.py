@@ -7,20 +7,29 @@ from django.http import HttpResponse
 # Create your views here.
 def ds_checkrequest_form():
     if request.method == 'POST':
-        return HttpResponse("good condition")
+        return "required.method = POST"
     else :
-        ds_return_check
-    return ds_return_check    
+        return "else return"
+    return 
 
 def ds_return_check():
     return HttpResponse('this is used by return_check')
 
 def act_signup():
-    ds_checkrequest_form
+    return ds_checkrequest_form()
+
+def act_return_check():
+	return 'Hi there'
 
 def url_signup_post(request):
 # "用户通过浏览器将表单内容post到/signup/post后来到这里"
-    act_signup
+    # word = act_return_check()
+    # word = act_signup()
+    if request.method == 'POST':
+        return HttpResponse ("required.method = POST")
+    else :
+        return HttpResponse ("else return")
+    return HttpResponse (word)
     
 
 def url_index(request):
