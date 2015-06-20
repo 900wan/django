@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from django.contrib.auth.models import *
+from django.contrib.auth.models import User
 
 # Create your models here.
 # index 1
@@ -26,10 +26,10 @@ class Provider(models.Model):
     def __unicode__(self):
         return u'%s' % self.name
     user = models.OneToOneField(User)
-    ROOKIE = 1
-    APPLIED = 2
-    INTERN = 3
-    FORMAL = 4
+    ROOKIE = 0
+    APPLIED = 1
+    INTERN = 2
+    FORMAL = 3
     LEVELS_OF_TEACHER_CHOICES = (
         (ROOKIE,'非教师'),
         (APPLIED,'已申请'),
@@ -42,8 +42,8 @@ class Provider(models.Model):
         )
     name = models.CharField(max_length=50, )
     weekday_pattern = models.CommaSeparatedIntegerField(max_length=200, blank=True,null=True)
-    fee_rate = models.FloatField()
-    hp = models.FloatField()
+    fee_rate = models.FloatField(default=1)
+    hp = models.FloatField(default=100)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     def get_fee_rate(self):
@@ -78,7 +78,7 @@ class Buyer(models.Model):
     brithday = models.DateField(blank=True,null=True)
     mother_tongue = models.ForeignKey(Language,blank=True,null=True)
     time_zone = models.CharField(max_length=50)
-    hp = models.IntegerField()
+    hp = models.IntegerField(default=100)
     provider = models.ForeignKey(Provider,blank=True,null=True,)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -198,7 +198,7 @@ class Wallet(models.Model):
 
     def __unicode__(self):
         return u'%s' % self.cny_balance
-    user = models.ForeignKey(User)
+    user = models.OneToOneField(User)
     cny_balance = models.FloatField(default=0)
     display_currency = models.CharField( default= "CNY" , max_length=50)
     created = models.DateTimeField(auto_now_add=True)
