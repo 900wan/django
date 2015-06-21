@@ -127,6 +127,8 @@ def act_addRTS(user_id, type, content):
         content = content
         )
 
+def act_addOrder(buyer_id, provider_id, cny_price, cny_paid, )
+
 def act_updatewallet():
     pass
 

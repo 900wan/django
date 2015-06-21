@@ -25,6 +25,24 @@ def url_index(request,fuckset):
 def url_homepage(request):
     return HttpResponse("Hi! 900wan gives you a warm welcome!")
 
+def url_login(request):
+    pass
+
+def url_tc(request):
+    pass
+
+def url_tutor(request, offset_id):
+    provider_id = int(offset_id)
+    act = act_showindividual(provider_id)
+    return HttpResponse(act)
+
+def url_order(request, offset_id):
+    order_id = int(order_id)
+    act = act_showorder(order_id)
+    return HttpResponse(act)
+
+
+
 def url_user(request,offset):
     id = int(offset)
     user = act_showuser(id)
