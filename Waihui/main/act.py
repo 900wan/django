@@ -122,12 +122,26 @@ def act_addRTB(provider_id, buyer_id, sku_id):
 def act_addRTS(user_id, type, content):
     user = User.objects.get(id = user_id)
     RTS = ReplytoSku(
-        user = user
-        type = type
-        content = content
+        user = user,
+        type = type,
+        content = content,
         )
+    RTS.save()
+    result = "OK, " + user.name + " left a message of" + content
+    return result
 
-def act_addOrder(buyer_id, provider_id, cny_price, cny_paid, )
+def act_addOrder(buyer_id, provider_id, cny_price, cny_paid):
+    buyer = Buyer.objects.get(id = buyer_id)
+    provider = Provider.objects.get(id = provider_id)
+    order = Order(
+        buyer = buyer,
+        provider = provider,
+        cny_paid = cny_paid,
+        cny_price = cny_price,
+        )
+    RTS.save()
+    result = "OK, " + buyer.name + "place a order for" + provider.name + "costs " + cny_price
+    return result
 
 def act_updatewallet():
     pass

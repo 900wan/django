@@ -3,7 +3,7 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
 from main.act import act_signup
-from main.act import act_jisuan
+# from main.act import act_jisuan
 from main.act import act_addlanguage
 from main.act import act_showuser
 # from main.act import 
@@ -37,11 +37,30 @@ def url_tutor(request, offset_id):
     return HttpResponse(act)
 
 def url_order(request, offset_id):
-    order_id = int(order_id)
+    order_id = int(offset_id)
     act = act_showorder(order_id)
     return HttpResponse(act)
 
+def url_lesson_prepare(request, offset_id):
+    sku_id = int(offset_id)
+    act = act_showsku(sku_id)
+    return HttpResponse(act)
 
+def url_lesson_summarize(request, offset_id):
+    sku_id = int(offset_id)
+    act = act_showsku(sku_id)
+    return HttpResponse(act)
+
+def url_lesson_rate(request, offset_id):
+    sku_id = int(offset_id)
+    act = act_showsku(sku_id)
+    return HttpResponse(act)
+
+def url_classroom(request):
+    pass
+
+def url_office(request):
+    pass
 
 def url_user(request,offset):
     id = int(offset)
