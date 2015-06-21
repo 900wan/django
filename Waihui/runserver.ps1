@@ -1,2 +1,2 @@
-﻿cd "D:\Personal\Documents\GitHub\waihui-django\Waihui"
+﻿cd ./
 python manage.py runserver

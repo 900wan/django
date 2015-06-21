@@ -49,7 +49,7 @@ def act_addlanguage(chinese_name, english_name, local_name):
     result = "OK, Language:" + local_name + " added!"
     return result
 
-def act_addtopiccategory(name, url):
+def act_addTC(name, url):
     topiccategory = TopicCategory(
         name = name,
         url = url)
@@ -60,40 +60,72 @@ def act_addtopiccategory(name, url):
 def act_addtopic(name, category_id, status, user_id):
     topic = Topic(
         name = name,
-        category = category_id,
+        category = Category.objects.get(id = category_id),
         status = status,
-        creator = user_id)
+        creator = User.objects.get(id = user_id))
     topic.save()
     result = "OK, Topic:" + name + " added!"
     return result
 
 def act_addsku(provider_id, status, start_time, end_time, topic_id,):
+    provider = Provider.objects.get(id = provider_id)
+    topic = Topic.objects.get(id = topic_id)
     sku = Sku(
-        provider = provider_id,
+        provider = provider,
         status = status,
         start_time = start_time,
         end_time = end_time,
-        topic = topic_id)
+        topic = topic)
     sku.save()
-    provider = Provider.objects.get(id = provider_id)
-    topic = Topic.objects.get(id = topic_id)
     result = "OK, Sku:" + provider.name +"'s "+ topic.name + str(start_time) + " added!"
     return result
 
 def act_addplan(sku_id, topic_id, status, content,):
-    plan = Plan.objects(
-        sku = sku_id,
-        topic = topic_id,
+    sku = Sku.objects.get(id = sku_id)
+    topic = Topic.objects.get(id = topic_id)
+    plan = Plan(
+        sku = sku,
+        topic = topic,
         status = status,
         content = content)
     plan.save()
-    sku = Sku.objects.get(id = sku_id)
-    topic = Topic.objects.get(id = topic_id)
     result = "OK, Plan: " + sku.provider + topic.name + " added!"
     return result
 
-def function():
-    pass
+def act_addRTP(provider_id, buyer_id, sku_id, questionnaire, score):
+    provider = Provider.objects.get(id = provider_id)
+    buyer = Buy.objects.get(id = buyer_id)
+    sku = Sku.objects.get(id = sku_id)
+    RTP = ReviewToProvider(
+        provider = provider,
+        buyer = buyer,
+        sku = sku,
+        questionnaire = questionnaire,
+        score = score)
+    RTP.save()
+    result = "OK, " + provider.name + "has leave a review on " + sku + "to " + buyer.name
+    return result
+
+def act_addRTB(provider_id, buyer_id, sku_id):
+    provider = Provider.objects.get(id = provider_id)
+    buyer = Buy.objects.get(id = buyer_id)
+    sku = Sku.objects.get(id = sku_id)
+    RTB = ReviewToBuyer(
+        provider = provider,
+        buyer = buyer,
+        sku = sku,
+        )
+    RTB.save()
+    result = "OK, " + provider.name + "has leave a review to " + buyer.name
+    return result
+
+def act_addRTS(user_id, type, content):
+    user = User.objects.get(id = user_id)
+    RTS = ReplytoSku(
+        user = user
+        type = type
+        content = content
+        )
 
 def act_updatewallet():
     pass

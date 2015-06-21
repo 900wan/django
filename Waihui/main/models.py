@@ -65,8 +65,8 @@ class Buyer(models.Model):
         return u'%s' % self.nickname
     user = models.OneToOneField(User)
     nickname = models.CharField(max_length=50)
-    MALE = 1
-    FEMALE = 2
+    MALE = 0
+    FEMALE = 1
     CHOICES_OF_GENDER = (
         (MALE,'男'),
         (FEMALE,'女'),
@@ -131,14 +131,14 @@ class Sku(models.Model):
     provider = models.ForeignKey(Provider, )
     buyer = models.ManyToManyField(Buyer, blank=True,null=True)
         
-    FORBOOK = 1
-    PREBOOKED = 2
-    REFUSED = 3
-    LOSTED = 4
-    BOOKED = 5
-    PREPARED = 6
-    FORVOTE = 7
-    FINISHED = 8
+    FORBOOK = 0
+    PREBOOKED = 1
+    REFUSED = 2
+    LOSTED = 3
+    BOOKED = 4
+    PREPARED = 5
+    FORVOTE = 6
+    FINISHED = 7
 
     STATUS_OF_SKU_CHOICES = (
         (FORBOOK,'可预约'),
@@ -251,12 +251,22 @@ class ReplyToSku(models.Model):
 
     def __unicode__(self):
         pass
-    from_user = models.ForeignKey(User)
-    from_type = models.IntegerField()
+    user = models.ForeignKey(User)
+    type = models.IntegerField()
     content = models.TextField()
-    to_reply = models.ForeignKey('self',blank=True,null=True)
+    reply_to = models.ForeignKey('self',blank=True,null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
+
+class OrderType(models.Model):
+
+    class Meta:
+        verbose_name = "OrderType"
+        verbose_name_plural = "OrderTypes"
+
+    def __str__(self):
+        pass
+    type = models.CharField( max_length=50)
 
 class Order(models.Model):
 
@@ -270,22 +280,29 @@ class Order(models.Model):
     provider = models.ForeignKey(Provider, null=True)
     cny_price = models.FloatField()
     cny_paid = models.FloatField(default=0)
-    pay_method = models.CharField(null=True, max_length=50)
-    skus = models.ForeignKey(Sku, null=True)
-
-    # type = models.OneToOneField(OrderType)
+    pay_method = models.CharField(blank=True, null=True, max_length=50)
+    skus = models.ForeignKey(Sku, blank=True, null=True)
+    type = models.ForeignKey(OrderType)
 # 不可支付、未支付、已支付、已完成、申请退款、已退款……
-    status = models.IntegerField()
+    UA = 0
+    UNPAID = 1
+    PAID = 2
+    FINISHED = 3
+    FORREFUND = 4
+    BEREFUND = 5
 
-# class OrderType(models.Model):
+    STATUS_OF_ORDER_TYPE = (
+        (UA, '不可支付'),
+        (UNPAID, '未支付'),
+        (PAID, '已支付'),
+        (FINISHED, '已完成'),
+        (FORREFUND, '申请退款'),
+        (BEREFUND, '已退款'))
 
-#     class Meta:
-#         verbose_name = "OrderType"
-#         verbose_name_plural = "OrderTypes"
+    status = models.IntegerField(
+        choices=STATUS_OF_ORDER_TYPE,
+        default=UNPAID)
 
-#     def __str__(self):
-#         pass
-#     type = models.CharField( max_length=50)
 
     
 # TODO 有空时咱们一起进行：

@@ -22,6 +22,9 @@ def url_index(request,fuckset):
     ace=act_jisuan(boy)
     return HttpResponse(ace)
 
+def url_homepage(request):
+    return HttpResponse("Hi! 900wan gives you a warm welcome!")
+
 def url_user(request,offset):
     id = int(offset)
     user = act_showuser(id)
