@@ -13,4 +13,5 @@ urlpatterns = patterns('',
     url(r'^user/(\d{1,2})/$', url_views.url_user ,name = 'user' ),
     url(r'^test/$',url_views.url_test_set, name = "test"),
     url(r'^test/(\d{1,2})/$', url_views.url_test_set, name = 'test_setnum'),
+    url(r'^', url_homepage, name ="home_page")
 )

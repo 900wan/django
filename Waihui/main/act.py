@@ -8,6 +8,9 @@ from main.models import Sku
 from main.models import Plan
 from main.models import Wallet
 from main.models import Language
+from main.models import ReplytoSku
+from main.models import ReviewToProvider
+from main.models import ReviewToBuyer
 
 def act_signup(email,password,nickname,gender,mother_tongue_id,time_zone):
     # try:
