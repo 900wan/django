@@ -205,7 +205,7 @@ class Wallet(models.Model):
     modified = models.DateTimeField(auto_now=True)    
 
 # index 9
-class ReviewTovProvider(models.Model):
+class ReviewToProvider(models.Model):
 
     class Meta:
         verbose_name = "ReviewTovProvider"

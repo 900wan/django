@@ -1,2 +1,1 @@
-﻿cd "D:\Personal\Documents\GitHub\waihui-django\Waihui"
-python manage.py shell
+﻿python manage.py shell

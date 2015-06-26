@@ -8,7 +8,7 @@ from main.models import Sku
 from main.models import Plan
 from main.models import Wallet
 from main.models import Language
-from main.models import ReplytoSku
+from main.models import ReplyToSku
 from main.models import ReviewToProvider
 from main.models import ReviewToBuyer
 
@@ -150,5 +150,21 @@ def act_updatewallet():
     pass
 
 def act_showuser(id):
-    user = User.objects.get(id = id),
+    '''test'''
+    user = User.objects.get(id=id),
     return user
+
+def act_showprovider(id):
+    provider = Provider.objects.get(id=id)
+    return provider
+    
+def act_showbuyer(id):
+    buyer = Buyer.objects.get(id=id)
+    return buyer.nickname
+
+def act_showindividual(id, c):
+    if c == 1:
+        r = act_showbuyer(id)
+    elif c == 2:
+        r = act_showprovider(id)
+    return r

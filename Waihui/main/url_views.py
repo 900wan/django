@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
- 
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
 from main.act import act_signup
 # from main.act import act_jisuan
 from main.act import act_addlanguage
 from main.act import act_showuser
+from main.act import act_showindividual
+
 # from main.act import 
 
 def url_signup_post(request):
-# "用户通过浏览器将表单内容post到/signup/post后来到这里"
+    '''用户通过浏览器将表单内容post到/signup/post后来到这里'''
     # word = act_return_check()
     # word = act_signup()
     # if request.method == 'POST':
@@ -17,13 +18,14 @@ def url_signup_post(request):
     pass
 
 def url_index(request,fuckset):
-    boy=int(fuckset)
+    boy = int(fuckset)
     # return render(request, 'pass', )
-    ace=act_jisuan(boy)
-    return HttpResponse(ace)
+    # ace = act_jisuan(boy)
+    # return HttpResponse(ace)
 
 def url_homepage(request):
-    return HttpResponse("Hi! 900wan gives you a warm welcome!")
+    '''首页'''
+    return HttpResponse("Hi! 900wan team give you a warm welcome!")
 
 def url_login(request):
     pass
@@ -32,9 +34,11 @@ def url_tc(request):
     pass
 
 def url_tutor(request, offset_id):
+    '''For show tutor home page'''
     provider_id = int(offset_id)
-    act = act_showindividual(provider_id)
-    return HttpResponse(act)
+    # c = 0 为 user，1为buyer，2为provider
+    act = act_showindividual(provider_id, c=2)
+    return HttpResponse(act.name)
 
 def url_order(request, offset_id):
     order_id = int(offset_id)
@@ -119,4 +123,3 @@ def test_addlanguage(set):
         chinese_name = "英语",
         local_name = "英语")
     return result
-
