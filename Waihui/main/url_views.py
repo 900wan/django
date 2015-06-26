@@ -30,34 +30,33 @@ def url_homepage(request):
 def url_login(request):
     pass
 
-def url_tc(request):
-    pass
+def url_tc(request, offset_id):
+    return HttpResponse(offset_id)
 
 def url_tutor(request, offset_id):
     '''For show tutor home page'''
-    provider_id = int(offset_id)
-    # c = 0 为 user，1为buyer，2为provider
-    act = act_showindividual(provider_id, c=2)
-    return HttpResponse(act.name)
+    id = int(offset_id)
+    act = act_showindividual(id, 'provider')
+    return HttpResponse(act.status)
 
 def url_order(request, offset_id):
-    order_id = int(offset_id)
-    act = act_showorder(order_id)
+    id = int(offset_id)
+    act = act_showindividual(id, 'order')
     return HttpResponse(act)
 
 def url_lesson_prepare(request, offset_id):
-    sku_id = int(offset_id)
-    act = act_showsku(sku_id)
+    id = int(offset_id)
+    act = act_showindividual(id, 'sku')
     return HttpResponse(act)
 
 def url_lesson_summarize(request, offset_id):
-    sku_id = int(offset_id)
-    act = act_showsku(sku_id)
+    id = int(offset_id)
+    act = act_showindividual(id, 'sku')
     return HttpResponse(act)
 
 def url_lesson_rate(request, offset_id):
-    sku_id = int(offset_id)
-    act = act_showsku(sku_id)
+    id = int(offset_id)
+    act = act_showindividual(id, 'sku')
     return HttpResponse(act)
 
 def url_classroom(request):
@@ -66,13 +65,13 @@ def url_classroom(request):
 def url_office(request):
     pass
 
-def url_user(request,offset):
-    id = int(offset)
-    user = act_showuser(id)
-    username = user.username
+def url_user(request,offset_id):
+    id = int(offset_id)
+    user = act_showindividual(id, 'user')
+    usern = user.username
     email = user.email 
     password = user.password
-    result = username + email + password
+    result = usern + email + password
     return HttpResponse(result)
 
 def url_test_set(request,offset = 0 ):

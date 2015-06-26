@@ -38,7 +38,7 @@ def act_signup(email,password,nickname,gender,mother_tongue_id,time_zone):
         user = user)
     wallet.save()
 
-    result="OK!" + str(username) + "." + str(nickname) + "has added"
+    result="OK!" + str(email) + "." + str(nickname) + "has added"
     # except:
     #     pass
     return result
@@ -150,21 +150,28 @@ def act_updatewallet():
     pass
 
 def act_showuser(id):
-    '''test'''
     user = User.objects.get(id=id),
     return user
 
 def act_showprovider(id):
     provider = Provider.objects.get(id=id)
     return provider
-    
+
 def act_showbuyer(id):
     buyer = Buyer.objects.get(id=id)
-    return buyer.nickname
+    return buyer
+
+def act_showorder(id):
+    order = Sku.objects.get(id=id)
+    return order
 
 def act_showindividual(id, c):
-    if c == 1:
+    if c == 'buyer':
         r = act_showbuyer(id)
-    elif c == 2:
+    elif c == 'provider':
         r = act_showprovider(id)
+    elif c == 'order':
+        r = act_showorder(id)
+    elif c == 'user':
+        r = act_showuser(id)
     return r
