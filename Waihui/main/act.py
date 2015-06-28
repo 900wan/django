@@ -193,3 +193,6 @@ def act_showindividual(id, c):
     elif c == 'user':
         r = act_showuser(id)
     return r
+
+def act_signtopic(provider, topic):
+    pass

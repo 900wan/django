@@ -46,6 +46,7 @@ class Provider(models.Model):
     hp = models.FloatField(default=100)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
+    
     def get_fee_rate(self):
         # "对该老师的fee_rate进行更新（在需要时）"
         if self.fee_rate == '':
