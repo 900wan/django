@@ -12,13 +12,17 @@ class Language(models.Model):
 
     def __unicode__(self):
         return u'%s' % self.english_name
-    chinese_name = models.CharField( max_length=50)
-    english_name = models.CharField( max_length=50)
-    local_name = models.CharField( max_length=50)
+    chinese_name = models.CharField(max_length=50)
+    english_name = models.CharField(max_length=50)
+    local_name = models.CharField(max_length=50)
 
 # index 2
 class Provider(models.Model):
-
+    """
+    There are user(o2o), status(mc), name(mc), weekday_pattern(mcoseint), fee_rate(mfloat), hp(mfloat),hp(mfloat)
+    and get_fee_rate(), upgrade_status(int), upgrade_hp(int), set_weekday_pattern()
+    in Provider model
+    """ 
     class Meta:
         verbose_name = "Provider"
         verbose_name_plural = "Providers"
@@ -31,29 +35,43 @@ class Provider(models.Model):
     INTERN = 2
     FORMAL = 3
     LEVELS_OF_TEACHER_CHOICES = (
-        (ROOKIE,'非教师'),
-        (APPLIED,'已申请'),
-        (INTERN,'实习'),
-        (FORMAL,'正式'),
+        (ROOKIE, '非教师'),
+        (APPLIED, '已申请'),
+        (INTERN, '实习'),
+        (FORMAL, '正式'),
         )
     status = models.IntegerField(
-        choices=LEVELS_OF_TEACHER_CHOICES, 
+        choices=LEVELS_OF_TEACHER_CHOICES,
         default=ROOKIE,
         )
     name = models.CharField(max_length=50, )
-    weekday_pattern = models.CommaSeparatedIntegerField(max_length=200, blank=True,null=True)
+    weekday_pattern = models.CommaSeparatedIntegerField(max_length=200, blank=True, null=True)
     fee_rate = models.FloatField(default=1)
     hp = models.FloatField(default=100)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
-    
+
     def get_fee_rate(self):
-        # "对该老师的fee_rate进行更新（在需要时）"
+        """对该老师的fee_rate进行更新（在需要时）"""
         if self.fee_rate == '':
             return "empty value"
-        else :
+        else:
             return '%s' %(self.fee_rate)
-        return fee_rate
+        self.save()
+        return self.fee_rate
+    def upgrade_status(self, theset):
+        """对教师状态进行升级"""
+        self.status = theset
+        self.save()
+        return self.status
+    def upgrade_hp(self, theset):
+        """upgrade the hp by input a int"""
+        self.hp = theset
+        self.save()
+        return self.hp
+    def set_weekday_pattern(self, theset):
+        pass
+
 
 # index 3
 class Buyer(models.Model):
@@ -69,18 +87,18 @@ class Buyer(models.Model):
     MALE = 0
     FEMALE = 1
     CHOICES_OF_GENDER = (
-        (MALE,'男'),
-        (FEMALE,'女'),
+        (MALE, '男'),
+        (FEMALE, '女'),
         )
     gender = models.IntegerField(
         choices=CHOICES_OF_GENDER,
-        blank=True,null=True,
+        blank=True, null=True,
         )
-    brithday = models.DateField(blank=True,null=True)
-    mother_tongue = models.ForeignKey(Language,blank=True,null=True)
+    brithday = models.DateField(blank=True, null=True)
+    mother_tongue = models.ForeignKey(Language, blank=True, null=True)
     time_zone = models.CharField(max_length=50)
     hp = models.IntegerField(default=100)
-    provider = models.ForeignKey(Provider,blank=True,null=True,)
+    provider = models.ForeignKey(Provider, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     def set_provider(self, Provider):
