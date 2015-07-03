@@ -101,8 +101,8 @@ class Buyer(models.Model):
     provider = models.ForeignKey(Provider, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
-    def set_provider(self, Provider):
-        new_provider = Provider
+    def set_provider(self, provider):
+        new_provider = provider
         self.provider = new_provider
         return u'%s' %self.provider
 
@@ -221,7 +221,18 @@ class Wallet(models.Model):
     cny_balance = models.FloatField(default=0)
     display_currency = models.CharField( default= "CNY" , max_length=50)
     created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)    
+    modified = models.DateTimeField(auto_now=True)
+
+    def upgragde_balance(self, theset, order):
+        if order == 0:
+            self.cny_balance = theset
+        elif order.status == 1
+            amount = order.cny_price
+            self.cny_balance -= amount
+        self.save()
+        return self.cny_balance
+
+
 
 # index 9
 class ReviewToProvider(models.Model):
@@ -321,6 +332,11 @@ class Order(models.Model):
     status = models.IntegerField(
         choices=STATUS_OF_ORDER_TYPE,
         default=UNPAID)
+
+    def upgrade_status(self, theset):
+        """对order状态进行升级"""
+        self.status = theset
+        self.save()
 
 
     
