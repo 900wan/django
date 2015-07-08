@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.contrib.auth.models import User
+from main.act import act_upgrade_hp
+# 无法导入acts
 
 # Create your models here.
 # index 1
@@ -65,9 +67,7 @@ class Provider(models.Model):
         self.save()
         return self.status
     def upgrade_hp(self, theset):
-        """upgrade the hp by input a int"""
-        self.hp = theset
-        self.save()
+        act_upgrade_hp(self, theset)
         return self.hp
     def set_weekday_pattern(self, theset):
         pass
@@ -115,7 +115,7 @@ class TopicCategory(models.Model):
 
     def __unicode__(self):
         return u'%s' % self.name
-    name = models.CharField( max_length=50,blank=True,null=True)
+    name = models.CharField(max_length=50, blank=True, null=True)
     background_image = models.URLField()
 
 # index 5
@@ -226,7 +226,7 @@ class Wallet(models.Model):
     def upgragde_balance(self, theset, order):
         if order == 0:
             self.cny_balance = theset
-        elif order.status == 1
+        elif order.status == 1:
             amount = order.cny_price
             self.cny_balance -= amount
         self.save()

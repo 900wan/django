@@ -1,14 +1,14 @@
-# -*- coding: utf-8 -*-
+-*- coding: utf-8 -*-
 from main.models import User
-from main.models import Buyer
+from main.models import Language
 from main.models import Provider
+from main.models import Buyer
 from main.models import Topic
 from main.models import TopicCategory
 from main.models import Sku
 from main.models import Plan
 from main.models import Order
 from main.models import Wallet
-from main.models import Language
 from main.models import ReplyToSku
 from main.models import ReviewToProvider
 from main.models import ReviewToBuyer
@@ -196,3 +196,10 @@ def act_showindividual(id, c):
 
 def act_signtopic(provider, topic):
     pass
+
+def act_upgrade_hp(self, theset):
+    """unavailable in Models!:
+    upgrade the hp by input a int """
+    self.hp = theset
+    self.save()
+    return self.hp
