@@ -226,7 +226,7 @@ class Wallet(models.Model):
     def upgragde_balance(self, theset, order):
         if order == 0:
             self.cny_balance = theset
-        elif order.status == 1
+        elif order.status == 1:
             amount = order.cny_price
             self.cny_balance -= amount
         self.save()
