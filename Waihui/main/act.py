@@ -179,18 +179,6 @@ def act_showorder(id):
     order = Sku.objects.get(id=id)
     return order
 
-def act_showtopic(id):
-    """this will show a topic"""
-    topic = Topic.objects.get(id=id)
-    return topic
-
-def act_showtc(id):
-    """it will show a topiccategory"""
-    tc = TopicCategory.objects.get(id=id)
-    return tc
-
-def function():
-    pass
 def act_showindividual(id, c):
     '''
     this act is used for show lots of models
@@ -204,8 +192,6 @@ def act_showindividual(id, c):
         r = act_showorder(id)
     elif c == 'user':
         r = act_showuser(id)
-    # elif c == 'topic':
-    #     r = ds_showtopic(id, bywhat)
     return r
 
 def act_signtopic(provider, topic):
