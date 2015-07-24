@@ -1,8 +1,20 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.contrib.auth.models import User
-from main.act import act_upgrade_hp
+# from main.act import act_upgrade_hp
 # 无法导入acts
+
+def upgrade_hp(self,theset):
+    """upgrade the hp by input a int """
+    self.hp = theset
+    self.save()
+    return self.hp
+
+def upgrade_status(self,theset):
+    """upgrade the hp by input a int """
+    self.status = theset
+    self.save()
+    return self.status
 
 # Create your models here.
 # index 1
@@ -63,12 +75,12 @@ class Provider(models.Model):
         return self.fee_rate
     def upgrade_status(self, theset):
         """对教师状态进行升级"""
-        self.status = theset
-        self.save()
-        return self.status
+        return upgrade_status(self.theset)
+
     def upgrade_hp(self, theset):
-        act_upgrade_hp(self, theset)
-        return self.hp
+        '''upgrade hp of teacher'''
+        return upgrade_hp(self, theset)
+
     def set_weekday_pattern(self, theset):
         pass
 

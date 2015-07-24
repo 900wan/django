@@ -1,4 +1,4 @@
--*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 from main.models import User
 from main.models import Language
 from main.models import Provider
@@ -189,8 +189,17 @@ def act_showtc(id):
     tc = TopicCategory.objects.get(id=id)
     return tc
 
-def function():
+def act_signtopic(provider, topic):
     pass
+
+def act_upgrade_hp(self, theset):
+    """unavailable in Models!:
+    
+    upgrade the hp by input a int """
+    self.hp = theset
+    self.save()
+    return self.hp
+
 def act_showindividual(id, c):
     '''
     this act is used for show lots of models
@@ -207,13 +216,3 @@ def act_showindividual(id, c):
     # elif c == 'topic':
     #     r = ds_showtopic(id, bywhat)
     return r
-
-def act_signtopic(provider, topic):
-    pass
-
-def act_upgrade_hp(self, theset):
-    """unavailable in Models!:
-    upgrade the hp by input a int """
-    self.hp = theset
-    self.save()
-    return self.hp
