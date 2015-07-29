@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+ # -*- coding: utf-8 -*-
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
 from main.act import act_signup
