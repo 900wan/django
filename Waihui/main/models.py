@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
+import datetime
 # from main.act import act_upgrade_hp
 # 无法导入acts
 
@@ -75,10 +77,16 @@ class Provider(models.Model):
         return self.fee_rate
     def upgrade_status(self, theset):
         """对教师状态进行升级"""
-        return upgrade_status(self.theset)
+        # if form is OK
+        return upgrade_status(self, theset)
 
     def upgrade_hp(self, theset):
         '''upgrade hp of teacher'''
+        user.last_login
+        d1 = datetime.datetime.now()
+        d2 = self.modified
+        if (d1-d2).days >= 1:
+            return "in if"
         return upgrade_hp(self, theset)
 
     def set_weekday_pattern(self, theset):
@@ -161,7 +169,7 @@ class Sku(models.Model):
             return u'%s' % str("("+self.start_time.strftime("%c")+")"+str(self.topic))
     provider = models.ForeignKey(Provider, )
     buyer = models.ManyToManyField(Buyer, blank=True,null=True)
-        
+
     FORBOOK = 0
     PREBOOKED = 1
     REFUSED = 2
@@ -172,14 +180,14 @@ class Sku(models.Model):
     FINISHED = 7
 
     STATUS_OF_SKU_CHOICES = (
-        (FORBOOK,'可预约'),
-        (PREBOOKED,'已预约'),
+        (FORBOOK, '可预约'),
+        (PREBOOKED, '已预约'),
         (REFUSED, '被拒绝扔池子的'),
         (LOSTED, '彻底没人教'),
-        (BOOKED,'已定'),
+        (BOOKED, '已定'),
         (PREPARED, '已备课'),
         (FORVOTE, '已结束代评价'),
-        (FINISHED,'已彻底结束 '),
+        (FINISHED, '已彻底结束 '),
     )
     
     status = models.IntegerField(
@@ -349,6 +357,7 @@ class Order(models.Model):
         """对order状态进行升级"""
         self.status = theset
         self.save()
+
 
 
     
