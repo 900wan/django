@@ -340,7 +340,6 @@ class Order(models.Model):
     FINISHED = 3
     FORREFUND = 4
     BEREFUND = 5
-
     STATUS_OF_ORDER_TYPE = (
         (UA, '不可支付'),
         (UNPAID, '未支付'),
@@ -359,7 +358,40 @@ class Order(models.Model):
         self.save()
 
 
+class Log(models.Model):
 
+    class Meta:
+        verbose_name = "Log"
+        verbose_name_plural = "Logs"
+
+    def __str__(self):
+        pass
+    HTML = 0
+    WAP = 1
+    IOSAPP = 2
+    ANDAPP = 3
+    TYPE_OF_CLIENT = (
+        (HTML, '网页端'),
+        (WAP, '移动网页端'),
+        (IOSAPP, 'IOS客户端'),
+        (ANDAPP, '安卓客户端'))
+    source = models.IntegerField(
+        choices=TYPE_OF_CLIENT,
+        default=HTML)
+
+    LOGIN = 0
+    LOGOUT = 1
+    ORDERED = 2
+    MODIFIED = 3
+    CANCLE = 4
+    TYPE_OF_ACTION = (
+        (LOGIN, '登陆'),
+        (LOGOUT, '登出'),
+        (ORDERED, '下单'),
+        (MODIFIED, '修改'),
+        (CANCLE, '取消'))
+    type = models.IntegerField(
+        choices=TYPE_OF_ACTION)
     
 # TODO 有空时咱们一起进行：
 # 默认值、是否必填等有些还需要再调整
