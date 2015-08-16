@@ -359,7 +359,8 @@ class Order(models.Model):
 
 
 class Log(models.Model):
-
+    '''Model Log is for record of the journal of a User daily action.
+    To record this info, your should insert log attribution in Front'''
     class Meta:
         verbose_name = "Log"
         verbose_name_plural = "Logs"
@@ -390,9 +391,17 @@ class Log(models.Model):
         (ORDERED, '下单'),
         (MODIFIED, '修改'),
         (CANCLE, '取消'))
-    type = models.IntegerField(
-        choices=TYPE_OF_ACTION)
-    
+    type = models.IntegerField(choices=TYPE_OF_ACTION)
+    user = models.OneToOneField(User)
+
+    BUYER = 0
+    PROVIDER = 1
+    TYPE_OF_CHARACTER = (
+        (BUYER, 'buyer'),
+        (PROVIDER, 'provider'))
+    character = models.IntegerField(choices=TYPE_OF_CHARACTER)
+    Dtime = models.DateTimeField(auto_now_add=True)
+
 # TODO 有空时咱们一起进行：
 # 默认值、是否必填等有些还需要再调整
 # max_length长度有些字段可能不够
