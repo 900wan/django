@@ -1,4 +1,13 @@
 # -*- coding: utf-8 -*-
+{% load i18n %}
+
+{% block title %}
+	{{section.title}}
+{% endblock title %}
+{% block content %}
+	
+{% endblock content %}
+
 <a href="{% url 'logo_hometop' %}"></a>
 <a href="{% url 'language:en_us' %}">English</a>
 <a href="{% url 'accouts:registerprovider' %}">{% trans "Be a teacher?" %} </a>

@@ -12,6 +12,7 @@ from main.models import Wallet
 from main.models import ReplyToSku
 from main.models import ReviewToProvider
 from main.models import ReviewToBuyer
+from django.contrib.auth import authenticate, login
 
 def act_signup(email,password,nickname,gender,mother_tongue_id,time_zone):
     '''signup a user'''
@@ -43,6 +44,17 @@ def act_signup(email,password,nickname,gender,mother_tongue_id,time_zone):
     # except:
     #     pass
     return result
+
+def act_login(uf):
+    if uf.is_valid():
+        username = uf.cleaned_data['username']
+        password = uf.cleaned_data['password']
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                return user
+        else:
+            pass
 
 def act_addlanguage(chinese_name, english_name, local_name):
     '''add a language'''

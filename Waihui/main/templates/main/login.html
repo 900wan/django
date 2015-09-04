@@ -1,0 +1,15 @@
+{# {% extends "main/base.html" %} #}
+{% load i18n %}
+
+<head>
+    <title>login</title>
+</head>
+
+<body>
+    <form method="post" enctype="multipart/form-data" action="">
+        {{uf.username}}
+        {{uf.password}}
+        {% csrf_token %}
+        <input type="submit" name="submit">
+    </form>
+</body>

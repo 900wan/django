@@ -1,12 +1,16 @@
  # -*- coding: utf-8 -*-
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
+# from django import forms
+# from login.models import User
 from main.act import act_signup
 # from main.act import act_jisuan
 from main.act import act_addlanguage
 from main.act import act_showuser
 from main.act import act_showindividual
 from main.act import act_addtopic
+from main.act import act_login
+from main.forms import UserForm
 
 # from main.act import 
 
@@ -26,10 +30,18 @@ def url_index(request,fuckset):
 
 def url_homepage(request):
     '''首页'''
-    return HttpResponse("Hi! 900wan team give you a warm welcome!")
+    return render(request, "main/home.html", )
 
 def url_login(request):
-    pass
+    if request.method == 'POST':
+        uf = UserForm(request.POST)
+        # act_login(uf)
+        if uf.is_valid():
+            name=uf.cleaned_data['name']
+            return render(request, 'main.test_result.html',{'uf':uf})
+    else:
+        uf = UserForm()
+    return render(request, "main/login.html", {'uf':uf})
 
 def url_tc(request, offset_id):
     return HttpResponse(offset_id)
