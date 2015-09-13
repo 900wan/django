@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 {% load i18n %}
+{% extends "main/base.html" %}
 
 {% block title %}
-	{{section.title}}
+    {{section.title}}
 {% endblock title %}
 {% block content %}
-	
-{% endblock content %}
-
 <a href="{% url 'logo_hometop' %}"></a>
 <a href="{% url 'language:en_us' %}">English</a>
 <a href="{% url 'accouts:registerprovider' %}">{% trans "Be a teacher?" %} </a>
@@ -18,3 +16,4 @@
 <a href="{% url 'topic:home' %}">{% trans "Explore more topic..." %}</a>
 <a href="{% url 'about' %}">{% trans "About us" %}</a>
 <a href="{% url 'jobs' %}">{% trans "Jobs" %}</a>
+{% endblock content %}

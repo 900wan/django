@@ -33,15 +33,23 @@ def url_homepage(request):
     return render(request, "main/home.html", )
 
 def url_login(request):
+    uf = UserForm(request.POST)
+    msg = request.method+' hehe '+str(uf.is_valid())
     if request.method == 'POST':
-        uf = UserForm(request.POST)
-        # act_login(uf)
-        if uf.is_valid():
-            name=uf.cleaned_data['name']
-            return render(request, 'main.test_result.html',{'uf':uf})
+        if True:
+            username = uf.cleaned_data['username']
+            password = uf.cleaned_data['password']
+            if act_login(username, password):
+                return render(request, "main/right.html", {'username':username})
+            else:
+                return render(request, "main/wrong.html", {'username':username})
+        else:
+            return render(request, "main/login.html", {'uf':uf, 'msg':msg})
+        # elif uf.is_valid():
+        #     name=uf.cleaned_data['name']
+        #     return render(request, 'main.test_result.html',{'uf':uf})
     else:
-        uf = UserForm()
-    return render(request, "main/login.html", {'uf':uf})
+        return render(request, "main/login.html", {'uf':uf, 'msg':msg})
 
 def url_tc(request, offset_id):
     return HttpResponse(offset_id)

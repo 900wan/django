@@ -1,12 +1,17 @@
-<!DOCTYPE html>
 {% load i18n %}
-<html lang="zh-CN"></html>
+<html lang="zh-CN">
 <head>
-	<meta charset="UTF-8">
-	{% block blockname %}
-		<title>{{page_title}}</title>
-		<script type="text/javascript" src="/static/js/jquery.js"></script>
-		<link rel="stylesheet" type="text/css" href="/static/css/style.css" />
-	{% endblock blockname %}
+    <meta charset="UTF-8">
+    
+        <title>{{page_title}}</title>
+        <script type="text/javascript" src="/static/js/jquery.js"></script>
+        {% block javascript %}{% endblock javascript %}
+        {% block stylesheet %}{% endblock stylesheet %}
+        <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
 </head>
 
+<body>
+    {% block main %}{% endblock main %}
+</body>
+
+</html>
