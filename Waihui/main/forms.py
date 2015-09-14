@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import forms
 
-class UserForm(forms.Form):
+class SignupForms(forms.Form):
     username = forms.CharField(
       # label=_('姓名'),
       max_length= 30,
@@ -23,6 +23,9 @@ class UserForm(forms.Form):
       password = self.cleaned_data.get("password")
       password_2 = self.cleaned_data.get("password_2")
       if password and password_2 and password != password_2:
-        raise form.ValidationError(_('password confirm failed'))
+        raise forms.ValidationError(_('password confirm failed'))
       return password_2
 
+class LoginForm(forms.Form):
+    username = forms.CharField(max_length=30)
+    password = forms.CharField(widget=forms.PasswordInput())

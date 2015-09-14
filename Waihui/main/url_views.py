@@ -10,7 +10,7 @@ from main.act import act_showuser
 from main.act import act_showindividual
 from main.act import act_addtopic
 from main.act import act_login
-from main.forms import UserForm
+from main.forms import LoginForm
 
 # from main.act import 
 
@@ -33,10 +33,10 @@ def url_homepage(request):
     return render(request, "main/home.html", )
 
 def url_login(request):
-    uf = UserForm(request.POST)
+    uf = LoginForm(request.POST)
     msg = request.method+' hehe '+str(uf.is_valid())
     if request.method == 'POST':
-        if True:
+        if uf.is_valid():
             username = uf.cleaned_data['username']
             password = uf.cleaned_data['password']
             if act_login(username, password):
