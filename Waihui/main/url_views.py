@@ -10,7 +10,9 @@ from main.act import act_showuser
 from main.act import act_showindividual
 from main.act import act_addtopic
 from main.act import act_login
+from main.act import act_htmllogin
 from main.forms import LoginForm
+
 
 # from main.act import 
 
@@ -40,6 +42,7 @@ def url_login(request):
             username = uf.cleaned_data['username']
             password = uf.cleaned_data['password']
             if act_login(username, password):
+                act_htmllogin(user)
                 return render(request, "main/right.html", {'username':username})
             else:
                 return render(request, "main/wrong.html", {'username':username})

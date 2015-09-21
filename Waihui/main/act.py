@@ -12,7 +12,9 @@ from main.models import Wallet
 from main.models import ReplyToSku
 from main.models import ReviewToProvider
 from main.models import ReviewToBuyer
+from main.models import Log
 from django.contrib.auth import authenticate, login
+from main.ds import ds_addlog
 
 def act_signup(email,password,nickname,gender,mother_tongue_id,time_zone):
     '''signup a user'''
@@ -225,3 +227,18 @@ def act_showindividual(id, c):
     # elif c == 'topic':
     #     r = ds_showtopic(id, bywhat)
     return r
+
+def act_htmllogin(user):
+    user = User.objects.get(id=user)
+    log = ds_addlog(source=0, type=0, user=user, character=0)
+    log.save()
+    return "OK!" + "from " + "html " + log.user + " logged in"
+
+def act_addlog(source, type, user, character):
+    user = User.objects.get(id=user)
+    log = Log(source=source,
+        type=type,
+        user=user,
+        character=character)
+    log.save()
+    return "OK!" + "from " + log.source + log.user + " logged in"
