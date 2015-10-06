@@ -16,7 +16,7 @@ from main.models import Log
 from django.contrib.auth import authenticate, login
 from main.ds import ds_addlog
 
-def act_signup(email,password,nickname,gender,mother_tongue_id,time_zone):
+def act_signup(email,password,nickname,gender=1,mother_tongue_id=1,time_zone=1):
     '''signup a user'''
     user = User.objects.create_user(
         username=email,

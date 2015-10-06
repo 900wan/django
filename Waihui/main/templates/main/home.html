@@ -9,5 +9,9 @@
 {% block content %}
     <h1>{{heading}}</h1>
     {% trans "This the content of home page." %}
-    {% trans "The priority language：" %}{{ LANGUAGE_CODE|language_name_local }}
+    {% trans "The priority language：" %}{{ LANGUAGE_CODE|language_name_local }}.
+    <a href="{% url 'main:signup' %}">{% trans "Sign up now!" %}</a>    
+    <a href="{% url 'main:login' %}">{% trans "Already have accounts?" %}</a>
+    {% trans "This is our first auto-translation page." %}
+
 {% endblock content %}

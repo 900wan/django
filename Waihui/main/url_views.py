@@ -20,7 +20,7 @@ from main.forms import SignupForm
 
 # from main.act import 
 def url_homepage(request):
-    user_language = 'en'
+    user_language = 'zh-cn'
     translation.activate(user_language)
     # request.session[translation.LANGUAGE_SESSION_KEY] = user_language
     tstr=_(u'Our hompage heading')
@@ -35,9 +35,15 @@ def url_index(request,fuckset):
 def url_signup(request):
     '''用户通过浏览器将表单内容post到/signup/post后来到这里'''
     uf = SignupForm(request.POST)
+    msg=request.method
     if request.method == 'POST':
-        act_signup(username, password, email, )
-    return render(request, "main/signup.html")
+        if uf.is_valid():
+            nickname = uf.cleaned_data['nickname']
+            password = uf.cleaned_data['password']
+            email = uf.cleaned_data['email']
+            result = act_signup(password=password, nickname=nickname, email=email, )
+            msg=result
+    return render(request, "main/signup.html",{'form':uf, 'msg':msg})
     # act_signup()
 
 def url_login(request):

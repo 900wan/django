@@ -2,12 +2,12 @@
 from django import forms
 
 class SignupForm(forms.Form):
-    username = forms.CharField(
+    nickname = forms.CharField(
       # label=_('姓名'),
-      max_length= 30,
+      max_length=30,
     )
 
-    # email = forms.EmailField(label=_('Email'),)
+    email = forms.EmailField(label='Email',)
 
     password = forms.CharField(
       # label=_('password'),
@@ -23,7 +23,7 @@ class SignupForm(forms.Form):
       password = self.cleaned_data.get("password")
       password_2 = self.cleaned_data.get("password_2")
       if password and password_2 and password != password_2:
-        raise forms.ValidationError(_('password confirm failed'))
+        raise forms.ValidationError('password confirm failed')
       return password_2
 
 class LoginForm(forms.Form):
