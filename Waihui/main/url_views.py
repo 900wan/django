@@ -1,7 +1,11 @@
  # -*- coding: utf-8 -*-
 from django.shortcuts import get_object_or_404, render
+<<<<<<< HEAD
 from django.utils.translation import ugettext as _
 from django.utils import translation
+=======
+from django.contrib.auth import authenticate, login
+>>>>>>> origin/master
 from django.http import HttpResponse
 # from django import forms
 # from login.models import User
@@ -14,17 +18,15 @@ from main.act import act_addtopic
 from main.act import act_login
 from main.act import act_htmllogin
 from main.forms import LoginForm
+from main.forms import SignupForm
 
 
 # from main.act import 
-
-def url_signup_post(request):
-    '''用户通过浏览器将表单内容post到/signup/post后来到这里'''
-    # word = act_return_check()
-    # word = act_signup()
-    # if request.method == 'POST':
-    #     act_signup(username, password, email, )
-    pass
+def url_homepage(request):
+    title = "熊猫老师"
+    slogan = "一台电脑，和中文老师轻松练口语"
+    
+    return render(request, "main/home.html", )
 
 def url_index(request,fuckset):
     boy = int(fuckset)
@@ -32,12 +34,23 @@ def url_index(request,fuckset):
     # ace = act_jisuan(boy)
     # return HttpResponse(ace)
 
+<<<<<<< HEAD
 def url_homepage(request):
     user_language = 'en'
     translation.activate(user_language)
     # request.session[translation.LANGUAGE_SESSION_KEY] = user_language
     tstr=_(u'Our hompage heading')
     return render(request, "main/home.html", {'heading':tstr})
+=======
+def url_signup(request):
+    '''用户通过浏览器将表单内容post到/signup/post后来到这里'''
+    if request.method == 'POST':
+        act_signup(username, password, email, )
+    # uf = SignupForm(request.POST)
+    # act_signup()
+
+
+>>>>>>> origin/master
 
 def url_login(request):
     uf = LoginForm(request.POST)
@@ -46,9 +59,13 @@ def url_login(request):
         if uf.is_valid():
             username = uf.cleaned_data['username']
             password = uf.cleaned_data['password']
-            if act_login(username, password):
-                act_htmllogin(user)
-                return render(request, "main/right.html", {'username':username})
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    return render(request, "main/right.html", {'username':username})
+                else:
+                    return render(request, "main/isnotactive.html", {'username':username})
             else:
                 return render(request, "main/wrong.html", {'username':username})
         else:

@@ -1,12 +1,15 @@
 {% extends "main/base.html" %}
 {% load i18n %}
 
-<head>
-    <title>login</title>
-</head>
+{% block title %}
+    
+{% endblock title %}
 
-{% block main %}
+{% block content %}
 
+    <a href="">English</a>
+    <a href="{% url 'main:signup' %}">免费注册</a>
+    <p>欢迎回来</p>
     <form method="post" enctype="multipart/form-data" action="/login/">
         {{uf.username}}
         {{uf.password}}
@@ -14,4 +17,4 @@
         <input type="submit" name="submit">
     </form>
     {{msg}}
-{% endblock main %}
+{% endblock content %}
