@@ -47,7 +47,8 @@ def act_signup(email,password,nickname,gender,mother_tongue_id,time_zone):
     #     pass
     return result
 
-def act_login(username,password):
+def act_login(request,username,password):
+    
     user = authenticate(username=username, password=password)
     if user is not None:
         if user.is_active:

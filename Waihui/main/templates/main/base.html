@@ -10,10 +10,11 @@
         {% block javascript %}{% endblock javascript %}
         {% block stylesheet %}{% endblock stylesheet %}
         <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
+        {% block head %}{% endblock head %}
 </head>
 
 <body>
-    {% block main %}{% endblock main %}
+    
     {% block content %}
     	
     {% endblock content %}

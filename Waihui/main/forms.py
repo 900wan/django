@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import forms
 
-class SignupForms(forms.Form):
+class SignupForm(forms.Form):
     username = forms.CharField(
       # label=_('姓名'),
       max_length= 30,
