@@ -1,11 +1,10 @@
 {% load i18n %}
-<html lang="zh-CN">
+{% get_current_language as LANGUAGE_CODE %}
+
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
-    
-        {% block title %}
-        	<title>{{page_title}}</title>
-        {% endblock title %}
+        <title>{% block title %}SilkyChinese{% endblock %}</title>
         <script type="text/javascript" src="/static/js/jquery.js"></script>
         {% block javascript %}{% endblock javascript %}
         {% block stylesheet %}{% endblock stylesheet %}
@@ -13,9 +12,7 @@
 </head>
 
 <body>
-    {% block main %}{% endblock main %}
     {% block content %}
-    	
     {% endblock content %}
 </body>
 

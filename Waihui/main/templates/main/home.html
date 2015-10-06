@@ -1,18 +1,13 @@
 {% extends "main/base.html" %}
-{% load i18n %}
+{% load i18n %} 
+{% get_current_language as LANGUAGE_CODE %}
 
 {% block title %}
-    {{section.title}}
+    Home
 {% endblock title %}
+
 {% block content %}
-<a href="{% url 'logo_hometop' %}"></a>
-<a href="{% url 'language:en_us' %}">English</a>
-<a href="{% url 'accouts:registerprovider' %}">{% trans "Be a teacher?" %} </a>
-<a href="{% url 'accouts:login' %}">{% trans "login" %}</a>
-<a href="{% url 'firstclass' %}">{% trans "Enjoy, Be Free" %}</a>
-<a href="{% url 'home:photo_1' %}"></a>
-<a href="{% url 'home:matrix_photo_1' %}"></a>
-<a href="{% url 'topic:home' %}">{% trans "Explore more topic..." %}</a>
-<a href="{% url 'about' %}">{% trans "About us" %}</a>
-<a href="{% url 'jobs' %}">{% trans "Jobs" %}</a>
+    <h1>{{heading}}</h1>
+    {% trans "This the content of home page." %}
+    {% trans "The priority language：" %}{{ LANGUAGE_CODE|language_name_local }}
 {% endblock content %}

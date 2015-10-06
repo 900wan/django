@@ -1,5 +1,7 @@
  # -*- coding: utf-8 -*-
 from django.shortcuts import get_object_or_404, render
+from django.utils.translation import ugettext as _
+from django.utils import translation
 from django.http import HttpResponse
 # from django import forms
 # from login.models import User
@@ -31,10 +33,11 @@ def url_index(request,fuckset):
     # return HttpResponse(ace)
 
 def url_homepage(request):
-    title = "熊猫老师"
-    slogan = "一台电脑，和中文老师轻松练口语"
-    
-    return render(request, "main/home.html", )
+    user_language = 'en'
+    translation.activate(user_language)
+    # request.session[translation.LANGUAGE_SESSION_KEY] = user_language
+    tstr=_(u'Our hompage heading')
+    return render(request, "main/home.html", {'heading':tstr})
 
 def url_login(request):
     uf = LoginForm(request.POST)
