@@ -168,7 +168,7 @@ class Sku(models.Model):
         else:
             return u'%s' % str("("+self.start_time.strftime("%c")+")"+str(self.topic))
     provider = models.ForeignKey(Provider, )
-    buyer = models.ManyToManyField(Buyer, blank=True,null=True)
+    buyer = models.ManyToManyField(Buyer, blank=True)
 
     FORBOOK = 0
     PREBOOKED = 1
