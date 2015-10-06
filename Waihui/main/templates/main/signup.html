@@ -1,4 +1,6 @@
-<form action="{% url 'accounts:signup_post' %}">
+{% extends "main/base.html" %}
+{% block content %}
+	<form action="{% url 'main:signup' %}">
 	{% csrf_token %}
 	<table>
 		{% for field in form %}
@@ -9,6 +11,7 @@
 			</tr>
 		{% endfor %}
 	</table>
-	<input type="submit" id="submit" value={% trans "signup" %} >
-	<a href="{% url 'accounts:login' %}">{% trans "Already have accounts?" %}</a>
+	<input type="submit" id="submit" value="注册" >
+	<a href="{% url 'main:login' %}">Already have accounts?</a>
 </form>
+{% endblock content %}

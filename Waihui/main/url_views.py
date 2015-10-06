@@ -34,9 +34,10 @@ def url_index(request,fuckset):
 
 def url_signup(request):
     '''用户通过浏览器将表单内容post到/signup/post后来到这里'''
+    uf = SignupForm(request.POST)
     if request.method == 'POST':
         act_signup(username, password, email, )
-    # uf = SignupForm(request.POST)
+    return render(request, "main/signup.html")
     # act_signup()
 
 def url_login(request):
