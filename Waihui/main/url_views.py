@@ -31,7 +31,9 @@ def url_index(request,fuckset):
     # return HttpResponse(ace)
 
 def url_homepage(request):
-    '''首页'''
+    title = "熊猫老师"
+    slogan = "一台电脑，和中文老师轻松练口语"
+    
     return render(request, "main/home.html", )
 
 def url_login(request):
