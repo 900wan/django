@@ -1,11 +1,8 @@
  # -*- coding: utf-8 -*-
 from django.shortcuts import get_object_or_404, render
-<<<<<<< HEAD
 from django.utils.translation import ugettext as _
 from django.utils import translation
-=======
 from django.contrib.auth import authenticate, login
->>>>>>> origin/master
 from django.http import HttpResponse
 # from django import forms
 # from login.models import User
