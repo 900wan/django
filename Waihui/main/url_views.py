@@ -17,8 +17,11 @@ from main.act import act_htmllogin
 from main.forms import LoginForm
 from main.forms import SignupForm
 
+# test
+from main.alpha import get_language
+def url_test(request):
+    return get_language(request)
 
-# from main.act import 
 def url_homepage(request):
     user_language = 'zh-cn'
     translation.activate(user_language)
@@ -57,6 +60,7 @@ def url_login(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
+                    ds
                     return render(request, "main/right.html", {'username':username})
                 else:
                     return render(request, "main/isnotactive.html", {'username':username})
@@ -113,59 +117,3 @@ def url_user(request,offset_id):
     password = user.password
     result = usern + email + password
     return HttpResponse(result)
-
-def url_test_set(request,offset = 0 ):
-    set = int(offset)
-    act = test_signup(set)
-    return HttpResponse(act)
-
-
-
-
-
-
-
-
-
-
-
-
-
-def test_signup(set):
-    if set == 0:
-        b = act_signup(
-        email="swee@msn.com",
-        password="123",
-        nickname="Bob",
-        gender="1",
-        mother_tongue_id=1,
-        time_zone='America/Chicago')
-    else:
-        b=act_signup(
-        email=str(set)+"swee@msn.com",
-        password="123",
-        nickname="Bob",
-        gender="1",
-        mother_tongue_id=1,
-        time_zone='America/Chicago')
-    return b
-
-def test_addlanguage(set):
-    if set == 0:
-        result = act_addlanguage(
-        english_name=str(set) + "english",
-        chinese_name=str(set) + "英语",
-        local_name=str(set) + "英语")
-    else:
-        result = act_addlanguage(
-        english_name="english",
-        chinese_name="英语",
-        local_name="英语")
-    return result
-
-
-def test_addtopic(set):
-    if set == 0:
-        result = act_addtopic(
-            name='支付宝',
-            category='')

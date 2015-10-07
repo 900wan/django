@@ -2,6 +2,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.utils.translation import get_language
 import datetime
 # from main.act import act_upgrade_hp
 # 无法导入acts
@@ -30,7 +31,15 @@ class Language(models.Model):
         return u'%s' % self.english_name
     chinese_name = models.CharField(max_length=50)
     english_name = models.CharField(max_length=50)
+    # 需要修改english_name为系统可识别 
     local_name = models.CharField(max_length=50)
+    def autoaddlanguage(self):
+        self.english_name = get_language()
+        self.save()
+        return self.english_name
+
+
+        
 
 # index 2
 class Provider(models.Model):
