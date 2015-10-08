@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
 from django.utils.translation import ugettext as _
 from django.http import HttpResponse
+def url_test(request):
+    return get_language(request)
 
-def my_view(request):
+
+
+def test_home(request):
     output = _("Welcome to my site.")
     return HttpResponse(output)
 
 def get_language(request):
-    i = request.META
-    return i
+    i = request.META.get('HTTP_ACCEPT_LANGUAGE')
+    i
+    return HttpResponse(str(i))
 
 def url_test_set(request, offset=0):
     set = int(offset)

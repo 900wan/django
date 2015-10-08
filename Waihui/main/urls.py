@@ -1,11 +1,17 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from main import url_views
+from main import test_views
+
+test_patterns = patterns('',
+    url(r'$', test_views.test_home, ))
 
 urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'Waihui.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
+    url(r'^test/$', include(test_patterns)),
+    # url(r'^test/$', url_views.url_test, name='url_test'),
     url(r'^$', url_views.url_homepage, name="home_page"),
     url(r'^signup/$', url_views.url_signup, name="signup"), 
     url(r'^login/$', url_views.url_login, name="login"), 

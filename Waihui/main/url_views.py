@@ -17,11 +17,6 @@ from main.act import act_htmllogin
 from main.forms import LoginForm
 from main.forms import SignupForm
 
-# test
-from main.alpha import get_language
-def url_test(request):
-    return get_language(request)
-
 def url_homepage(request):
     user_language = 'zh-cn'
     translation.activate(user_language)
