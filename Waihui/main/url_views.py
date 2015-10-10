@@ -14,14 +14,16 @@ from main.act import act_showindividual
 from main.act import act_addtopic
 from main.act import act_login
 from main.act import act_htmllogin
+from main.act import act_getlanguage
 from main.forms import LoginForm
 from main.forms import SignupForm
 
 def url_homepage(request):
-    user_language = 'zh-cn'
+    language = act_getlanguage(request)
+    user_language = language
     translation.activate(user_language)
     # request.session[translation.LANGUAGE_SESSION_KEY] = user_language
-    tstr=_(u'Our hompage heading')
+    tstr = _(u'Our hompage heading')
     return render(request, "main/home.html", {'heading':tstr})
 
 def url_index(request,fuckset):
@@ -33,15 +35,16 @@ def url_index(request,fuckset):
 def url_signup(request):
     '''用户通过浏览器将表单内容post到/signup/post后来到这里'''
     uf = SignupForm(request.POST)
-    msg=request.method
+    msg = request.method
     if request.method == 'POST':
         if uf.is_valid():
             nickname = uf.cleaned_data['nickname']
             password = uf.cleaned_data['password']
             email = uf.cleaned_data['email']
-            result = act_signup(password=password, nickname=nickname, email=email, )
-            msg=result
-    return render(request, "main/signup.html",{'form':uf, 'msg':msg})
+            language = act_getlanguage(request)
+            result = act_signup(password=password, nickname=nickname, email=email, http_language=language)
+            msg = result
+    return render(request, "main/signup.html", {'form':uf, 'msg':msg})
     # act_signup()
 
 def url_login(request):

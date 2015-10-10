@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
+from django.shortcuts import get_object_or_404, render
 from django.utils.translation import ugettext as _
 from django.http import HttpResponse
 def url_test(request):
     return get_language(request)
-
-
 
 def test_home(request):
     output = _("Welcome to my site.")
@@ -12,8 +11,8 @@ def test_home(request):
 
 def get_language(request):
     i = request.META.get('HTTP_ACCEPT_LANGUAGE')
-    i
-    return HttpResponse(str(i))
+
+    return render(request, 'main/test.html', {'lans':i})
 
 def url_test_set(request, offset=0):
     set = int(offset)

@@ -16,8 +16,16 @@ from main.models import Log
 from django.contrib.auth import authenticate, login
 from main.ds import ds_addlog
 
-def act_signup(email,password,nickname,gender=1,mother_tongue_id=1,time_zone=1):
+def act_getlanguage(request):
+    language = request.META.get('HTTP_ACCEPT_LANGUAGE')
+    return language
+
+def act_signup(email, password, nickname, http_language, gender=1, mother_tongue_id=1, time_zone=1):
     '''signup a user'''
+    http_language = http_language
+    language = Language.objects.get(english_name=http_language)
+    language.save()
+
     user = User.objects.create_user(
         username=email,
         email=email,

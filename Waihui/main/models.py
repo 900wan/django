@@ -33,7 +33,7 @@ class Language(models.Model):
     english_name = models.CharField(max_length=50)
     # 需要修改english_name为系统可识别 
     local_name = models.CharField(max_length=50)
-    def autoaddlanguage(self):
+    def autoaddlanguage(self, language_name):
         self.english_name = get_language()
         self.save()
         return self.english_name
