@@ -22,9 +22,9 @@ def act_getlanguage(request):
 
 def act_signup(email, password, nickname, http_language, gender=1, mother_tongue_id=1, time_zone=1):
     '''signup a user'''
-    http_language = http_language
-    language = Language.objects.get(english_name=http_language)
-    language.save()
+    language = http_language
+    ulanguage = Language.objects.get(english_name=language)
+    ulanguage.save()
 
     user = User.objects.create_user(
         username=email,

@@ -35,15 +35,16 @@ def url_index(request,fuckset):
 def url_signup(request):
     '''用户通过浏览器将表单内容post到/signup/post后来到这里'''
     uf = SignupForm(request.POST)
-    msg = request.method
+    language = act_getlanguage(request)
+    msg = request.method + language
     if request.method == 'POST':
         if uf.is_valid():
             nickname = uf.cleaned_data['nickname']
             password = uf.cleaned_data['password']
             email = uf.cleaned_data['email']
-            language = act_getlanguage(request)
-            result = act_signup(password=password, nickname=nickname, email=email, http_language=language)
-            msg = result
+            result = act_signup(password=password, nickname=nickname, email=email,
+                http_language=language)
+            msg = result + language
     return render(request, "main/signup.html", {'form':uf, 'msg':msg})
     # act_signup()
 
@@ -58,7 +59,6 @@ def url_login(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    ds
                     return render(request, "main/right.html", {'username':username})
                 else:
                     return render(request, "main/isnotactive.html", {'username':username})
