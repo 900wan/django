@@ -98,18 +98,20 @@ def act_addtopic(name, topic_id, status, user_id):
     result = "OK, Topic:" + name + " added!"
     return result
 
-def act_addsku(provider_id, status, start_time, end_time, topic_id,):
+def act_addsku(provider, start_time, end_time, topic, buyer, status=1):
     '''it will add a Sku'''
-    provider = Provider.objects.get(id=provider_id)
-    topic = Topic.objects.get(id=topic_id)
+    # provider = Provider.objects.get(id=provider_id)
+    # topic = Topic.objects.get(id=topic_id)
     sku = Sku(
         provider=provider,
         status=status,
         start_time=start_time,
         end_time=end_time,
-        topic=topic)
+        topic=topic,
+        )
     sku.save()
-    result = "OK, Sku:" + provider.name +"'s "+ topic.name + str(start_time) + " added!"
+    sku.buyer.add(buyer)
+    result = "OK, Sku:" + provider.name +"'s "+ topic.name + str(start_time) + " added! Student:" + buyer.nickname
     return result
 
 def act_addplan(sku_id, topic_id, status, content,):

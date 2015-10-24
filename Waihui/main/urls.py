@@ -20,4 +20,5 @@ urlpatterns = patterns('',
                         url(r'^tc/(\w*)/$', url_views.url_tc, name='topic_category'),
                         url(r'^show/(\d{1,2})/$', url_views.url_tutor, name='show'),
                         url(r'^time/plus/(\d{1,2})/$', url_views.url_index, name="index"),
+                        url(r'^sku/$', url_views.url_sku, name='sku'),
     )

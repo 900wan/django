@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404, render
 from django.utils.translation import ugettext as _
 from django.utils import translation
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 # from django import forms
 # from login.models import User
@@ -15,8 +16,15 @@ from main.act import act_addtopic
 from main.act import act_login
 from main.act import act_htmllogin
 from main.act import act_getlanguage
+from main.act import act_addsku
+from main.models import Language
+from main.models import Provider
+from main.models import Buyer
+from main.models import Topic
+from main.models import Sku
 from main.forms import LoginForm
 from main.forms import SignupForm
+from main.forms import AddSkuForm
 
 def url_homepage(request):
     language = act_getlanguage(request)
@@ -80,6 +88,28 @@ def url_tutor(request, offset_id):
     id = int(offset_id)
     act = act_showindividual(id, 'provider')
     return HttpResponse(act.status)
+
+@login_required
+def url_sku(request):
+    '''make a sku for order, One order can have many skus'''
+    current_user=request.user
+    skus = Sku.objects.all()
+    uf = AddSkuForm(request.POST)
+    msg = request.method+", user: ["+str(current_user.username)+"], user's buyer: ["+str(current_user.buyer)+"]"
+    if request.method == 'POST':
+        if uf.is_valid():
+            provider = uf.cleaned_data['provider']
+            topic = uf.cleaned_data['topic']
+            start_time = uf.cleaned_data['start_time']
+            end_time = uf.cleaned_data['end_time']
+            result = act_addsku(provider=provider, topic=topic, start_time=start_time, end_time=end_time, buyer=current_user.buyer)
+            msg = result
+    return render(request, "main/addsku.html", {'uf':uf, 'msg':msg, 'heading':"add sku", 'skus':skus})
+    # teachers = Provider.objects.all()
+    # topics = Topic.objects.all()
+    # 
+    # return render(request, "main/addsku.html", {'teacher_list':teachers, 'topic_list':topics,})
+    
 
 def url_order(request, offset_id):
     id = int(offset_id)

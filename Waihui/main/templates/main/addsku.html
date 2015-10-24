@@ -1,0 +1,46 @@
+{% extends "main/base.html" %}
+{% load i18n %} 
+{% get_current_language as LANGUAGE_CODE %}
+{% block title %}
+    {% trans "Booking a course" %}
+{% endblock title %}
+
+{% block content %}
+    <h1>{{heading}}</h1>
+    {% trans "This the content of booking a course page." %}
+    {% trans "The priority language：" %}{{ LANGUAGE_CODE|language_name_local }}.
+    <a href="{% url 'main:signup' %}">{% trans "Sign up now!" %}</a>    
+    <a href="{% url 'main:login' %}">{% trans "Already have accounts?" %}</a>
+    
+    <form method="post" enctype="multipart/form-data" action="{% url 'main:sku' %}">
+        {{uf.as_p}}
+        {% csrf_token %}
+        <input type="submit" name="submit">
+    </form>
+    <p>================================</p>
+    <p>{{msg}}</p>
+    <p>================================</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Topic</th>
+                    <th>Provider</th>
+                    <th>Buyer</th>
+                    <th>Start time</th>
+                    <th>End time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sku in skus %}
+                <tr>
+                    <td>{{sku.topic}}</td>
+                    <td>{{sku.provider}}</td>
+                    <td>{{sku.buyer.all}}</td>
+                    <td>{{sku.start_time}}</td>
+                    <td>{{sku.end_time}}</td>
+                </tr>
+                {% endfor%}
+            </tbody>
+        </table>
+{% endblock content %}

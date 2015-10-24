@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import forms
+from main.models import Provider
+from main.models import Topic
 
 class SignupForm(forms.Form):
     nickname = forms.CharField(
@@ -29,3 +31,9 @@ class SignupForm(forms.Form):
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=30)
     password = forms.CharField(widget=forms.PasswordInput())
+
+class AddSkuForm(forms.Form):
+    provider = forms.ModelChoiceField(queryset=Provider.objects.all())
+    topic = forms.ModelChoiceField(queryset=Topic.objects.all())
+    start_time = forms.DateTimeField()
+    end_time = forms.DateTimeField()
