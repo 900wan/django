@@ -1,0 +1,49 @@
+{% extends "main/base.html" %}
+{% load i18n %} 
+{% get_current_language as LANGUAGE_CODE %}
+{% block title %}
+    {% trans "Booking a course" %}
+{% endblock title %}
+
+{% block content %}
+    <h1>{{heading}}</h1>
+    {% trans "This the content of replying to sku." %}
+    {% trans "The priority language：" %}{{ LANGUAGE_CODE|language_name_local }}.
+    <a href="{% url 'main:signup' %}">{% trans "Sign up now!" %}</a>    
+    <a href="{% url 'main:login' %}">{% trans "Already have accounts?" %}</a>
+    
+    <form method="post" enctype="multipart/form-data" action="{% url 'main:replyrts' %}">
+        {{uf.as_p}}
+        {% csrf_token %}
+        <input type="submit" name="submit">
+    </form>
+    <p>================================</p>
+    <p>{{msg}}</p>
+    <p>================================</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Type</th>
+                    <th>Content</th>
+                    <th>Rply to</th>
+                    <th>Created</th>
+                    <th>Modified</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in rtss %}
+                <tr>
+                    <td>{{r.user}}</td>
+                    <td>{{r.type}}</td>
+                    <td>{{r.content}}</td>
+                    <td>{{r.reply_to}}</td>
+                    <td>{{sku.created}}</td>
+                    <td>{{sku.modified}}</td>
+
+                </tr>
+                {% endfor%}
+            </tbody>
+        </table>
+{% endblock content %}

@@ -17,14 +17,17 @@ from main.act import act_login
 from main.act import act_htmllogin
 from main.act import act_getlanguage
 from main.act import act_addsku
+from main.act import act_addrts
 from main.models import Language
 from main.models import Provider
 from main.models import Buyer
 from main.models import Topic
 from main.models import Sku
+from main.models import ReplyToSku
 from main.forms import LoginForm
 from main.forms import SignupForm
 from main.forms import AddSkuForm
+from main.forms import AddRTSForm
 
 def url_homepage(request):
     language = act_getlanguage(request)
@@ -70,18 +73,18 @@ def url_login(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    if next =='':
+                    if next == '':
                         return render(request, "main/right.html", {'username':username})
                     else:
                         return HttpResponseRedirect(next)
                 else:
-                    msg=_(u'Login failed, user is not active.')
+                    msg = _(u'Login failed, user is not active.')
                     return render(request, "main/login.html", {'uf':uf, 'msg':msg, 'next':next})
             else:
-                msg=_(u'Guess what? Login failed.')
+                msg = _(u'Guess what? Login failed.')
                 return render(request, "main/login.html", {'uf':uf, 'msg':msg, 'next':next})
         else:
-            msg=_(u'form not valid')
+            msg = _(u'form not valid')
             return render(request, "main/login.html", {'uf':uf, 'msg':msg})
         # elif uf.is_valid():
         #     name=uf.cleaned_data['name']
@@ -124,6 +127,30 @@ def url_sku(request):
     # 
     # return render(request, "main/addsku.html", {'teacher_list':teachers, 'topic_list':topics,})
     
+def url_replytosku(request):
+    '''handling the replys to sku,'''
+    current_user = request.user
+    rtss = ReplyToSku.objects.all()
+    uf = AddRTSForm(request.POST)
+    msg = request.method
+    if request.method == 'POST':
+        if uf.is_valid():
+            sku = uf.cleaned_data['sku']
+            content = uf.cleaned_data['content']
+            replyto = uf.cleaned_data['reply_to']
+            if current_user == sku.provider:
+                type = 1    
+            elif current_user == sku.buyer:
+                type = 2
+            else:
+                type = 0
+            result = act_addrts(user=current_user, type=type, content=content, reply_to=replyto,)
+            msg = result
+    return render(request, "main/addrts.html", {'uf':uf, 'msg':msg, 'heading':"Reply to Sku", 'rtss':rtss})
+
+
+
+
 def url_order(request, offset_id):
     id = int(offset_id)
     act = act_showindividual(id, 'order')

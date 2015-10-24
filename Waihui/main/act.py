@@ -157,16 +157,16 @@ def act_addrtb(provider_id, buyer_id, sku_id):
     result = "OK, " + provider.name + "has leave a review to " + Buyer.name
     return result
 
-def act_addrts(user_id, type, content):
+def act_addrts(user, type, content, reply_to):
     '''it will add a ReplyToSku'''
-    user = User.objects.get(id=user_id)
     rts = ReplyToSku(
         user=user,
         type=type,
         content=content,
+        reply_to=reply_to,
         )
     rts.save()
-    result = "OK, " + user.name + " left a message of" + content
+    result = "OK, " + user.username + " left a message of" + content
     return result
 
 def act_addorder(buyer_id, provider_id, cny_price, cny_paid):

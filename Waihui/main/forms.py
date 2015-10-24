@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from django import forms
 from main.models import Provider
-from main.models import Topic
+from main.models import Topic 
+from main.models import Sku
+from main.models import ReplyToSku
 
 class SignupForm(forms.Form):
     nickname = forms.CharField(
@@ -37,3 +39,10 @@ class AddSkuForm(forms.Form):
     topic = forms.ModelChoiceField(queryset=Topic.objects.all())
     start_time = forms.DateTimeField()
     end_time = forms.DateTimeField()
+
+class AddRTSForm(forms.Form):
+    sku = forms.ModelChoiceField(queryset=Sku.objects.all())
+    content = forms.CharField(widget=forms.Textarea())
+    reply_to = forms.ModelChoiceField(queryset=ReplyToSku.objects.all(), required=False)
+
+

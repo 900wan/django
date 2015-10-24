@@ -310,7 +310,7 @@ class ReplyToSku(models.Model):
         verbose_name_plural = "ReplyToSkus"
 
     def __unicode__(self):
-        pass
+        return u'%s' % self.content
     user = models.ForeignKey(User)
     type = models.IntegerField()
     content = models.TextField()
