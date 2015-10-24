@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.translation import get_language
+from django.utils.translation import ugettext as _
 import datetime
 # from main.act import act_upgrade_hp
 # 无法导入acts
@@ -189,7 +190,7 @@ class Sku(models.Model):
     FINISHED = 7
 
     STATUS_OF_SKU_CHOICES = (
-        (FORBOOK, '可预约'),
+        (FORBOOK, _(u'可预约')),
         (PREBOOKED, '已预约'),
         (REFUSED, '被拒绝扔池子的'),
         (LOSTED, '彻底没人教'),

@@ -15,6 +15,7 @@ from main.models import ReviewToBuyer
 from main.models import Log
 from django.contrib.auth import authenticate, login
 from main.ds import ds_addlog
+from django.utils.translation import ugettext as _
 
 def act_getlanguage(request):
     language = request.META.get('HTTP_ACCEPT_LANGUAGE')
@@ -24,12 +25,12 @@ def act_signup(email, password, nickname, http_language, gender=1, mother_tongue
     '''signup a user'''
     
     language = http_language
-    if  Language(english_name=language) is None:
-        Language.objects.get(english_name=language)
-        ulanguage = Language(
-        english_name=language)
+    try:
+        ulanguage = Language.objects.get(english_name=language)
+    except Language.DoesNotExist:
+        ulanguage = Language(english_name=language)
         ulanguage.save()
-
+    
     user = User.objects.create_user(
         username=email,
         email=email,
@@ -40,7 +41,7 @@ def act_signup(email, password, nickname, http_language, gender=1, mother_tongue
         user=user,
         nickname=nickname,
         gender=gender,
-        mother_tongue=Language.objects.get(id=mother_tongue_id),
+        mother_tongue=ulanguage,
         time_zone=time_zone)
     buyer.save()
 

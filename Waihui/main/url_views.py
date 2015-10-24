@@ -2,9 +2,9 @@
 from django.shortcuts import get_object_or_404, render
 from django.utils.translation import ugettext as _
 from django.utils import translation
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 # from django import forms
 # from login.models import User
 from main.act import act_signup
@@ -58,7 +58,10 @@ def url_signup(request):
 
 def url_login(request):
     uf = LoginForm(request.POST)
-    msg = request.method+' hehe '+str(uf.is_valid())
+    msg = ''
+    next = ''
+    if request.GET:  
+       next = request.GET['next']
     if request.method == 'POST':
         if uf.is_valid():
             username = uf.cleaned_data['username']
@@ -67,18 +70,29 @@ def url_login(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return render(request, "main/right.html", {'username':username})
+                    if next =='':
+                        return render(request, "main/right.html", {'username':username})
+                    else:
+                        return HttpResponseRedirect(next)
                 else:
-                    return render(request, "main/isnotactive.html", {'username':username})
+                    msg=_(u'Login failed, user is not active.')
+                    return render(request, "main/login.html", {'uf':uf, 'msg':msg, 'next':next})
             else:
-                return render(request, "main/wrong.html", {'username':username})
+                msg=_(u'Guess what? Login failed.')
+                return render(request, "main/login.html", {'uf':uf, 'msg':msg, 'next':next})
         else:
+            msg=_(u'form not valid')
             return render(request, "main/login.html", {'uf':uf, 'msg':msg})
         # elif uf.is_valid():
         #     name=uf.cleaned_data['name']
         #     return render(request, 'main.test_result.html',{'uf':uf})
     else:
-        return render(request, "main/login.html", {'uf':uf, 'msg':msg})
+        return render(request, "main/login.html", {'uf':uf, 'msg':msg, 'next':next})
+
+# @login_required
+def url_logout(request):
+    logout(request)
+    return HttpResponse("logouted")
 
 def url_tc(request, offset_id):
     return HttpResponse(offset_id)
@@ -110,7 +124,6 @@ def url_sku(request):
     # 
     # return render(request, "main/addsku.html", {'teacher_list':teachers, 'topic_list':topics,})
     
-
 def url_order(request, offset_id):
     id = int(offset_id)
     act = act_showindividual(id, 'order')

@@ -7,9 +7,13 @@
 
 {% block content %}
 
-    <a href="{% url 'main:signup' %}">免费注册</a>
-    <p>欢迎回来</p>
+    <a href="{% url 'main:signup' %}">{% trans "免费注册" %}</a>
+    <p>{% trans "欢迎回来" %}</p>
+    {% if next %}
+    <form method="post" enctype="multipart/form-data" action="/login/?next={{next}}">
+    {%else%}
     <form method="post" enctype="multipart/form-data" action="/login/">
+    {% endif %}
         {{uf.username}}
         {{uf.password}}
         {% csrf_token %}
