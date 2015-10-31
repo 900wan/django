@@ -14,4 +14,13 @@
     <a href="{% url 'main:login' %}">{% trans "Already have accounts?" %}</a>
     {% trans "This is our first auto-translation page." %}
 
+    <h1>{% trans "TEST" %}</h1>
+    <p>{% trans "link to other pages" %}</p>
+    {# <a href="{% url 'main:index' %}">{% trans "Show Index" %}</a> #}
+    {# <a href="{% url 'main:user' %}">{% trans "Show Users" %}</a> #}
+    {# <a href="{% url 'main:topic_category'%}">{% trans "Show Topic category" %}</a> #}
+    {# <a href="{% url 'main:tutor' %}">{% trans "Show tutortor" %}</a> #}
+    <a href="{% url 'main:sku' %}">{% trans "Add SKU" %}</a>
+    <a href="{% url 'main:replyrts' %}">{% trans "Reply a SKU" %}</a>
+
 {% endblock content %}
