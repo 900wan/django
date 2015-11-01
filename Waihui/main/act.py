@@ -117,8 +117,6 @@ def act_addsku(provider, start_time, end_time, topic, buyer, status=1):
 
 def act_addplan(sku_id, topic_id, status, content,):
     '''it will add a sku '''
-    sku = Sku.objects.get(id=sku_id)
-    topic = Topic.objects.get(id=topic_id)
     plan = Plan(
         sku=sku,
         topic=topic,
@@ -258,3 +256,7 @@ def act_addlog(source, type, user, character):
         character=character)
     log.save()
     return "OK!" + "from " + log.source + log.user + " logged in"
+
+def act_showsku(id):
+    sku = Sku.objects.get(id=id)
+    return sku

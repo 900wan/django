@@ -174,9 +174,9 @@ class Sku(models.Model):
 
     def __unicode__(self):
         if self.topic is None:
-            return u'%s' % str("("+self.start_time.strftime("%c")+")"+"no topic")
+            return u'%s' % str(str(self.id)+". ("+self.start_time.strftime("%c")+") "+"no topic")
         else:
-            return u'%s' % str("("+self.start_time.strftime("%c")+")"+str(self.topic))
+            return u'%s' % str(str(self.id)+". ("+self.start_time.strftime("%c")+") "+str(self.topic))
     provider = models.ForeignKey(Provider, )
     buyer = models.ManyToManyField(Buyer, blank=True)
 

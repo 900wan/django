@@ -18,16 +18,22 @@ from main.act import act_htmllogin
 from main.act import act_getlanguage
 from main.act import act_addsku
 from main.act import act_addrts
+from main.act import act_addplan
+from main.act import act_showsku
+
 from main.models import Language
 from main.models import Provider
 from main.models import Buyer
 from main.models import Topic
 from main.models import Sku
 from main.models import ReplyToSku
+from main.models import Plan
+
 from main.forms import LoginForm
 from main.forms import SignupForm
 from main.forms import AddSkuForm
 from main.forms import AddRTSForm
+from main.forms import AddPlanForm
 
 def url_homepage(request):
     language = act_getlanguage(request)
@@ -107,7 +113,7 @@ def url_tutor(request, offset_id):
     return HttpResponse(act.status)
 
 @login_required
-def url_sku(request):
+def url_addsku(request):
     '''make a sku for order, One order can have many skus'''
     current_user=request.user
     skus = Sku.objects.all()
@@ -127,28 +133,6 @@ def url_sku(request):
     # 
     # return render(request, "main/addsku.html", {'teacher_list':teachers, 'topic_list':topics,})
     
-def url_replytosku(request):
-    '''handling the replys to sku,'''
-    current_user = request.user
-    rtss = ReplyToSku.objects.all()
-    uf = AddRTSForm(request.POST)
-    msg = request.method
-    if request.method == 'POST':
-        if uf.is_valid():
-            sku = uf.cleaned_data['sku']
-            content = uf.cleaned_data['content']
-            replyto = uf.cleaned_data['reply_to']
-            if current_user.provider == sku.provider:
-                type = 1    
-            else:
-                type = 0
-            result = act_addrts(user=current_user, type=type, content=content, reply_to=replyto,)
-            msg = str(current_user)+", "+str(sku.provider)+", "+result
-    return render(request, "main/addrts.html", {'uf':uf, 'msg':msg, 'heading':"Reply to Sku", 'rtss':rtss})
-
-
-
-
 def url_order(request, offset_id):
     id = int(offset_id)
     act = act_showindividual(id, 'order')
@@ -183,3 +167,50 @@ def url_user(request,offset_id):
     password = user.password
     result = usern + email + password
     return HttpResponse(result)
+
+def url_replytosku(request):
+    '''handling the replys to sku,'''
+    current_user = request.user
+    rtss = ReplyToSku.objects.all()
+    uf = AddRTSForm(request.POST)
+    msg = request.method
+    if request.method == 'POST':
+        if uf.is_valid():
+            sku = uf.cleaned_data['sku']
+            content = uf.cleaned_data['content']
+            replyto = uf.cleaned_data['reply_to']
+            if current_user.provider == sku.provider:
+                type = 1    
+            else:
+                type = 0
+            result = act_addrts(user=current_user, type=type, content=content, reply_to=replyto,)
+            msg = str(current_user)+", "+str(sku.provider)+", "+result
+    return render(request, "main/addrts.html", {'uf':uf, 'msg':msg, 'heading':"Reply to Sku", 'rtss':rtss})
+
+def url_addplan(request):
+    current_user = request.user
+    plans = Plan.objects.all()
+    uf = AddPlanForm(request.POST)
+    msg = request.method
+    if request.method == 'POST':
+        if uf.is_valid():
+            sku = uf.cleaned_data['sku']
+            topic = uf.cleaned_data['topic']
+            status = uf.cleaned_data['status']
+            content = uf.cleaned_data['content']
+            assignment = uf.cleaned_data['assignment']
+            slides = uf.cleaned_data['slides']
+            materiallinks = uf.cleaned_data['materiallinks']
+            materialhtmls = uf.cleaned_data['materialhtmls']
+            voc = uf.cleaned_data['voc']
+            result = act_addplan(sku=sku, topic=topic, status=status, content=content, 
+                assignment=assignment, slides=slides, materialhtmls=materialhtmls, materiallinks=materiallinks, voc=voc)
+            msg = result
+    return render(request, "main/addplan.html", {'uf':uf, 'msg':msg, 'heading':"Add a plan on SKU", 'plans':plans})
+
+def url_showsku(request, sku_id):
+    id = int(sku_id)
+    sku_id = id
+    result = act_showsku(sku_id)
+    msg = str(result) + ", " + str(result.topic)
+    return render(request, "main/showsku.html", {'heading':"There is all SKUs", 'msg':msg})

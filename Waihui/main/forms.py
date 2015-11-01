@@ -4,6 +4,7 @@ from main.models import Provider
 from main.models import Topic 
 from main.models import Sku
 from main.models import ReplyToSku
+from main.models import Plan
 
 class SignupForm(forms.Form):
     nickname = forms.CharField(
@@ -44,5 +45,18 @@ class AddRTSForm(forms.Form):
     sku = forms.ModelChoiceField(queryset=Sku.objects.all())
     content = forms.CharField(widget=forms.Textarea())
     reply_to = forms.ModelChoiceField(queryset=ReplyToSku.objects.all(), required=False)
+
+class AddPlanForm(forms.Form):
+    sku = forms.ModelChoiceField(queryset=Sku.objects.all())
+    topic = forms.ModelChoiceField(queryset=Topic.objects.all())
+    status = forms.IntegerField()
+    content = forms.CharField(widget=forms.Textarea())
+    assignment = forms.CharField(widget=forms.Textarea(), required=False)
+    slides = forms.CharField(widget=forms.Textarea(), required=False)
+    materiallinks = forms.CharField(widget=forms.Textarea(), required=False)
+    materialhtmls = forms.CharField(widget=forms.Textarea(), required=False)
+    voc = forms.CharField(widget=forms.Textarea(), required=False)
+    copy_from = forms.ModelChoiceField(queryset=Plan.objects.all())
+    sumy = forms.CharField(widget=forms.Textarea(), required=False)
 
 
