@@ -138,14 +138,12 @@ def url_replytosku(request):
             sku = uf.cleaned_data['sku']
             content = uf.cleaned_data['content']
             replyto = uf.cleaned_data['reply_to']
-            if current_user == sku.provider:
+            if current_user.provider == sku.provider:
                 type = 1    
-            elif current_user == sku.buyer:
-                type = 2
             else:
                 type = 0
             result = act_addrts(user=current_user, type=type, content=content, reply_to=replyto,)
-            msg = result
+            msg = str(current_user)+", "+str(sku.provider)+", "+result
     return render(request, "main/addrts.html", {'uf':uf, 'msg':msg, 'heading':"Reply to Sku", 'rtss':rtss})
 
 
