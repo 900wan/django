@@ -13,6 +13,7 @@
 </head>
 
 <body>
+    <a href="{% url 'main:home' %}">{% trans "Home, Sweet home!" %}</a>
     <a href="{% url 'main:signup' %}">{% trans "Sign up now!" %}</a>    
     <a href="{% url 'main:login' %}">{% trans "Already have accounts?" %}</a>
     <a href="{% url 'main:logout' %}">{% trans "Log out now!" %}</a>
