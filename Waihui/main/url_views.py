@@ -211,6 +211,11 @@ def url_addplan(request):
 def url_showsku(request, sku_id):
     id = int(sku_id)
     sku_id = id
-    result = act_showsku(sku_id)
-    msg = str(result) + ", " + str(result.topic)
-    return render(request, "main/showsku.html", {'heading':"There is all SKUs", 'msg':msg})
+    sku = act_showsku(sku_id)
+    msg = str(request)
+    return render(request, "main/showsku.html", {'heading':"There is all SKUs", 'msg':msg, 'sku':sku})
+
+def url_skulist(request):
+    skus = Sku.objects.all()
+    msg = str(request)
+    return render(request, "main/skulist.html", {'heading':"There is a Sku list", 'msg':msg, 'skus':skus})
