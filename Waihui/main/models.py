@@ -207,6 +207,7 @@ class Sku(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     topic = models.ForeignKey(Topic,blank=True,null=True)
+    roomlink = models.URLField()
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
