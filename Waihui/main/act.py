@@ -115,15 +115,24 @@ def act_addsku(provider, start_time, end_time, topic, buyer, status=1):
     result = "OK, Sku:" + provider.name +"'s "+ topic.name + str(start_time) + " added! Student:" + buyer.nickname
     return result
 
-def act_addplan(sku_id, topic_id, status, content,):
+def act_addplan(sku, topic, status, content, assignment, slides, roomlink, materiallinks, materialhtml, voc, copy_from, sumy):
     '''it will add a sku '''
     plan = Plan(
         sku=sku,
         topic=topic,
         status=status,
-        content=content)
+        content=content,
+        assignment=assignment,
+        slides=slides,
+        roomlink=roomlink,
+        materialhtml=materialhtml,
+        materiallinks=materiallinks,
+        voc=voc,
+        copy_from=copy_from,
+        sumy=sumy,
+        )
     plan.save()
-    result = "OK, Plan: " + sku.provider + topic.name + " added!"
+    result = "OK, Plan: " + sku.provider.name + " & " + topic.name + " added!"
     return result
 
 def act_addrtp(provider_id, buyer_id, sku_id, questionnaire, score):

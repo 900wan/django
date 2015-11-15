@@ -218,7 +218,7 @@ class Plan(models.Model):
         verbose_name_plural = "Plans"
 
     def __unicode__(self):
-        pass
+        return u'Plan of %s' % self.sku
     sku = models.OneToOneField(Sku ,blank=True, null=True)
     topic = models.ForeignKey(Topic, )
 # 给sku：

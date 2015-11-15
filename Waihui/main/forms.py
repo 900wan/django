@@ -55,7 +55,7 @@ class AddPlanForm(forms.Form):
     slides = forms.CharField(widget=forms.Textarea(), required=False)
     roomlink = forms.URLField(required=False)
     materiallinks = forms.CharField(widget=forms.Textarea(), required=False)
-    materialhtmls = forms.CharField(widget=forms.Textarea(), required=False)
+    materialhtml = forms.CharField(widget=forms.Textarea(), required=False)
     voc = forms.CharField(widget=forms.Textarea(), required=False)
     copy_from = forms.ModelChoiceField(queryset=Plan.objects.all(), required=False)
     sumy = forms.CharField(widget=forms.Textarea(), required=False)

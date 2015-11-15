@@ -200,11 +200,15 @@ def url_addplan(request, sku_id):
             content = uf.cleaned_data['content']
             assignment = uf.cleaned_data['assignment']
             slides = uf.cleaned_data['slides']
+            roomlink = uf.cleaned_data['roomlink']
             materiallinks = uf.cleaned_data['materiallinks']
-            materialhtmls = uf.cleaned_data['materialhtmls']
+            materialhtml = uf.cleaned_data['materialhtml']
             voc = uf.cleaned_data['voc']
+            copy_from = uf.cleaned_data['copy_from']
+            sumy = uf.cleaned_data['sumy']
             result = act_addplan(sku=sku, topic=topic, status=status, content=content, 
-                assignment=assignment, slides=slides, materialhtmls=materialhtmls, materiallinks=materiallinks, voc=voc)
+                assignment=assignment, slides=slides, roomlink = roomlink, materialhtml=materialhtml, materiallinks=materiallinks, voc=voc,
+                copy_from=copy_from, sumy=sumy)
             msg = result
     return render(request, "main/addplan.html", {'uf':uf, 'msg':msg, 'heading':"Add a plan on SKU", 'plans':plans, 'sku':sku})
 
