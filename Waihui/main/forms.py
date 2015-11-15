@@ -42,12 +42,12 @@ class AddSkuForm(forms.Form):
     end_time = forms.DateTimeField()
 
 class AddRTSForm(forms.Form):
-    sku = forms.ModelChoiceField(queryset=Sku.objects.all())
+    # sku = forms.ModelChoiceField(queryset=Sku.objects.all())
     content = forms.CharField(widget=forms.Textarea())
     reply_to = forms.ModelChoiceField(queryset=ReplyToSku.objects.all(), required=False)
 
 class AddPlanForm(forms.Form):
-    sku = forms.ModelChoiceField(queryset=Sku.objects.all())
+    # sku = forms.ModelChoiceField(queryset=Sku.objects.all())
     topic = forms.ModelChoiceField(queryset=Topic.objects.all())
     status = forms.IntegerField()
     content = forms.CharField(widget=forms.Textarea())

@@ -7,12 +7,12 @@
 
 {% block content %}
     <h1>{{heading}}</h1>
-    {% trans "This the content of replying to sku." %}
+    {% trans "This content for adding a plan to sku." %}
     {% trans "The priority language：" %}{{ LANGUAGE_CODE|language_name_local }}.
     <a href="{% url 'main:signup' %}">{% trans "Sign up now!" %}</a>    
     <a href="{% url 'main:login' %}">{% trans "Already have accounts?" %}</a>
     
-    <form method="post" enctype="multipart/form-data" action="{% url 'main:replyrts' %}">
+    <form method="post" enctype="multipart/form-data" action="{% url 'main:addplan' %}">
         {{uf.as_p}}
         {% csrf_token %}
         <input type="submit" name="submit">

@@ -187,14 +187,14 @@ def url_replytosku(request):
             msg = str(current_user)+", "+str(sku.provider)+", "+result
     return render(request, "main/addrts.html", {'uf':uf, 'msg':msg, 'heading':"Reply to Sku", 'rtss':rtss})
 
-def url_addplan(request):
+def url_addplan(request, sku_id):
     current_user = request.user
     plans = Plan.objects.all()
     uf = AddPlanForm(request.POST)
     msg = request.method
     if request.method == 'POST':
         if uf.is_valid():
-            sku = uf.cleaned_data['sku']
+            sku = Sku.objects.get(id=sku_id)
             topic = uf.cleaned_data['topic']
             status = uf.cleaned_data['status']
             content = uf.cleaned_data['content']
