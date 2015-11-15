@@ -42,6 +42,6 @@
         </table>
 
     {# <a href="{% url 'main:addrts' %}">{% trans "Add a Repy to this SKU" %}</a> #}
-    <a href="{% url 'main:addplan' %}">{% trans "Add a Plan to this SKU" %}</a>
+    <a href="{% url 'main:addplan' sku.id %}">{% trans "Add a Plan to this SKU" %}</a>
     <a href="{% url 'main:skulist' %}">{% trans "Get Back to SKU list" %}</a>
 {% endblock content %}

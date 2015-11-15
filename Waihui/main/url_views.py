@@ -192,10 +192,10 @@ def url_addplan(request, sku_id):
     plans = Plan.objects.all()
     uf = AddPlanForm(request.POST)
     msg = request.method
+    sku = Sku.objects.get(id=sku_id)
+    topic = sku.topic
     if request.method == 'POST':
         if uf.is_valid():
-            sku = Sku.objects.get(id=sku_id)
-            topic = uf.cleaned_data['topic']
             status = uf.cleaned_data['status']
             content = uf.cleaned_data['content']
             assignment = uf.cleaned_data['assignment']
@@ -206,7 +206,7 @@ def url_addplan(request, sku_id):
             result = act_addplan(sku=sku, topic=topic, status=status, content=content, 
                 assignment=assignment, slides=slides, materialhtmls=materialhtmls, materiallinks=materiallinks, voc=voc)
             msg = result
-    return render(request, "main/addplan.html", {'uf':uf, 'msg':msg, 'heading':"Add a plan on SKU", 'plans':plans})
+    return render(request, "main/addplan.html", {'uf':uf, 'msg':msg, 'heading':"Add a plan on SKU", 'plans':plans, 'sku':sku})
 
 def url_showsku(request, sku_id):
     id = int(sku_id)

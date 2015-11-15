@@ -48,15 +48,16 @@ class AddRTSForm(forms.Form):
 
 class AddPlanForm(forms.Form):
     # sku = forms.ModelChoiceField(queryset=Sku.objects.all())
-    topic = forms.ModelChoiceField(queryset=Topic.objects.all())
+    # topic = forms.ModelChoiceField(queryset=Topic.objects.all())
     status = forms.IntegerField()
     content = forms.CharField(widget=forms.Textarea())
     assignment = forms.CharField(widget=forms.Textarea(), required=False)
     slides = forms.CharField(widget=forms.Textarea(), required=False)
+    roomlink = forms.URLField(required=False)
     materiallinks = forms.CharField(widget=forms.Textarea(), required=False)
     materialhtmls = forms.CharField(widget=forms.Textarea(), required=False)
     voc = forms.CharField(widget=forms.Textarea(), required=False)
-    copy_from = forms.ModelChoiceField(queryset=Plan.objects.all())
+    copy_from = forms.ModelChoiceField(queryset=Plan.objects.all(), required=False)
     sumy = forms.CharField(widget=forms.Textarea(), required=False)
 
 
