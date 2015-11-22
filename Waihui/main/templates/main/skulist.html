@@ -2,7 +2,7 @@
 {% load i18n %} 
 {% get_current_language as LANGUAGE_CODE %}
 {% block title %}
-    {% trans "Booking a course" %}
+    {{heading}}
 {% endblock title %}
 
 {% block content %}
@@ -26,7 +26,6 @@
                     <th>Buyer</th>
                     <th>Start time</th>
                     <th>End time</th>
-                    <th>Room Link</th>
                     <th>Created</th>
                     <th>Modified</th>
                 </tr>
@@ -40,7 +39,6 @@
                     <td>{{sku.buyer.all}}</td>
                     <td>{{sku.start_time}}</td>
                     <td>{{sku.end_time}}</td>
-                    <td>{{sku.roomlink}}</td>
                     <td>{{sku.created}}</td>
                     <td>{{sku.modified}}</td>
 

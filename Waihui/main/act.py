@@ -164,13 +164,14 @@ def act_addrtb(provider_id, buyer_id, sku_id):
     result = "OK, " + provider.name + "has leave a review to " + Buyer.name
     return result
 
-def act_addrts(user, type, content, reply_to):
+def act_addrts(user, type, content, reply_to, sku):
     '''it will add a ReplyToSku'''
     rts = ReplyToSku(
         user=user,
         type=type,
         content=content,
         reply_to=reply_to,
+        sku=sku,
         )
     rts.save()
     result = "OK, " + user.username + " left a message of" + content

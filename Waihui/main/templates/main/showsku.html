@@ -2,7 +2,7 @@
 {% load i18n %} 
 {% get_current_language as LANGUAGE_CODE %}
 {% block title %}
-    {% trans "Booking a course" %}
+    {{heading}}
 {% endblock title %}
 
 {% block content %}
@@ -20,6 +20,7 @@
             <thead>
                 <tr>
                     <th>Topic</th>
+                    <th>Status</th> 
                     <th>Provider</th>
                     <th>Buyer</th>
                     <th>Start time</th>
@@ -31,6 +32,7 @@
             <tbody>
                 <tr>
                     <td>{{sku.topic}}</td>
+                    <td>{{sku.status}}</td>
                     <td>{{sku.provider}}</td>
                     <td>{{sku.buyer.all}}</td>
                     <td>{{sku.start_time}}</td>
@@ -42,6 +44,7 @@
         </table>
     <p>================================</p>
     <p>Plans on this SKU</p>
+    {% if has_plan %}
         <table>
             <thead>
                 <tr>
@@ -78,6 +81,9 @@
                 {# {% endfor %} #}
             </tbody>
         </table>
+    {% else %}
+    <a href="{% url 'main:addplan' sku.id %}">{% trans "Add a Plan to this SKU" %}</a>
+    {% endif %}
     <p>================================</p>
     <p>Replys to This SKU</p>
 
@@ -103,8 +109,9 @@
                 {% endfor %}
             </tbody>
         </table>
+    <a href="{% url 'main:replyrts' sku.id %}">{% trans "Add a reply" %}</a>
     <p>================================</p>
     {# <a href="{% url 'main:addrts' %}">{% trans "Add a Repy to this SKU" %}</a> #}
-    <a href="{% url 'main:addplan' sku.id %}">{% trans "Add a Plan to this SKU" %}</a>
+    
     <a href="{% url 'main:skulist' %}">{% trans "Get Back to SKU list" %}</a>
 {% endblock content %}

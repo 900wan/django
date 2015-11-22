@@ -168,24 +168,24 @@ def url_user(request,offset_id):
     result = usern + email + password
     return HttpResponse(result)
 
-def url_replytosku(request):
+def url_replytosku(request, sku_id):
     '''handling the replys to sku,'''
     current_user = request.user
     rtss = ReplyToSku.objects.all()
     uf = AddRTSForm(request.POST)
     msg = request.method
+    sku = Sku.objects.get(id=sku_id)
     if request.method == 'POST':
         if uf.is_valid():
-            sku = uf.cleaned_data['sku']
             content = uf.cleaned_data['content']
             replyto = uf.cleaned_data['reply_to']
             if current_user.provider == sku.provider:
                 type = 1    
             else:
                 type = 0
-            result = act_addrts(user=current_user, type=type, content=content, reply_to=replyto,)
+            result = act_addrts(user=current_user, type=type, content=content, reply_to=replyto, sku=sku)
             msg = str(current_user)+", "+str(sku.provider)+", "+result
-    return render(request, "main/addrts.html", {'uf':uf, 'msg':msg, 'heading':"Reply to Sku", 'rtss':rtss})
+    return render(request, "main/addrts.html", {'uf':uf, 'msg':msg, 'heading':"Reply to Sku", 'rtss':rtss, 'sku_id':sku.id})
 
 def url_addplan(request, sku_id):
     current_user = request.user
@@ -213,16 +213,16 @@ def url_addplan(request, sku_id):
     return render(request, "main/addplan.html", {'uf':uf, 'msg':msg, 'heading':"Add a plan on SKU", 'plans':plans, 'sku':sku})
 
 def url_showsku(request, sku_id):
-    id = int(sku_id)
-    sku_id = id
-    sku = act_showsku(sku_id)
-    if sku.plan is None:
-        sku=""
-    else:
+    sku = act_showsku(int(sku_id))
+    try:
         plan = sku.plan
+        has_plan = True
+    except Plan.DoesNotExist:
+        plan = ""
+        has_plan = False
     rtss = ReplyToSku.objects.filter(sku=sku)
     msg = str(request)
-    return render(request, "main/showsku.html", {'heading':"There is all SKUs", 'msg':msg, 'sku':sku, 'plan':plan, 'rtss':rtss})
+    return render(request, "main/showsku.html", {'heading':"SKU #"+str(sku.id), 'msg':msg, 'sku':sku, 'has_plan':has_plan,'plan':plan, 'rtss':rtss})
 
 def url_skulist(request):
     skus = Sku.objects.all()
