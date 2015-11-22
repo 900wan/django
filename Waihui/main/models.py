@@ -312,6 +312,7 @@ class ReplyToSku(models.Model):
 
     def __unicode__(self):
         return u'%s' % self.content
+    sku = models.ForeignKey(Sku)
     user = models.ForeignKey(User)
     type = models.IntegerField()
     content = models.TextField()

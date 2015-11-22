@@ -216,8 +216,13 @@ def url_showsku(request, sku_id):
     id = int(sku_id)
     sku_id = id
     sku = act_showsku(sku_id)
+    if sku.plan is None:
+        sku=""
+    else:
+        plan = sku.plan
+    rtss = ReplyToSku.objects.filter(sku=sku)
     msg = str(request)
-    return render(request, "main/showsku.html", {'heading':"There is all SKUs", 'msg':msg, 'sku':sku})
+    return render(request, "main/showsku.html", {'heading':"There is all SKUs", 'msg':msg, 'sku':sku, 'plan':plan, 'rtss':rtss})
 
 def url_skulist(request):
     skus = Sku.objects.all()

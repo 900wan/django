@@ -40,7 +40,70 @@
                 </tr>
             </tbody>
         </table>
+    <p>================================</p>
+    <p>Plans on this SKU</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Topic</th>
+                    <th>Content</th>
+                    <th>Assignment</th>
+                    <th>Slides</th>
+                    <th>Materiallinks</th>
+                    <th>Materialhtml</th>
+                    <th>Voc</th>
+                    <th>Copy_from</th>
+                    <th>Sumy</th>
+                    <th>Roomlink</th>
+                    <th>Created</th>
+                    <th>Modified</th>
+                </tr>
+            </thead>
+            <tbody>
+                {# {% for plan in plans %} #}
+                <tr>
+                    <td>{{plan.topic}}</td>
+                    <td>{{plan.content}}</td>
+                    <td>{{plan.assignment}}</td>
+                    <td>{{plan.slides}}</td>
+                    <td>{{plan.materiallinks}}</td>
+                    <td>{{plan.materialhtml}}</td>
+                    <td>{{plan.voc}}</td>
+                    <td>{{plan.copy_from}}</td>
+                    <td>{{plan.sumy}}</td>
+                    <td>{{plan.roomlink}}</td>
+                    <td>{{plan.created}}</td>
+                    <td>{{plan.modified}}</td>
+                </tr>
+                {# {% endfor %} #}
+            </tbody>
+        </table>
+    <p>================================</p>
+    <p>Replys to This SKU</p>
 
+        <table>
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Type</th>
+                    <th>Content</th>
+                    <th>Created</th>
+                    <th>Modified</th>
+                </tr>  
+            </thead>
+            <tbody>
+                {% for rts in rtss %}    
+                <tr>
+                    <td>{{rts.user}}</td>
+                    <td>{{rts.type}}</td>
+                    <td>{{rts.content}}</td>
+                    <td>{{rts.created}}</td>
+                    <td>{{rts.modified}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    <p>================================</p>
     {# <a href="{% url 'main:addrts' %}">{% trans "Add a Repy to this SKU" %}</a> #}
     <a href="{% url 'main:addplan' sku.id %}">{% trans "Add a Plan to this SKU" %}</a>
     <a href="{% url 'main:skulist' %}">{% trans "Get Back to SKU list" %}</a>
