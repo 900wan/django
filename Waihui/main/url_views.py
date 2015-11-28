@@ -13,13 +13,13 @@ from main.act import act_addlanguage
 from main.act import act_showuser
 from main.act import act_showindividual
 from main.act import act_addtopic
-from main.act import act_login
 from main.act import act_htmllogin
 from main.act import act_getlanguage
 from main.act import act_addsku
 from main.act import act_addrts
 from main.act import act_addplan
 from main.act import act_showsku
+from main.act import act_getinfo
 
 from main.models import Language
 from main.models import Provider
@@ -40,8 +40,9 @@ def url_homepage(request):
     user_language = language
     translation.activate(user_language)
     # request.session[translation.LANGUAGE_SESSION_KEY] = user_language
+    info = act_getinfo(request)
     tstr = _(u'Our hompage heading')
-    return render(request, "main/home.html", {'heading':tstr})
+    return render(request, "main/home.html", {'info':info, 'heading':tstr})
 
 def url_index(request,fuckset):
     boy = int(fuckset)
@@ -62,13 +63,15 @@ def url_signup(request):
             result = act_signup(password=password, nickname=nickname, email=email,
                 http_language=language)
             msg = result + language
-    return render(request, "main/signup.html", {'form':uf, 'msg':msg})
+    info = act_getinfo(request)
+    return render(request, "main/signup.html", {'info':info, 'form':uf, 'msg':msg})
     # act_signup()
 
 def url_login(request):
     uf = LoginForm(request.POST)
     msg = ''
     next = ''
+    info = act_getinfo(request)
     if request.GET:  
        next = request.GET['next']
     if request.method == 'POST':
@@ -79,29 +82,30 @@ def url_login(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
+                    info = act_getinfo(request)
                     if next == '':
-                        return render(request, "main/right.html", {'username':username})
+                        return render(request, "main/right.html", {'info':info, 'username':username})
                     else:
                         return HttpResponseRedirect(next)
                 else:
                     msg = _(u'Login failed, user is not active.')
-                    return render(request, "main/login.html", {'uf':uf, 'msg':msg, 'next':next})
+                    return render(request, "main/login.html", {'info':info,'uf':uf, 'msg':msg, 'next':next})
             else:
                 msg = _(u'Guess what? Login failed.')
-                return render(request, "main/login.html", {'uf':uf, 'msg':msg, 'next':next})
+                return render(request, "main/login.html", {'info':info, 'uf':uf, 'msg':msg, 'next':next})
         else:
             msg = _(u'form not valid')
-            return render(request, "main/login.html", {'uf':uf, 'msg':msg})
+            return render(request, "main/login.html", {'info':info, 'uf':uf, 'msg':msg})
         # elif uf.is_valid():
         #     name=uf.cleaned_data['name']
         #     return render(request, 'main.test_result.html',{'uf':uf})
     else:
-        return render(request, "main/login.html", {'uf':uf, 'msg':msg, 'next':next})
+        return render(request, "main/login.html", {'info':info, 'uf':uf, 'msg':msg, 'next':next})
 
 # @login_required
 def url_logout(request):
     logout(request)
-    return HttpResponse("logouted")
+    return url_homepage(request)
 
 def url_tc(request, offset_id):
     return HttpResponse(offset_id)
@@ -115,6 +119,7 @@ def url_tutor(request, offset_id):
 @login_required
 def url_addsku(request):
     '''make a sku for order, One order can have many skus'''
+    info = act_getinfo(request)
     current_user=request.user
     skus = Sku.objects.all()
     uf = AddSkuForm(request.POST)
@@ -127,7 +132,7 @@ def url_addsku(request):
             end_time = uf.cleaned_data['end_time']
             result = act_addsku(provider=provider, topic=topic, start_time=start_time, end_time=end_time, buyer=current_user.buyer)
             msg = result
-    return render(request, "main/addsku.html", {'uf':uf, 'msg':msg, 'heading':"add sku", 'skus':skus})
+    return render(request, "main/addsku.html", {'info':info, 'uf':uf, 'msg':msg, 'heading':"add sku", 'skus':skus})
     # teachers = Provider.objects.all()
     # topics = Topic.objects.all()
     # 
@@ -168,8 +173,10 @@ def url_user(request,offset_id):
     result = usern + email + password
     return HttpResponse(result)
 
+@login_required
 def url_replytosku(request, sku_id):
     '''handling the replys to sku,'''
+    info = act_getinfo(request)
     current_user = request.user
     rtss = ReplyToSku.objects.all()
     uf = AddRTSForm(request.POST)
@@ -185,34 +192,40 @@ def url_replytosku(request, sku_id):
                 type = 0
             result = act_addrts(user=current_user, type=type, content=content, reply_to=replyto, sku=sku)
             msg = str(current_user)+", "+str(sku.provider)+", "+result
-    return render(request, "main/addrts.html", {'uf':uf, 'msg':msg, 'heading':"Reply to Sku", 'rtss':rtss, 'sku_id':sku.id})
+    return render(request, "main/addrts.html", {'info':info, 'uf':uf, 'msg':msg, 'heading':"Reply to Sku", 'rtss':rtss, 'sku_id':sku.id})
 
+@login_required
 def url_addplan(request, sku_id):
+    info = act_getinfo(request)
     current_user = request.user
-    plans = Plan.objects.all()
     uf = AddPlanForm(request.POST)
-    msg = request.method
     sku = Sku.objects.get(id=sku_id)
-    topic = sku.topic
-    if request.method == 'POST':
-        if uf.is_valid():
-            status = uf.cleaned_data['status']
-            content = uf.cleaned_data['content']
-            assignment = uf.cleaned_data['assignment']
-            slides = uf.cleaned_data['slides']
-            roomlink = uf.cleaned_data['roomlink']
-            materiallinks = uf.cleaned_data['materiallinks']
-            materialhtml = uf.cleaned_data['materialhtml']
-            voc = uf.cleaned_data['voc']
-            copy_from = uf.cleaned_data['copy_from']
-            sumy = uf.cleaned_data['sumy']
-            result = act_addplan(sku=sku, topic=topic, status=status, content=content, 
-                assignment=assignment, slides=slides, roomlink = roomlink, materialhtml=materialhtml, materiallinks=materiallinks, voc=voc,
-                copy_from=copy_from, sumy=sumy)
-            msg = result
-    return render(request, "main/addplan.html", {'uf':uf, 'msg':msg, 'heading':"Add a plan on SKU", 'plans':plans, 'sku':sku})
+    if current_user != sku.provider.user:
+        msg = "no"
+    else:
+        msg = request.method
+        topic = sku.topic
+        if request.method == 'POST':
+            if uf.is_valid():
+                status = uf.cleaned_data['status']
+                content = uf.cleaned_data['content']
+                assignment = uf.cleaned_data['assignment']
+                slides = uf.cleaned_data['slides']
+                roomlink = uf.cleaned_data['roomlink']
+                materiallinks = uf.cleaned_data['materiallinks']
+                materialhtml = uf.cleaned_data['materialhtml']
+                voc = uf.cleaned_data['voc']
+                copy_from = uf.cleaned_data['copy_from']
+                sumy = uf.cleaned_data['sumy']
+                result = act_addplan(sku=sku, topic=topic, status=status, content=content, 
+                    assignment=assignment, slides=slides, roomlink = roomlink, materialhtml=materialhtml, materiallinks=materiallinks, voc=voc,
+                    copy_from=copy_from, sumy=sumy)
+                msg = result
+    return render(request, "main/addplan.html", {'info':info, 'uf':uf, 'msg':msg, 'heading':"Add a plan on SKU", 'sku':sku})
 
-def url_showsku(request, sku_id):
+@login_required
+def url_showsku(request, sku_id): 
+    info = act_getinfo(request)    
     sku = act_showsku(int(sku_id))
     try:
         plan = sku.plan
@@ -221,10 +234,13 @@ def url_showsku(request, sku_id):
         plan = ""
         has_plan = False
     rtss = ReplyToSku.objects.filter(sku=sku)
+    current_user = request.user
+    is_provider = True if current_user == sku.provider.user else False
     msg = str(request)
-    return render(request, "main/showsku.html", {'heading':"SKU #"+str(sku.id), 'msg':msg, 'sku':sku, 'has_plan':has_plan,'plan':plan, 'rtss':rtss})
+    return render(request, "main/showsku.html", {'info':info, 'heading':"SKU #"+str(sku.id), 'msg':msg, 'is_provider':is_provider, 'sku':sku, 'has_plan':has_plan,'plan':plan, 'rtss':rtss})
 
 def url_skulist(request):
+    info = act_getinfo(request)
     skus = Sku.objects.all()
     msg = str(request)
-    return render(request, "main/skulist.html", {'heading':"There is a Sku list", 'msg':msg, 'skus':skus})
+    return render(request, "main/skulist.html", {'info':info, 'heading':"There is a Sku list", 'msg':msg, 'skus':skus})

@@ -13,7 +13,7 @@ from main.models import ReplyToSku
 from main.models import ReviewToProvider
 from main.models import ReviewToBuyer
 from main.models import Log
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from main.ds import ds_addlog
 from django.utils.translation import ugettext as _
 
@@ -59,15 +59,6 @@ def act_signup(email, password, nickname, http_language, gender=1, mother_tongue
     # except:
     #     pass
     return result
-
-def act_login(request,username,password):
-    
-    user = authenticate(username=username, password=password)
-    if user is not None:
-        if user.is_active:
-            return user
-    else:
-        pass
 
 def act_addlanguage(chinese_name, english_name, local_name):
     '''add a language'''
@@ -270,3 +261,15 @@ def act_addlog(source, type, user, character):
 def act_showsku(id):
     sku = Sku.objects.get(id=id)
     return sku
+
+def act_getinfo(request):
+    if request.user.is_authenticated():
+        info = {
+        'is_login': True,
+        'current_user': request.user
+        }
+    else:
+        info = {
+        'is_login': False,
+        }
+    return info

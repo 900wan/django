@@ -13,10 +13,16 @@
 </head>
 
 <body>
-    <a href="{% url 'main:home' %}">{% trans "Home, Sweet home!" %}</a>
-    <a href="{% url 'main:signup' %}">{% trans "Sign up now!" %}</a>    
-    <a href="{% url 'main:login' %}">{% trans "Already have accounts?" %}</a>
+    {% if info.is_login %}
+    <a href="{% url 'main:home' %}">{% trans "Home" %}</a>
+    [{{info.current_user.buyer.nickname}}{% trans ", welcome back!" %}]
     <a href="{% url 'main:logout' %}">{% trans "Log out now!" %}</a>
+    {% else %}
+    <a href="{% url 'main:home' %}">{% trans "Home" %}</a>
+     [You havn't login!]
+    <a href="{% url 'main:login' %}">{% trans "Log in now!" %}</a>
+    <a href="{% url 'main:signup' %}">{% trans "Sign up now!" %}</a>    
+    {% endif %}
     {% block content %}
     {% endblock content %}
 </body>

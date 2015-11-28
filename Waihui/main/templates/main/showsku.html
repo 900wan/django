@@ -81,8 +81,10 @@
                 {# {% endfor %} #}
             </tbody>
         </table>
-    {% else %}
+    {% elif is_provider %}
     <a href="{% url 'main:addplan' sku.id %}">{% trans "Add a Plan to this SKU" %}</a>
+    {% else %}
+    {% trans "You are not the teacher of this class, so you can not add plan." %}
     {% endif %}
     <p>================================</p>
     <p>Replys to This SKU</p>
