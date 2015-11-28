@@ -177,22 +177,25 @@ def url_user(request,offset_id):
 def url_replytosku(request, sku_id):
     '''handling the replys to sku,'''
     info = act_getinfo(request)
-    current_user = request.user
-    rtss = ReplyToSku.objects.all()
-    uf = AddRTSForm(request.POST)
-    msg = request.method
+    current_user = info['current_user']
     sku = Sku.objects.get(id=sku_id)
-    if request.method == 'POST':
-        if uf.is_valid():
-            content = uf.cleaned_data['content']
-            replyto = uf.cleaned_data['reply_to']
-            if current_user.provider == sku.provider:
-                type = 1    
-            else:
-                type = 0
-            result = act_addrts(user=current_user, type=type, content=content, reply_to=replyto, sku=sku)
-            msg = str(current_user)+", "+str(sku.provider)+", "+result
-    return render(request, "main/addrts.html", {'info':info, 'uf':uf, 'msg':msg, 'heading':"Reply to Sku", 'rtss':rtss, 'sku_id':sku.id})
+    uf = AddRTSForm(request.POST)
+    is_involved = (current_user.provider == sku.provider) or (sku.buyer.filter(id=current_user.buyer.id).exists())
+    if is_involved:
+        msg = request.method
+        if request.method == 'POST':
+            if uf.is_valid():
+                content = uf.cleaned_data['content']
+                replyto = uf.cleaned_data['reply_to']
+                if current_user.provider == sku.provider:
+                    type = 1    
+                else:
+                    type = 0
+                result = act_addrts(user=current_user, type=type, content=content, reply_to=replyto, sku=sku)
+                msg = str(current_user)+", "+str(sku.provider)+", "+result
+    else:
+        msg = 'you are not involved in this class'
+    return render(request, "main/addrts.html", {'info':info, 'uf':uf, 'msg':msg, 'heading':"Reply to Sku", 'sku_id':sku.id, 'is_involved':is_involved})
 
 @login_required
 def url_addplan(request, sku_id):
@@ -226,7 +229,9 @@ def url_addplan(request, sku_id):
 @login_required
 def url_showsku(request, sku_id): 
     info = act_getinfo(request)    
+    current_user = info['current_user']
     sku = act_showsku(int(sku_id))
+    is_involved = (current_user.provider == sku.provider) or (sku.buyer.filter(id=current_user.buyer.id).exists())
     try:
         plan = sku.plan
         has_plan = True
@@ -234,10 +239,9 @@ def url_showsku(request, sku_id):
         plan = ""
         has_plan = False
     rtss = ReplyToSku.objects.filter(sku=sku)
-    current_user = request.user
     is_provider = True if current_user == sku.provider.user else False
     msg = str(request)
-    return render(request, "main/showsku.html", {'info':info, 'heading':"SKU #"+str(sku.id), 'msg':msg, 'is_provider':is_provider, 'sku':sku, 'has_plan':has_plan,'plan':plan, 'rtss':rtss})
+    return render(request, "main/showsku.html", {'info':info, 'heading':"SKU #"+str(sku.id), 'msg':msg, 'is_provider':is_provider, 'is_involved':is_involved, 'sku':sku, 'has_plan':has_plan,'plan':plan, 'rtss':rtss})
 
 def url_skulist(request):
     info = act_getinfo(request)
