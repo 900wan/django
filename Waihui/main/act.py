@@ -13,12 +13,12 @@ from main.models import ReplyToSku
 from main.models import ReviewToProvider
 from main.models import ReviewToBuyer
 from main.models import Log
-from django.contrib.auth import authenticate, login, logout
 from main.ds import ds_addlog
 from django.utils.translation import ugettext as _
 
 def act_getlanguage(request):
-    language = request.META.get('HTTP_ACCEPT_LANGUAGE')
+    language = request.LANGUAGE_CODE
+    # language = request.META.get('HTTP_ACCEPT_LANGUAGE')
     return language
 
 def act_signup(email, password, nickname, http_language, gender=1, mother_tongue_id=1, time_zone=1):

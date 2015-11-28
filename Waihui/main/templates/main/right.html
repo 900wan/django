@@ -6,5 +6,10 @@
 {% endblock head %}
 {% block content %}
     <p>Good, rarely right in your life</p>
-    {{username}}
+    
+    <ul>
+        <li><a href="{% url 'main:skulist' %}">{% trans "SKU List" %}</a></li>
+        <li><a href="{% url 'main:addsku' %}">{% trans "Add SKU" %}</a></li>
+    </ul>
+
 {% endblock content %}

@@ -1,6 +1,8 @@
 {% extends "main/base.html" %}
 {% load i18n %} 
+{% load tz %}
 {% get_current_language as LANGUAGE_CODE %}
+{% get_current_timezone as TIME_ZONE %}
 
 {% block title %}
     Home
@@ -9,18 +11,45 @@
 {% block content %}
     <h1>{{heading}}</h1>
     {% trans "This the content of home page." %}
-    {% trans "The priority language：" %}{{ LANGUAGE_CODE }}.
-    <a href="{% url 'main:signup' %}">{% trans "Sign up now!" %}</a>    
-    <a href="{% url 'main:login' %}">{% trans "Already have accounts?" %}</a>
+    <h1>{% trans "Local" %}</h1>
+    <h2>* Language</h2>
+    {% trans "The priority language：" %}{{ LANGUAGE_CODE|language_name_local }}. (
+    {{ LANGUAGE_CODE }}, 
+    {{ LANGUAGE_CODE|language_name_local }}, 
+    {{ LANGUAGE_CODE|language_name }}, 
+    {{ LANGUAGE_CODE|language_bidi }}) <br>
     {% trans "This is our first auto-translation page." %}
+    <h2>* Time zone</h2>
+        Time zone using in this page: {{TIME_ZONE}}
+        <ul style="text-align:right; width:280px;font-family:monospace;">
+            {% localtime off %}
+            <li>Server: {{now_tz|date:"Y-m-d H:i:s (O)"}}</li>
+            {% endlocaltime %}
 
-    <h1>{% trans "TEST" %}</h1>
+            {% localtime on %}
+            <li>Local : {{now_tz|date:"Y-m-d H:i:s (O)"}}</li>
+            {% endlocaltime %}
+
+            <li>Beijing : {{now_tz|timezone:"Asia/Shanghai"|date:"d H:i:s (O)"}}</li>
+            <li>Los Angeles : {{now_tz|timezone:"America/Los_Angeles"|date:"d H:i:s (O)"}}</li>
+            <li>Chicago : {{now_tz|timezone:"America/Chicago"|date:"d H:i:s (O)"}}</li>
+            <li>New York : {{now_tz|timezone:"America/New_York"|date:"d H:i:s (O)"}}</li>
+            <li>London : {{now_tz|timezone:"Europe/London"|date:"d H:i:s (O)"}}</li>
+            <li>Paris : {{now_tz|timezone:"Europe/Paris"|date:"d H:i:s (O)"}}</li>
+        </ul>
+    
+    <h1>{% trans "Pages" %}</h1>
     <p>{% trans "link to other pages" %}</p>
     {# <a href="{% url 'main:index' %}">{% trans "Show Index" %}</a> #}
     {# <a href="{% url 'main:user' %}">{% trans "Show Users" %}</a> #}
     {# <a href="{% url 'main:topic_category'%}">{% trans "Show Topic category" %}</a> #}
     {# <a href="{% url 'main:tutor' %}">{% trans "Show tutortor" %}</a> #}
-    <a href="{% url 'main:addsku' %}">{% trans "Add SKU" %}</a>
-    <a href="{% url 'main:skulist' %}">{% trans "Sku List" %}</a>
+    <ul>
+        <li><a href="{% url 'main:signup' %}">{% trans "Sign up now!" %}</a>    </li>
+        <li><a href="{% url 'main:login' %}">{% trans "Already have accounts?" %}</a></li>
+        <li><a href="{% url 'main:skulist' %}">{% trans "SKU List" %}</a></li>
+        <li><a href="{% url 'main:addsku' %}">{% trans "Add SKU" %}</a></li>
+    </ul>
+    
 
 {% endblock content %}

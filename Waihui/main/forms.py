@@ -44,7 +44,8 @@ class AddSkuForm(forms.Form):
 class AddRTSForm(forms.Form):
     # sku = forms.ModelChoiceField(queryset=Sku.objects.all())
     content = forms.CharField(widget=forms.Textarea())
-    reply_to = forms.ModelChoiceField(queryset=ReplyToSku.objects.all(), required=False)
+    # reply_to = forms.ModelChoiceField(queryset=ReplyToSku.objects.all(), required=False)
+    reply_to = forms.ModelChoiceField(queryset=None, required=False)
 
 class AddPlanForm(forms.Form):
     # sku = forms.ModelChoiceField(queryset=Sku.objects.all())

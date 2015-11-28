@@ -1,6 +1,10 @@
 {% extends "main/base.html" %}
 {% load i18n %} 
+{% load tz %}
 {% get_current_language as LANGUAGE_CODE %}
+{% get_current_timezone as TIME_ZONE %}
+{% localtime on %}
+
 {% block title %}
     {{heading}}
 {% endblock title %}
@@ -8,14 +12,13 @@
 {% block content %}
     <h1>{{heading}}</h1>
     {% trans "This the content of replying to sku." %}
-    {% trans "The priority language：" %}{{ LANGUAGE_CODE|language_name_local }}.
-    <a href="{% url 'main:signup' %}">{% trans "Sign up now!" %}</a>    
-    <a href="{% url 'main:login' %}">{% trans "Already have accounts?" %}</a>
-    
+    Time zone using in this page: {{TIME_ZONE}}
     
     <p>================================</p>
     <p>{{msg}}</p>
     <p>================================</p>
+
+<a href="{% url 'main:addsku' %}">[+]{% trans "Add SKU" %}</a></li>
 
         <table>
             <thead>
@@ -36,11 +39,11 @@
                     <td><a href="{{sku.id}}">{{sku.topic}}</a></td>
                     <td>{{sku.id}}</td>
                     <td>{{sku.provider}}</td>
-                    <td>{{sku.buyer.all}}</td>
-                    <td>{{sku.start_time}}</td>
-                    <td>{{sku.end_time}}</td>
-                    <td>{{sku.created}}</td>
-                    <td>{{sku.modified}}</td>
+                    <td>{{sku.buyer.all|safeseq|join:", "}}</td>
+                    <td>{{sku.start_time|date:"Y-m-d H:i (e)"}}</td>
+                    <td>{{sku.end_time|date:"Y-m-d H:i (e)"}}</td>
+                    <td>{{sku.created|date:"Y-m-d H:i (e)"}}</td>
+                    <td>{{sku.modified|date:"Y-m-d H:i (e)"}}</td>
 
                 </tr>
                 {% endfor%}
@@ -49,3 +52,4 @@
 <p></p>
 <a href="{% url 'main:home' %}">{% trans "Get back to home" %}</a>
 {% endblock content %}
+{% endlocaltime %}

@@ -12,7 +12,7 @@
         {% block head %}{% endblock head %}
 </head>
 
-<body>
+<body style="font-family:serif;">
     {% if info.is_login %}
     <a href="{% url 'main:home' %}">{% trans "Home" %}</a>
     [{{info.current_user.buyer.nickname}}{% trans ", welcome back!" %}]

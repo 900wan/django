@@ -1,7 +1,8 @@
  # -*- coding: utf-8 -*-
+import pytz
 from django.shortcuts import get_object_or_404, render
+from django.utils import translation, timezone
 from django.utils.translation import ugettext as _
-from django.utils import translation
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
@@ -37,25 +38,23 @@ from main.forms import AddPlanForm
 
 def url_homepage(request):
     language = act_getlanguage(request)
-    user_language = language
-    translation.activate(user_language)
+    # user_language = language
+    # translation.activate(user_language) 系统已经可以自动判断，这个激活暂时不需要
     # request.session[translation.LANGUAGE_SESSION_KEY] = user_language
+    timezone.activate(pytz.timezone("Asia/Shanghai"))
+    now_tz = timezone.now()
     info = act_getinfo(request)
-    tstr = _(u'Our hompage heading')
-    return render(request, "main/home.html", {'info':info, 'heading':tstr})
+    heading = _(u'Our hompage heading')
 
-def url_index(request,fuckset):
-    boy = int(fuckset)
-    # return render(request, 'pass', )
-    # ace = act_jisuan(boy)
-    # return HttpResponse(ace)
+    return render(request, "main/home.html", locals())
 
 def url_signup(request):
     '''用户通过浏览器将表单内容post到/signup/post后来到这里'''
-    uf = SignupForm(request.POST)
+    uf = SignupForm()
     language = act_getlanguage(request)
     msg = request.method + language
     if request.method == 'POST':
+        uf = SignupForm(request.POST)
         if uf.is_valid():
             nickname = uf.cleaned_data['nickname']
             password = uf.cleaned_data['password']
@@ -180,6 +179,7 @@ def url_replytosku(request, sku_id):
     current_user = info['current_user']
     sku = Sku.objects.get(id=sku_id)
     uf = AddRTSForm(request.POST)
+    uf.fields['reply_to'].queryset = ReplyToSku.objects.filter(sku=sku)
     is_involved = (current_user.provider == sku.provider) or (sku.buyer.filter(id=current_user.buyer.id).exists())
     if is_involved:
         msg = request.method
@@ -193,6 +193,10 @@ def url_replytosku(request, sku_id):
                     type = 0
                 result = act_addrts(user=current_user, type=type, content=content, reply_to=replyto, sku=sku)
                 msg = str(current_user)+", "+str(sku.provider)+", "+result
+            else:
+                msg = "validation failed"
+        else:
+            pass
     else:
         msg = 'you are not involved in this class'
     return render(request, "main/addrts.html", {'info':info, 'uf':uf, 'msg':msg, 'heading':"Reply to Sku", 'sku_id':sku.id, 'is_involved':is_involved})
