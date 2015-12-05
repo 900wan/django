@@ -88,7 +88,7 @@ def url_login(request):
                         return HttpResponseRedirect(next)
                 else:
                     msg = _(u'Login failed, user is not active.')
-                    return render(request, "main/login.html", {'info':info,'uf':uf, 'msg':msg, 'next':next})
+                    return render(request, "main/login.html", {'info':info, 'uf':uf, 'msg':msg, 'next':next})
             else:
                 msg = _(u'Guess what? Login failed.')
                 return render(request, "main/login.html", {'info':info, 'uf':uf, 'msg':msg, 'next':next})
@@ -119,7 +119,7 @@ def url_tutor(request, offset_id):
 def url_addsku(request):
     '''make a sku for order, One order can have many skus'''
     info = act_getinfo(request)
-    current_user=request.user
+    current_user = info['current_user']
     skus = Sku.objects.all()
     uf = AddSkuForm(request.POST)
     msg = request.method+", user: ["+str(current_user.username)+"], user's buyer: ["+str(current_user.buyer)+"]"
@@ -252,3 +252,12 @@ def url_skulist(request):
     skus = Sku.objects.all()
     msg = str(request)
     return render(request, "main/skulist.html", {'info':info, 'heading':"There is a Sku list", 'msg':msg, 'skus':skus})
+
+def order_add(request, skus):
+    info = act_getinfo(request)
+    current_user = info['current_user']
+    for i in skus:
+        thesku = Sku.objects.filter(id=i)
+        thesku.status = 2
+        
+    pass

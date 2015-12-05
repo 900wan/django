@@ -89,7 +89,6 @@ class Provider(models.Model):
         """对教师状态进行升级"""
         # if form is OK
         return upgrade_status(self, theset)
-
     def upgrade_hp(self, theset):
         '''upgrade hp of teacher'''
         user.last_login
@@ -206,9 +205,12 @@ class Sku(models.Model):
     )
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
-    topic = models.ForeignKey(Topic,blank=True,null=True)
+    topic = models.ForeignKey(Topic, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
+    def duration(self):
+        hours = (self.end_time - self.start_time)
+        return hours
 
 # index 7
 class Plan(models.Model):
@@ -368,7 +370,6 @@ class Order(models.Model):
         """对order状态进行升级"""
         self.status = theset
         self.save()
-
 
 class Log(models.Model):
     '''Model Log is for record of the journal of a User daily action.
