@@ -209,8 +209,14 @@ class Sku(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     def duration(self):
-        hours = (self.end_time - self.start_time)
-        return hours
+        duration = (self.end_time - self.start_time)
+        duration = {
+        'Total':duration,
+        'hours':duration.seconds//3600,
+        'minuets':(duration.seconds % 3600) // 60,
+        'seconds':duration.seconds % 60 ,
+        }
+        return duration
 
 # index 7
 class Plan(models.Model):

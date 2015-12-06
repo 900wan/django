@@ -253,11 +253,17 @@ def url_skulist(request):
     msg = str(request)
     return render(request, "main/skulist.html", {'info':info, 'heading':"There is a Sku list", 'msg':msg, 'skus':skus})
 
-def order_add(request, skus):
+def url_order_add(request, skus):
     info = act_getinfo(request)
     current_user = info['current_user']
     for i in skus:
         thesku = Sku.objects.filter(id=i)
         thesku.status = 2
-        
-    pass
+
+
+def url_test(request):
+    i = Sku.objects.get(id=7)
+    a = i.duration()
+    b = a['seconds']
+    return render(request, "main/test.html", {'i':i, 'a':a, 'b':b})
+

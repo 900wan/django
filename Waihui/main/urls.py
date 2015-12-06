@@ -27,5 +27,6 @@ urlpatterns = patterns('',
                         url(r'^sku/(\d{1,2})/addplan/$', url_views.url_addplan, name='addplan'),
                         # url(r'^addplan/$', url_views.url_addplan, name='addplan'),
                         url(r'^sku/(\d{1,2})/reply/$', url_views.url_replytosku, name="replyrts"),
+                        url(r'^mytest/$', url_views.url_test, name="mytest")
                         # url(r'^reviews/$', url_views.url_reviews, name='reviews'),
     )
