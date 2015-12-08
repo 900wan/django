@@ -214,7 +214,7 @@ class Sku(models.Model):
         'Total':duration,
         'hours':duration.seconds//3600,
         'minuets':(duration.seconds % 3600) // 60,
-        'seconds':duration.seconds % 60 ,
+        'seconds':duration.seconds % 60,
         }
         return duration
 
@@ -306,8 +306,8 @@ class ReviewToBuyer(models.Model):
     provider = models.ForeignKey(Provider)
     buyer = models.ForeignKey(Buyer)
     sku = models.OneToOneField(Sku)
-    questionnaire = models.CharField( max_length=50,blank=True,null=True)
-    comment = models.CharField(max_length=50,blank=True,null=True)
+    questionnaire = models.CharField(max_length=50, blank=True, null=True)
+    comment = models.CharField(max_length=50, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
@@ -324,7 +324,7 @@ class ReplyToSku(models.Model):
     user = models.ForeignKey(User)
     type = models.IntegerField()
     content = models.TextField()
-    reply_to = models.ForeignKey('self',blank=True,null=True)
+    reply_to = models.ForeignKey('self', blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
@@ -420,6 +420,23 @@ class Log(models.Model):
         (PROVIDER, 'provider'))
     character = models.IntegerField(choices=TYPE_OF_CHARACTER)
     Dtime = models.DateTimeField(auto_now_add=True)
+
+
+class ReadMark(models.Model):
+
+    class Meta:
+        verbose_name = "ReadMark"
+        verbose_name_plural = "ReadMarks"
+
+    def __str__(self):
+        pass
+    UNREAD = 0
+    READED = 1
+    STATUS_OF_READ = (
+        (UNREAD, 'unread'),
+        (READED, 'readed'))
+    user = models.ForeignKey(User)
+    sku = models.ForeignKey(Sku)
 
 # TODO 有空时咱们一起进行：
 # 默认值、是否必填等有些还需要再调整
