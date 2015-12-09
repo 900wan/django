@@ -36,6 +36,8 @@ from main.forms import AddSkuForm
 from main.forms import AddRTSForm
 from main.forms import AddPlanForm
 
+from main.mytest import Test_skufunction
+
 def url_homepage(request):
     language = act_getlanguage(request)
     # user_language = language
@@ -265,5 +267,10 @@ def url_test(request):
     i = Sku.objects.get(id=7)
     a = i.duration()
     b = a['seconds']
-    return render(request, "main/test.html", {'i':i, 'a':a, 'b':b})
+    return render(request, "main/mytest.html", {'i':i, 'a':a, 'b':b})
+
+def url_idtest(request, set_id):
+
+    result = Test_skufunction(set_id)
+    return render(request, "main/mytest", {'result':result})
 
