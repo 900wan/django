@@ -459,7 +459,7 @@ class Notification(models.Model):
         (SYSTEMNOTE, '超级通知'),)
 
     user = models.ForeignKey(User)
-    noti = models.IntegerField(choices='STATUS_OF_NOTI')
+    noti = models.IntegerField(choices=STATUS_OF_NOTI)
     sku = models.ForeignKey(Sku, blank=True, null=True,)
     reply = models.ForeignKey(ReplyToSku, blank=True, null=True,)
     note = models.CharField(blank=True, null=True, max_length=200)
