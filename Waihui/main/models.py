@@ -285,8 +285,8 @@ class ReviewToProvider(models.Model):
     provider = models.ForeignKey(Provider)
     buyer = models.ForeignKey(Buyer)
     sku = models.OneToOneField(Sku)
-    questionnaire = models.CharField( max_length=50)
-    comment = models.CharField(max_length=250,blank=True,null=True)
+    questionnaire = models.CharField(max_length=50)
+    comment = models.CharField(max_length=250, blank=True, null=True)
     score = models.FloatField()
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -422,21 +422,59 @@ class Log(models.Model):
     Dtime = models.DateTimeField(auto_now_add=True)
 
 
-class ReadMark(models.Model):
+class Notification(models.Model):
 
     class Meta:
-        verbose_name = "ReadMark"
-        verbose_name_plural = "ReadMarks"
+        verbose_name = "Notification"
+        verbose_name_plural = "Notifications"
 
     def __str__(self):
         pass
+
+    NEWREPLY = 0
+    PROVIDERCONFIRM = 1
+    PLANREADY = 2
+    HALFHOURSTOGO = 3
+    SKUBEGIN = 4
+    PROVIDERCHANGED = 5
+    PROVIDERCANCLED = 6
+    PLANCHANGED = 7
+    SKUSOLD = 8
+    BUYERCANCLED = 9
+    BUYERREPLIED = 10
+    SYSTEMNOTE = 11
+
+    STATUS_OF_NOTI = (
+        (NEWREPLY, '老师发表了reply'),
+        (PROVIDERCONFIRM, '老师确认了你的课，已经开始备课'),
+        (PLANREADY, '老师已经备课完成！'),
+        (HALFHOURSTOGO, '还有半个小时'),
+        (SKUBEGIN, '开始上课！(5分钟)'),
+        (PROVIDERCHANGED, '老师确认了你的课，但是换了老师'),
+        (PROVIDERCANCLED, '抱歉，由于老师的时间安排，课程取消。退款到账户余额'),
+        (PLANCHANGED, '教案被修改'),
+        (SKUSOLD, '学生预订你的课啦！该备课了请确认'),
+        (BUYERCANCLED, '学生取消了课'),
+        (BUYERREPLIED, '学生发表了回复'),
+        (SYSTEMNOTE, '超级通知'),)
+
+    user = models.ForeignKey(User)
+    noti = models.IntegerField(choices='STATUS_OF_NOTI')
+    sku = models.ForeignKey(Sku, blank=True, null=True,)
+    reply = models.ForeignKey(ReplyToSku, blank=True, null=True,)
+    note = models.CharField(blank=True, null=True, max_length=200)
+    url = models.URLField(blank=True, null=True,)
+    open_time = models.DateTimeField(blank=True, null=True,)
+    close_time = models.DateTimeField(blank=True, null=True,)
+
     UNREAD = 0
     READED = 1
     STATUS_OF_READ = (
         (UNREAD, 'unread'),
         (READED, 'readed'))
-    user = models.ForeignKey(User)
-    sku = models.ForeignKey(Sku)
+    read = models.IntegerField(choices=STATUS_OF_READ)
+
+
 
 # TODO 有空时咱们一起进行：
 # 默认值、是否必填等有些还需要再调整
