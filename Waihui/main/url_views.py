@@ -29,6 +29,7 @@ from main.models import Topic
 from main.models import Sku
 from main.models import ReplyToSku
 from main.models import Plan
+from main.models import Notification
 
 from main.forms import LoginForm
 from main.forms import SignupForm
@@ -47,7 +48,10 @@ def url_homepage(request):
     now_tz = timezone.now()
     info = act_getinfo(request)
     heading = _(u'Our hompage heading')
-
+    if info['is_login']:
+        notis = Notification.objects.filter(user=info['current_user'])
+    else:
+        notis = {}
     return render(request, "main/home.html", locals())
 
 def url_signup(request):

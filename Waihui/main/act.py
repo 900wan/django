@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.utils import translation, timezone
 from main.models import User
 from main.models import Language
 from main.models import Provider
@@ -13,7 +14,8 @@ from main.models import ReplyToSku
 from main.models import ReviewToProvider
 from main.models import ReviewToBuyer
 from main.models import Log
-from main.ds import ds_addlog
+from main.models import Notification
+from main.ds import ds_addlog, ds_noti_newreply
 from django.utils.translation import ugettext as _
 
 def act_getlanguage(request):
@@ -165,6 +167,14 @@ def act_addrts(user, type, content, reply_to, sku):
         sku=sku,
         )
     rts.save()
+
+    if rts.type == 1:
+        for noti_buyer in sku.buyer.all():
+            ds_noti_newreply(reply=rts,user=noti_buyer.user, type=1)
+    elif rts.type == 0:
+        ds_noti_newreply(reply=rts,user=sku.provider.user, type=0)
+    
+
     result = "OK, " + user.username + " left a message of" + content
     return result
 
@@ -273,3 +283,10 @@ def act_getinfo(request):
         'is_login': False,
         }
     return info
+
+def function():
+    pass
+
+
+
+

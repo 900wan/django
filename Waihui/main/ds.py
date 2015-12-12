@@ -1,15 +1,22 @@
 # -*- coding: utf-8 -*-
-
-# def ds_checkrequest_form():
-#     if request.method == 'POST':
-#         return "required.method = POST"
-#     else :
-#         return "else return"
-#     return 
-
-from main.models import Topic
+from django.utils import translation, timezone
 from main.models import User
-    
+from main.models import Language
+from main.models import Provider
+from main.models import Buyer
+from main.models import Topic
+from main.models import TopicCategory
+from main.models import Sku
+from main.models import Plan
+from main.models import Order
+from main.models import Wallet
+from main.models import ReplyToSku
+from main.models import ReviewToProvider
+from main.models import ReviewToBuyer
+from main.models import Log
+from main.models import Notification
+import datetime
+
 def ds_showtopic(id=0, bywhat=0):
     if bywhat == 0:
         topic = Topic.objects.get(id=id)
@@ -27,3 +34,10 @@ def ds_addlog(source, type, user, character):
         character=character)
     log.save()
     return "OK!" + "from " + log.source + "log.user" + " logged in"
+
+def ds_noti_newreply(reply, user, type):
+    noti = 0 if type == 1 else 10
+    notification = Notification(user=user,
+        reply=reply, sku=reply.sku, open_time = timezone.now(), close_time = timezone.now() + datetime.timedelta(weeks=100), noti=noti)
+    notification.save()
+    return True

@@ -428,8 +428,8 @@ class Notification(models.Model):
         verbose_name = "Notification"
         verbose_name_plural = "Notifications"
 
-    def __str__(self):
-        pass
+    def __unicode__(self):
+        return u'%s' % str(self.noti) + " " + str(self.user)
 
     NEWREPLY = 0
     PROVIDERCONFIRM = 1
@@ -472,8 +472,10 @@ class Notification(models.Model):
     STATUS_OF_READ = (
         (UNREAD, 'unread'),
         (READED, 'readed'))
-    read = models.IntegerField(choices=STATUS_OF_READ)
-
+    read = models.IntegerField(choices=STATUS_OF_READ, default=0)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    
 
 
 # TODO 有空时咱们一起进行：
@@ -482,5 +484,4 @@ class Notification(models.Model):
 # 添加日期、修改日期回头统一给每一个 model 加
 # 最后再根据文档过一遍，看看还有哪里有遗漏
 
-# TODO 添加方法（coolgene 将写出文档）
-    
+# TODO 添加方法（coolgene 将写出文档）    

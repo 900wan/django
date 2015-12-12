@@ -51,5 +51,27 @@
         <li><a href="{% url 'main:addsku' %}">{% trans "Add SKU" %}</a></li>
     </ul>
     
+    <table>
+        <thead>
+            <tr>
+                <td>id</td>
+                <td>noti</td>
+                <td>content</td>
+                <td>read?</td>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for noti in notis %}
+                <tr>
+                    <td>{{noti.id}}</td>
+                    <td>{{noti.get_noti_display}}</td>
+                    <td>{{noti.reply.content}}</td>
+                    <td>{{noti.get_read_display}}</td>
+
+                </tr>
+            {% endfor%}
+        </tbody>
+    </table>
 
 {% endblock content %}
