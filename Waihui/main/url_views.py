@@ -21,6 +21,7 @@ from main.act import act_addrts
 from main.act import act_addplan
 from main.act import act_showsku
 from main.act import act_getinfo
+from main.act import act_getanotis
 
 from main.models import Language
 from main.models import Provider
@@ -49,9 +50,8 @@ def url_homepage(request):
     info = act_getinfo(request)
     heading = _(u'Our hompage heading')
     if info['is_login']:
-        notis = Notification.objects.filter(user=info['current_user'])
-    else:
-        notis = {}
+        notis = Notification.objects.filter(user=info['current_user']).order_by('-open_time')
+        anotis = act_getanotis(notis)
     return render(request, "main/home.html", locals())
 
 def url_signup(request):
@@ -198,7 +198,7 @@ def url_replytosku(request, sku_id):
                 else:
                     type = 0
                 result = act_addrts(user=current_user, type=type, content=content, reply_to=replyto, sku=sku)
-                msg = str(current_user)+", "+str(sku.provider)+", "+result
+                msg = result
             else:
                 msg = "validation failed"
         else:

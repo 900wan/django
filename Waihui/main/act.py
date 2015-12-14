@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.utils import translation, timezone
+from django.core.urlresolvers import reverse
 from main.models import User
 from main.models import Language
 from main.models import Provider
@@ -15,7 +16,7 @@ from main.models import ReviewToProvider
 from main.models import ReviewToBuyer
 from main.models import Log
 from main.models import Notification
-from main.ds import ds_addlog, ds_noti_newreply
+from main.ds import ds_addlog, ds_getanoti, ds_noti_newreply
 from django.utils.translation import ugettext as _
 
 def act_getlanguage(request):
@@ -23,7 +24,7 @@ def act_getlanguage(request):
     # language = request.META.get('HTTP_ACCEPT_LANGUAGE')
     return language
 
-def act_signup(email, password, nickname, http_language, gender=1, mother_tongue_id=1, time_zone=1):
+def act_signup(email, password, nickname, http_language, time_zone="Asia/Shanghai"):
     '''signup a user'''
     
     language = http_language
@@ -42,7 +43,7 @@ def act_signup(email, password, nickname, http_language, gender=1, mother_tongue
     buyer = Buyer(
         user=user,
         nickname=nickname,
-        gender=gender,
+        # gender=gender,
         mother_tongue=ulanguage,
         time_zone=time_zone)
     buyer.save()
@@ -284,9 +285,10 @@ def act_getinfo(request):
         }
     return info
 
-def function():
-    pass
-
-
-
+def act_getanotis(notis):
+    anotis = []
+    for noti in notis:
+        anoti = ds_getanoti(noti)
+        anotis.append(anoti)
+    return anotis
 

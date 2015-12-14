@@ -19,10 +19,11 @@
     <a href="{% url 'main:logout' %}">{% trans "Log out now!" %}</a>
     {% else %}
     <a href="{% url 'main:home' %}">{% trans "Home" %}</a>
-     [You havn't login!]
+     [Not loged in]
     <a href="{% url 'main:login' %}">{% trans "Log in now!" %}</a>
     <a href="{% url 'main:signup' %}">{% trans "Sign up now!" %}</a>    
     {% endif %}
+    <hr>
     {% block content %}
     {% endblock content %}
 </body>

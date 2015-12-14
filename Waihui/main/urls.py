@@ -11,7 +11,7 @@ urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'Waihui.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
-                       url(r'^test/$', include(test_patterns)),
+                        url(r'^test/', include(test_patterns)),
                         # url(r'^test/$', url_views.url_test, name='url_test'),
                         url(r'^$', url_views.url_homepage, name="home"),
                         url(r'^signup/$', url_views.url_signup, name="signup"), 

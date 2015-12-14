@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.utils import translation, timezone
+from django.core.urlresolvers import reverse
 from main.models import User
 from main.models import Language
 from main.models import Provider
@@ -34,6 +35,20 @@ def ds_addlog(source, type, user, character):
         character=character)
     log.save()
     return "OK!" + "from " + log.source + "log.user" + " logged in"
+
+def ds_getanoti(noti):
+    if noti.noti == 0:
+        content = u"Your tutor <strong>%s</strong> left a comment:<br/> <i>%s</i><br>-- from <i>Topic: %s</i>" % (noti.reply.user.provider.name, noti.reply.content, noti.sku.topic.name)
+        link = reverse('main:showsku', args=[noti.sku.id])
+    elif noti.noti == 10:
+        content = u"Your student <strong>%s</strong> left a comment:<br/> <i>%s</i><br>-- from <i>Topic: %s</i>" % (noti.reply.user.buyer.nickname, noti.reply.content, noti.sku.topic.name)
+        link = reverse('main:showsku', args=[noti.sku.id])
+    anoti={
+    'read' : noti.get_read_display(),
+    'content' : content,
+    'link' : link,
+    }
+    return anoti
 
 def ds_noti_newreply(reply, user, type):
     noti = 0 if type == 1 else 10
