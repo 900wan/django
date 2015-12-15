@@ -18,45 +18,8 @@
                 <li>login name: {{info.current_user.get_username}}</li>
                 <li>email: {{info.current_user.email}}</li>
                 <li>last login: {{info.current_user.last_login|date:"Y-m-d H:i:s (O)"}}</li>
-                <li>wallet balance: CNY {{info.current_user.wallet.cny_balance}}</li>
-                <li>as a student:</li>
-                <ul>
-                    <li>nickname: {{info.current_user.buyer.nickname}}</li>
-                    <li>preferred language: {{info.current_user.buyer.mother_tongue.english_name|language_name}}</li>
-                    <li>learning: {{info.current_user.buyer.sku_set.all|length}} courses</li>
-                </ul>
-                <li>as a tutor:</li>
-                <ul>
-                    <li>stage name (for tutoring): {{info.current_user.provider.name}}</li>
-                    <li>tutoring status: {{info.current_user.provider.get_status_display}}</li>
-                    <li>tutoring: {{info.current_user.provider.sku_set.all|length}} courses</li>
-                </ul>
+                <li><a href="{% url 'main:dashboard' %}">go to dashboard to see my full profile and courses...</a></li>
             </ul>
-        {% if notis %}
-        <h2>* Your have {{anotis|length}} notifications</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for anoti in anotis %}
-                        <tr style="vertical-align:top">
-                            <td><strong>[{{anoti.read|upper}}]</strong></td>
-                            <td>{{anoti.content|safe}}</td>
-                            <td><a href="{{anoti.link}}">&lt;GO&gt;</a></td>
-
-                        </tr>
-                    {% endfor%}
-                </tbody>
-            </table>
-        {% else %}
-            Great, you have no notification!
-        {% endif %}
     {% else %}
         {% trans "You have not loged in." %}
 
@@ -91,8 +54,8 @@
     {# <a href="{% url 'main:topic_category'%}">{% trans "Show Topic category" %}</a> #}
     {# <a href="{% url 'main:tutor' %}">{% trans "Show tutortor" %}</a> #}
     <ul>
-        <li><a href="{% url 'main:signup' %}">{% trans "Sign up now!" %}</a>    </li>
-        <li><a href="{% url 'main:login' %}">{% trans "Already have accounts?" %}</a></li>
+        <li><a href="{% url 'main:dashboard' %}">{% trans "Dashboard for student" %}</a></li>
+        <li><a href="{% url 'main:office' %}">{% trans "Office for tutor" %}</a></li>
         <li><a href="{% url 'main:skulist' %}">{% trans "SKU List" %}</a></li>
         <li><a href="{% url 'main:addsku' %}">{% trans "Add SKU" %}</a></li>
     </ul>

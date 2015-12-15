@@ -217,6 +217,13 @@ class Sku(models.Model):
         'seconds':duration.seconds % 60,
         }
         return duration
+    def has_plan(self):
+        try:
+            plan = self.plan
+            has_plan = True
+        except Plan.DoesNotExist:
+            has_plan = False
+        return has_plan
 
 # index 7
 class Plan(models.Model):
@@ -429,7 +436,7 @@ class Notification(models.Model):
         verbose_name_plural = "Notifications"
 
     def __unicode__(self):
-        return u'%s' % str(self.noti) + " " + str(self.user)
+        return u'%s' % "[" +str(self.id) + "] " +str(self.noti) + " " + str(self.user)
 
     NEWREPLY = 0
     PROVIDERCONFIRM = 1
@@ -467,11 +474,9 @@ class Notification(models.Model):
     open_time = models.DateTimeField(blank=True, null=True,)
     close_time = models.DateTimeField(blank=True, null=True,)
 
-    UNREAD = 0
-    READED = 1
     STATUS_OF_READ = (
-        (UNREAD, 'unread'),
-        (READED, 'readed'))
+        (0, 'unread'),
+        (1, 'read'))
     read = models.IntegerField(choices=STATUS_OF_READ, default=0)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)

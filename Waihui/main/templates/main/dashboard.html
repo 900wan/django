@@ -1,0 +1,73 @@
+{% extends "main/base.html" %}
+{% load i18n %} 
+{% load tz %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_timezone as TIME_ZONE %}
+
+{% block title %}
+    My Dashboard
+{% endblock title %}
+
+{% block content %}
+    <h1>{% trans "My Dashboard" %}</h1>
+    {% trans "Welcome back. China never leave." %}
+        <h2>* User profile</h2>
+        <ul style="font-family:monospace;">
+            <li>login name: {{info.current_user.get_username}}</li>
+            <li>email: {{info.current_user.email}}</li>
+            <li>last login: {{info.current_user.last_login|date:"Y-m-d H:i:s (O)"}}</li>
+            <li>wallet balance: CNY {{info.current_user.wallet.cny_balance}}</li>
+            <li>as a student:</li>
+            <ul>
+                <li>nickname: {{info.current_user.buyer.nickname}}</li>
+                <li>preferred language: {{info.current_user.buyer.mother_tongue.english_name|language_name}}</li>
+                <li>learning: {{info.current_user.buyer.sku_set.all|length}} courses</li>
+            </ul>
+            <li>as a tutor:</li>
+            <ul>
+                <li>stage name (for tutoring): {{info.current_user.provider.name}}</li>
+                <li>tutoring status: {{info.current_user.provider.get_status_display}}</li>
+                <li>tutoring: {{info.current_user.provider.sku_set.all|length}} courses</li>
+            </ul>
+        </ul>
+        <h2>* {% trans "Learning courses" %} <a href="{% url 'main:addsku' %}"><i><small>book a new course</small></i></a></h2>
+        <strong>As a student</strong>, you have {{info.current_user.buyer.sku_set.all|length}} courses.
+        <table>
+            <thead>
+                <tr>
+                    <th>Topic</th>
+                    <th>ID</th>
+                    <th>Provider</th>
+                    <th>Has plan?</th>
+                    <th>Buyer</th>
+                    <th>Start time</th>
+                    <th>End time</th>
+                    <th>Created</th>
+                    <th>Modified</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sku in info.current_user.buyer.sku_set.all %}
+                <tr>
+                    <td><a href="{% url 'main:showsku' sku.id %}">{{sku.topic}}</a></td>
+                    <td>{{sku.id}}</td>
+                    <td>{{sku.provider}}</td>
+                    <td>
+                        {% if sku.has_plan %}
+                            yes
+                        {% else %}
+                            <strong>NO</strong>
+                        {% endif %}
+                    </td>
+                    <td>{{sku.buyer.all|safeseq|join:", "}}</td>
+                    <td>{{sku.start_time|date:"Y-m-d H:i (e)"}}</td>
+                    <td>{{sku.end_time|date:"Y-m-d H:i (e)"}}</td>
+                    <td>{{sku.created|date:"Y-m-d H:i (e)"}}</td>
+                    <td>{{sku.modified|date:"Y-m-d H:i (e)"}}</td>
+
+                </tr>
+                {% endfor%}
+            </tbody>
+        </table>
+
+{% endblock content %}

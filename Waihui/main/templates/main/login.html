@@ -8,10 +8,11 @@
 {% block content %}
 
     <a href="{% url 'main:signup' %}">{% trans "免费注册" %}</a>
-    <p>{% trans "欢迎回来" %}</p>
     {% if next %}
+    <p>{% trans "说实在的，你需要登录才能访问 " %}{{ next }}</p>
     <form method="post" enctype="multipart/form-data" action="/login/?next={{next}}">
     {%else%}
+    <p>{% trans "Welcome Back" %}</p>
     <form method="post" enctype="multipart/form-data" action="/login/">
     {% endif %}
         {{uf.username}}

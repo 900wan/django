@@ -44,7 +44,8 @@ def ds_getanoti(noti):
         content = u"Your student <strong>%s</strong> left a comment:<br/> <i>%s</i><br>-- from <i>Topic: %s</i>" % (noti.reply.user.buyer.nickname, noti.reply.content, noti.sku.topic.name)
         link = reverse('main:showsku', args=[noti.sku.id])
     anoti={
-    'read' : noti.get_read_display(),
+    'id': noti.id,
+    'read' : noti.read,
     'content' : content,
     'link' : link,
     }

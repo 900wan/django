@@ -279,6 +279,7 @@ def act_getinfo(request):
         'is_login': True,
         'current_user': request.user
         }
+        info['unread_anotis'] = act_getanotis(Notification.objects.filter(user=request.user,read=0).order_by('-open_time'))
     else:
         info = {
         'is_login': False,

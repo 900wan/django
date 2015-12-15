@@ -6,6 +6,7 @@ from django.utils.translation import ugettext as _
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
+from django.core.urlresolvers import reverse
 # from django import forms
 # from login.models import User
 from main.act import act_signup
@@ -22,6 +23,8 @@ from main.act import act_addplan
 from main.act import act_showsku
 from main.act import act_getinfo
 from main.act import act_getanotis
+
+from main.ds import  ds_getanoti
 
 from main.models import Language
 from main.models import Provider
@@ -49,9 +52,6 @@ def url_homepage(request):
     now_tz = timezone.now()
     info = act_getinfo(request)
     heading = _(u'Our hompage heading')
-    if info['is_login']:
-        notis = Notification.objects.filter(user=info['current_user']).order_by('-open_time')
-        anotis = act_getanotis(notis)
     return render(request, "main/home.html", locals())
 
 def url_signup(request):
@@ -110,7 +110,7 @@ def url_login(request):
 # @login_required
 def url_logout(request):
     logout(request)
-    return url_homepage(request)
+    return HttpResponseRedirect(reverse('main:home'))
 
 def url_tc(request, offset_id):
     return HttpResponse(offset_id)
@@ -278,3 +278,31 @@ def url_idtest(request, set_id):
     result = Test_skufunction(set_id)
     return render(request, "main/mytest", {'result':result})
 
+@login_required
+def url_dashboard(request):
+    info = act_getinfo(request)
+    return render(request, "main/dashboard.html",locals())
+
+@login_required
+def url_office(request):
+    info = act_getinfo(request)
+    return render(request, "main/office.html",locals())
+
+@login_required
+def url_notifications(request):
+    info = act_getinfo(request)
+    anotis = act_getanotis(Notification.objects.filter(user=info['current_user']).order_by('-open_time'))
+    return render(request, "main/notifications.html",locals())
+
+@login_required
+def url_notification_go(request, noti_id):
+    info = act_getinfo(request)
+    noti = get_object_or_404(Notification ,id=noti_id)
+    if noti.user == info['current_user']:
+        if noti.read == 0:
+            noti.read = 1
+            noti.save()
+        return HttpResponseRedirect(ds_getanoti(noti)['link'])
+    else:
+    # 这说明这条noti不属于当前用户，无权查看的
+        return HttpResponse('这条消息不属于当前用户，无权查看。')
