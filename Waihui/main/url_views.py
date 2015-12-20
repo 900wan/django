@@ -23,6 +23,7 @@ from main.act import act_addplan
 from main.act import act_showsku
 from main.act import act_getinfo
 from main.act import act_getanotis
+from main.act import act_addorder
 
 from main.ds import  ds_getanoti
 
@@ -142,6 +143,7 @@ def url_addsku(request):
     # topics = Topic.objects.all()
     # 
     # return render(request, "main/addsku.html", {'teacher_list':teachers, 'topic_list':topics,})
+
     
 def url_order(request, offset_id):
     id = int(offset_id)
@@ -306,3 +308,11 @@ def url_notification_go(request, noti_id):
     else:
     # 这说明这条noti不属于当前用户，无权查看的
         return HttpResponse('这条消息不属于当前用户，无权查看。')
+
+@login_required
+def url_addorder(request):
+    '''add a order '''
+    info = act_getinfo(request)
+    result = act_addorder(info)
+    return render(request, "main/addorder.html", locals())
+

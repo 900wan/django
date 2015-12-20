@@ -56,19 +56,16 @@ class Provider(models.Model):
     def __unicode__(self):
         return u'%s' % self.name
     user = models.OneToOneField(User)
-    ROOKIE = 0
-    APPLIED = 1
-    INTERN = 2
-    FORMAL = 3
+
     LEVELS_OF_TEACHER_CHOICES = (
-        (ROOKIE, '非教师'),
-        (APPLIED, '已申请'),
-        (INTERN, '实习'),
-        (FORMAL, '正式'),
+        (0, '非教师'),
+        (1, '已申请'),
+        (2, '实习'),
+        (3, '正式'),
         )
     status = models.IntegerField(
         choices=LEVELS_OF_TEACHER_CHOICES,
-        default=ROOKIE,
+        default=0,
         )
     name = models.CharField(max_length=50, )
     weekday_pattern = models.CommaSeparatedIntegerField(max_length=200, blank=True, null=True)
@@ -179,29 +176,20 @@ class Sku(models.Model):
     provider = models.ForeignKey(Provider, )
     buyer = models.ManyToManyField(Buyer, blank=True)
 
-    FORBOOK = 0
-    PREBOOKED = 1
-    REFUSED = 2
-    LOSTED = 3
-    BOOKED = 4
-    PREPARED = 5
-    FORVOTE = 6
-    FINISHED = 7
-
     STATUS_OF_SKU_CHOICES = (
-        (FORBOOK, _(u'可预约')),
-        (PREBOOKED, '已预约'),
-        (REFUSED, '被拒绝扔池子的'),
-        (LOSTED, '彻底没人教'),
-        (BOOKED, '已定'),
-        (PREPARED, '已备课'),
-        (FORVOTE, '已结束代评价'),
-        (FINISHED, '已彻底结束 '),
+        (0, _(u'可预约')),
+        (1, '已预约'),
+        (2, '被拒绝扔池子的'),
+        (3, '彻底没人教'),
+        (4, '已定'),
+        (5, '已备课'),
+        (6, '已结束代评价'),
+        (7, '已彻底结束 '),
     )
     
     status = models.IntegerField(
         choices=STATUS_OF_SKU_CHOICES,
-        default=FORBOOK,
+        default=0,
     )
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
@@ -358,26 +346,21 @@ class Order(models.Model):
     cny_price = models.FloatField()
     cny_paid = models.FloatField(default=0)
     pay_method = models.CharField(blank=True, null=True, max_length=50)
-    skus = models.ForeignKey(Sku, blank=True, null=True)
+    skus = models.ManyToManyField(Sku, blank=True, null=True)
     type = models.ForeignKey(OrderType)
 # 不可支付、未支付、已支付、已完成、申请退款、已退款……
-    UA = 0
-    UNPAID = 1
-    PAID = 2
-    FINISHED = 3
-    FORREFUND = 4
-    BEREFUND = 5
+
     STATUS_OF_ORDER_TYPE = (
-        (UA, '不可支付'),
-        (UNPAID, '未支付'),
-        (PAID, '已支付'),
-        (FINISHED, '已完成'),
-        (FORREFUND, '申请退款'),
-        (BEREFUND, '已退款'))
+        (0, '不可支付'),
+        (1, '未支付'),
+        (2, '已支付'),
+        (3, '已完成'),
+        (4, '申请退款'),
+        (5, '已退款'))
 
     status = models.IntegerField(
         choices=STATUS_OF_ORDER_TYPE,
-        default=UNPAID)
+        default=1)
 
     def upgrade_status(self, theset):
         """对order状态进行升级"""
@@ -393,30 +376,22 @@ class Log(models.Model):
 
     def __str__(self):
         pass
-    HTML = 0
-    WAP = 1
-    IOSAPP = 2
-    ANDAPP = 3
+
     TYPE_OF_CLIENT = (
-        (HTML, '网页端'),
-        (WAP, '移动网页端'),
-        (IOSAPP, 'IOS客户端'),
-        (ANDAPP, '安卓客户端'))
+        (0, '网页端'),
+        (1, '移动网页端'),
+        (2, 'IOS客户端'),
+        (3, '安卓客户端'))
     source = models.IntegerField(
         choices=TYPE_OF_CLIENT,
-        default=HTML)
+        default=0)
 
-    LOGIN = 0
-    LOGOUT = 1
-    ORDERED = 2
-    MODIFIED = 3
-    CANCLE = 4
     TYPE_OF_ACTION = (
-        (LOGIN, '登陆'),
-        (LOGOUT, '登出'),
-        (ORDERED, '下单'),
-        (MODIFIED, '修改'),
-        (CANCLE, '取消'))
+        (0, '登陆'),
+        (1, '登出'),
+        (2, '下单'),
+        (3, '修改'),
+        (4, '取消'))
     type = models.IntegerField(choices=TYPE_OF_ACTION)
     user = models.OneToOneField(User)
 
@@ -438,32 +413,19 @@ class Notification(models.Model):
     def __unicode__(self):
         return u'%s' % "[" +str(self.id) + "] " +str(self.noti) + " " + str(self.user)
 
-    NEWREPLY = 0
-    PROVIDERCONFIRM = 1
-    PLANREADY = 2
-    HALFHOURSTOGO = 3
-    SKUBEGIN = 4
-    PROVIDERCHANGED = 5
-    PROVIDERCANCLED = 6
-    PLANCHANGED = 7
-    SKUSOLD = 8
-    BUYERCANCLED = 9
-    BUYERREPLIED = 10
-    SYSTEMNOTE = 11
-
     STATUS_OF_NOTI = (
-        (NEWREPLY, '老师发表了reply'),
-        (PROVIDERCONFIRM, '老师确认了你的课，已经开始备课'),
-        (PLANREADY, '老师已经备课完成！'),
-        (HALFHOURSTOGO, '还有半个小时'),
-        (SKUBEGIN, '开始上课！(5分钟)'),
-        (PROVIDERCHANGED, '老师确认了你的课，但是换了老师'),
-        (PROVIDERCANCLED, '抱歉，由于老师的时间安排，课程取消。退款到账户余额'),
-        (PLANCHANGED, '教案被修改'),
-        (SKUSOLD, '学生预订你的课啦！该备课了请确认'),
-        (BUYERCANCLED, '学生取消了课'),
-        (BUYERREPLIED, '学生发表了回复'),
-        (SYSTEMNOTE, '超级通知'),)
+        (0, '老师发表了reply'),
+        (1, '老师确认了你的课，已经开始备课'),
+        (2, '老师已经备课完成！'),
+        (3, '还有半个小时'),
+        (4, '开始上课！(5分钟)'),
+        (5, '老师确认了你的课，但是换了老师'),
+        (6, '抱歉，由于老师的时间安排，课程取消。退款到账户余额'),
+        (7, '教案被修改'),
+        (8, '学生预订你的课啦！该备课了请确认'),
+        (9, '学生取消了课'),
+        (10, '学生发表了回复'),
+        (11, '超级通知'),)
 
     user = models.ForeignKey(User)
     noti = models.IntegerField(choices=STATUS_OF_NOTI)

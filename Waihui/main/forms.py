@@ -61,4 +61,7 @@ class AddPlanForm(forms.Form):
     copy_from = forms.ModelChoiceField(queryset=Plan.objects.all(), required=False)
     sumy = forms.CharField(widget=forms.Textarea(), required=False)
 
+class AddOrderForm(forms.Form):
+    sku = forms.ModelChoiceField(queryset=Sku.objects.filter(status=1))
+    
 

@@ -16,6 +16,9 @@ from main.models import ReviewToProvider
 from main.models import ReviewToBuyer
 from main.models import Log
 from main.models import Notification
+
+from main.forms import AddOrderForm
+
 from main.ds import ds_addlog, ds_getanoti, ds_noti_newreply
 from django.utils.translation import ugettext as _
 
@@ -179,20 +182,6 @@ def act_addrts(user, type, content, reply_to, sku):
     result = "OK, " + user.username + " left a message of" + content
     return result
 
-def act_addorder(buyer_id, provider_id, cny_price, cny_paid):
-    '''it will add a Order'''
-    buyer = Buyer.objects.get(id=buyer_id)
-    provider = Provider.objects.get(id=provider_id)
-    order = Order(
-        buyer=buyer,
-        provider=provider,
-        cny_paid=cny_paid,
-        cny_price=cny_price,
-        )
-    order.save()
-    result = "OK, " + Buyer.name + "place a order for" + provider.name + "costs " + cny_price
-    return result
-
 def act_updatewallet():
     pass
 
@@ -293,3 +282,17 @@ def act_getanotis(notis):
         anotis.append(anoti)
     return anotis
 
+def act_addorder(info):
+    '''it will add a Order'''
+    user = info['current_user']
+    
+    provider = Provider.objects.get(id=provider_id)
+    order = Order(
+        buyer=buyer,
+        provider=provider,
+        cny_paid=cny_paid,
+        cny_price=cny_price,
+        )
+    order.save()
+    result = "OK, " + Buyer.name + "place a order for" + provider.name + "costs " + cny_price
+    return result
