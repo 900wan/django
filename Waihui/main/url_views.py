@@ -41,6 +41,7 @@ from main.forms import SignupForm
 from main.forms import AddSkuForm
 from main.forms import AddRTSForm
 from main.forms import AddPlanForm
+from main.forms import AddOrderForm
 
 from main.mytest import Test_skufunction
 
@@ -313,6 +314,8 @@ def url_notification_go(request, noti_id):
 def url_addorder(request):
     '''add a order '''
     info = act_getinfo(request)
+    uf = AddOrderForm(request.POST)
+
     result = act_addorder(info)
     return render(request, "main/addorder.html", locals())
 

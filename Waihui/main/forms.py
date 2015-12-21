@@ -62,6 +62,6 @@ class AddPlanForm(forms.Form):
     sumy = forms.CharField(widget=forms.Textarea(), required=False)
 
 class AddOrderForm(forms.Form):
-    sku = forms.ModelChoiceField(queryset=Sku.objects.filter(status=1))
+    skus = forms.ModelChoiceField(queryset=Sku.objects.all())
     
 

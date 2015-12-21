@@ -286,13 +286,13 @@ def act_addorder(info):
     '''it will add a Order'''
     user = info['current_user']
     
-    provider = Provider.objects.get(id=provider_id)
-    order = Order(
-        buyer=buyer,
-        provider=provider,
-        cny_paid=cny_paid,
-        cny_price=cny_price,
-        )
-    order.save()
-    result = "OK, " + Buyer.name + "place a order for" + provider.name + "costs " + cny_price
-    return result
+
+    # order = Order(
+    #     buyer=buyer,
+    #     provider=provider,
+    #     cny_paid=cny_paid,
+    #     cny_price=cny_price,
+    #     )
+    # order.save()
+    # result = "OK, " + Buyer.name + "place a order for" + provider.name + "costs " + cny_price
+    return uf
