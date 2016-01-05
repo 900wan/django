@@ -10,14 +10,14 @@ from main.models import TopicCategory
 from main.models import Sku
 from main.models import Plan
 from main.models import Order
+from main.models import OrderType
 from main.models import Wallet
 from main.models import ReplyToSku
 from main.models import ReviewToProvider
 from main.models import ReviewToBuyer
 from main.models import Log
 from main.models import Notification
-
-from main.forms import AddOrderForm
+from main.forms import OrderForm
 
 from main.ds import ds_addlog, ds_getanoti, ds_noti_newreply
 from django.utils.translation import ugettext as _
@@ -282,17 +282,13 @@ def act_getanotis(notis):
         anotis.append(anoti)
     return anotis
 
-def act_addorder(info):
+def act_addorder(request, buyer):
     '''it will add a Order'''
-    user = info['current_user']
-    
-
-    # order = Order(
-    #     buyer=buyer,
-    #     provider=provider,
-    #     cny_paid=cny_paid,
-    #     cny_price=cny_price,
-    #     )
-    # order.save()
-    # result = "OK, " + Buyer.name + "place a order for" + provider.name + "costs " + cny_price
+    uf = OrderForm(request.POST)
+    uf.fields['skus'].queryset = Sku.objects.filter(buyer=buyer)
+    if request.method == 'POST':
+        if uf.is_valid():
+            Order.skus = uf.cleaned_data['skus']
+            order = Order(cny_price=1.0, buyer=buyer, type=OrderType.objects.get(id=1))
+            order.save()
     return uf

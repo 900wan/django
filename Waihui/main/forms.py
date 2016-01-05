@@ -5,6 +5,7 @@ from main.models import Topic
 from main.models import Sku
 from main.models import ReplyToSku
 from main.models import Plan
+from main.models import Order
 
 class SignupForm(forms.Form):
     nickname = forms.CharField(
@@ -61,7 +62,9 @@ class AddPlanForm(forms.Form):
     copy_from = forms.ModelChoiceField(queryset=Plan.objects.all(), required=False)
     sumy = forms.CharField(widget=forms.Textarea(), required=False)
 
-class AddOrderForm(forms.Form):
-    skus = forms.ModelChoiceField(queryset=Sku.objects.all())
     
-
+class OrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ('skus',)
+    
