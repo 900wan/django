@@ -329,8 +329,8 @@ class OrderType(models.Model):
         verbose_name = "OrderType"
         verbose_name_plural = "OrderTypes"
 
-    def __str__(self):
-        pass
+    def __unicode__(self):
+        return u'%s' % self.type
     type = models.CharField( max_length=50)
 
 class Order(models.Model):

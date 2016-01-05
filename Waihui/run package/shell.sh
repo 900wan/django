@@ -1,4 +1,2 @@
-#! /bin/bash
-cd ~
-cd waihui-django/Waihui/
+cd ..
 python manage.py shell

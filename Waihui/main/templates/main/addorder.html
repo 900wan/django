@@ -18,7 +18,7 @@
             <li>Go back to <a href="{% url 'main:dashboard' %}">dashboard </a></li>
         </ul>
         <p>================================</p>
-        <form action="post" enctype="multipart/form-data" action="{% url 'main:addorder' %}">
+        <form method="post" enctype="multipart/form-data" action="{% url 'main:addorder' %}">
             {{uf.as_p}}
             {% csrf_token %}
         <input type="submit" name="submit">
