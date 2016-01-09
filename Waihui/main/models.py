@@ -339,14 +339,15 @@ class Order(models.Model):
         verbose_name = "Order"
         verbose_name_plural = "Orders"
 
-    def __str__(self):
-        pass
+    def __unicode__(self):
+        return u'%s' % '['+str(self.id)+'] '+"Order of "+ str(self.buyer)
+
     buyer = models.ForeignKey(Buyer)
     provider = models.ForeignKey(Provider, null=True)
     cny_price = models.FloatField()
     cny_paid = models.FloatField(default=0)
     pay_method = models.CharField(blank=True, null=True, max_length=50)
-    skus = models.ManyToManyField(Sku, blank=True, null=True)
+    skus = models.ManyToManyField(Sku, blank=True)
     type = models.ForeignKey(OrderType)
 # 不可支付、未支付、已支付、已完成、申请退款、已退款……
 

@@ -60,3 +60,8 @@ def ds_noti_newreply(reply, user, type):
         reply=reply, sku=reply.sku, open_time = timezone.now(), close_time = timezone.now() + datetime.timedelta(weeks=100), noti=noti)
     notification.save()
     return True
+
+def ds_get_order_cny_price(skus):
+    SKU_CNY_PRICE = 90.00
+    cny_price = len(skus) * SKU_CNY_PRICE
+    return cny_price

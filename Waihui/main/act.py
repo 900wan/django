@@ -19,7 +19,7 @@ from main.models import Log
 from main.models import Notification
 from main.forms import OrderForm
 
-from main.ds import ds_addlog, ds_getanoti, ds_noti_newreply
+from main.ds import ds_addlog, ds_getanoti, ds_noti_newreply, ds_get_order_cny_price
 from django.utils.translation import ugettext as _
 
 def act_getlanguage(request):
@@ -282,13 +282,11 @@ def act_getanotis(notis):
         anotis.append(anoti)
     return anotis
 
-def act_addorder(request, buyer):
+def act_addorder(skus, buyer):
     '''it will add a Order'''
-    uf = OrderForm(request.POST)
-    uf.fields['skus'].queryset = Sku.objects.filter(buyer=buyer)
-    if request.method == 'POST':
-        if uf.is_valid():
-            Order.skus = uf.cleaned_data['skus']
-            order = Order(cny_price=1.0, buyer=buyer, type=OrderType.objects.get(id=1))
-            order.save()
-    return uf
+    cny_price = ds_get_order_cny_price(skus)
+    order = Order(cny_price=cny_price, buyer=buyer, type=OrderType.objects.get(id=1))
+    order.save()
+    order.skus = skus
+    result = "Order added, need to pay: CNY¥"+ str(cny_price) +", this order includes: "+str(skus)
+    return result

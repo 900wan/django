@@ -316,8 +316,14 @@ def url_addorder(request):
     '''add a order '''
     info = act_getinfo(request)
     buyer = info['current_user'].buyer
-    uf = act_addorder(request, buyer)
-    msg = buyer
+    uf = OrderForm(request.POST)
+    uf.fields['skus'].queryset = Sku.objects.filter(buyer=buyer)
+    if request.method == 'POST':
+        if uf.is_valid():
+            skus = uf.cleaned_data['skus']
+            # msg=skus
+            msg = act_addorder(skus,buyer)
+    # result = act_addorder(skus, buyer)
     # uf = OrderForm(request.POST)
     # uf.fields['skus'].queryset = Sku.objects.filter(buyer=info['current_user'].buyer)
     
