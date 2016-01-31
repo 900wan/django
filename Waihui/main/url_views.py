@@ -340,17 +340,17 @@ def url_addsku(request):
     current_user = info['current_user']
     skus = Sku.objects.all()
     if current_user.provider.status == 0:
-        form = 0
         msg = "You have no rights to add class, Please be a teacher first."
     else:
-        form = 1
-        uf = AddSkuForm(request.POST)
         msg = request.method+", Provider: ["+str(current_user.username)+"]"
         if request.method == 'POST':
+            uf = AddSkuForm(request.POST)
             if uf.is_valid():
                 start_time = uf.cleaned_data['start_time']
                 end_time = uf.cleaned_data['end_time']
                 result = act_addsku(provider=current_user.provider, start_time=start_time, end_time=end_time)
                 msg = result
+        else:
+            uf = AddSkuForm()
     return render(request, "main/addsku.html", locals())
 

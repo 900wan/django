@@ -96,7 +96,7 @@ def act_addtopic(name, topic_id, status, user_id):
     result = "OK, Topic:" + name + " added!"
     return result
 
-def act_addsku(provider, start_time, end_time, topic, buyer, status=1):
+def act_addsku(provider, start_time, end_time, topic=None, buyer=None, status=0):
     '''it will add a Sku'''
     # provider = Provider.objects.get(id=provider_id)
     # topic = Topic.objects.get(id=topic_id)
@@ -108,7 +108,8 @@ def act_addsku(provider, start_time, end_time, topic, buyer, status=1):
         topic=topic,
         )
     sku.save()
-    sku.buyer.add(buyer)
+    if buyer is not None:
+        sku.buyer.add(buyer)
     result = "OK, Sku:" + provider.name + "'s " + str(start_time) + " added!"
     return result
 
