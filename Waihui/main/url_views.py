@@ -125,21 +125,26 @@ def url_tutor(request, offset_id):
     return HttpResponse(act.status)
 
 @login_required
-def url_addsku(request):
+def url_addsku_backup(request):
     '''make a sku for order, One order can have many skus'''
     info = act_getinfo(request)
     current_user = info['current_user']
-    skus = Sku.objects.all()
-    uf = AddSkuForm(request.POST)
-    msg = request.method+", user: ["+str(current_user.username)+"], user's buyer: ["+str(current_user.buyer)+"]"
-    if request.method == 'POST':
-        if uf.is_valid():
-            provider = uf.cleaned_data['provider']
-            topic = uf.cleaned_data['topic']
-            start_time = uf.cleaned_data['start_time']
-            end_time = uf.cleaned_data['end_time']
-            result = act_addsku(provider=provider, topic=topic, start_time=start_time, end_time=end_time, buyer=current_user.buyer)
-            msg = result
+    if current_user.provider.status == 0:
+        skus = Sku.objects.all()
+        uf = 0
+        msg = "Sorry, You have no rights to add class. Be a teacher first!"
+    else:    
+        skus = Sku.objects.all()
+        uf = AddSkuForm(request.POST)
+        msg = request.method+", user: ["+str(current_user.username)+"], user's buyer: ["+str(current_user.buyer)+"]"
+        if request.method == 'POST':
+            if uf.is_valid():
+                provider = uf.cleaned_data['provider']
+                topic = uf.cleaned_data['topic']
+                start_time = uf.cleaned_data['start_time']
+                end_time = uf.cleaned_data['end_time']
+                result = act_addsku(provider=provider, topic=topic, start_time=start_time, end_time=end_time, buyer=current_user.buyer)
+                msg = result
     return render(request, "main/addsku.html", {'info':info, 'uf':uf, 'msg':msg, 'heading':"add sku", 'skus':skus})
     # teachers = Provider.objects.all()
     # topics = Topic.objects.all()
@@ -328,4 +333,24 @@ def url_addorder(request):
     # uf.fields['skus'].queryset = Sku.objects.filter(buyer=info['current_user'].buyer)
     
     return render(request, "main/addorder.html", locals())
+
+@login_required
+def url_addsku(request):
+    info = act_getinfo(request)
+    current_user = info['current_user']
+    skus = Sku.objects.all()
+    if current_user.provider.status == 0:
+        form = 0
+        msg = "You have no rights to add class, Please be a teacher first."
+    else:
+        form = 1
+        uf = AddSkuForm(request.POST)
+        msg = request.method+", Provider: ["+str(current_user.username)+"]"
+        if request.method == 'POST':
+            if uf.is_valid():
+                start_time = uf.cleaned_data['start_time']
+                end_time = uf.cleaned_data['end_time']
+                result = act_addsku(provider=current_user.provider, start_time=start_time, end_time=end_time)
+                msg = result
+    return render(request, "main/addsku.html", locals())
 

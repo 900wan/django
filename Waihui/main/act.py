@@ -109,7 +109,7 @@ def act_addsku(provider, start_time, end_time, topic, buyer, status=1):
         )
     sku.save()
     sku.buyer.add(buyer)
-    result = "OK, Sku:" + provider.name +"'s "+ topic.name + str(start_time) + " added! Student:" + buyer.nickname
+    result = "OK, Sku:" + provider.name + "'s " + str(start_time) + " added!"
     return result
 
 def act_addplan(sku, topic, status, content, assignment, slides, roomlink, materiallinks, materialhtml, voc, copy_from, sumy):
@@ -290,3 +290,6 @@ def act_addorder(skus, buyer):
     order.skus = skus
     result = "Order added, need to pay: CNY¥"+ str(cny_price) +", this order includes: "+str(skus)
     return result
+
+def act_isprovider(current_user):
+    pass

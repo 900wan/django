@@ -9,40 +9,17 @@
     <h1>{{heading}}</h1>
     {% trans "This the content of booking a course page." %}
     
-    <form method="post" enctype="multipart/form-data" action="{% url 'main:addsku' %}">
+    {% if form %}
+        <form method="post" enctype="multipart/form-data" action="{% url 'main:addsku' %}">
         {{uf.as_p}}
         {% csrf_token %}
         <input type="submit" name="submit">
     </form>
+    {% endif %}
+    
     <p>================================</p>
     <p>{{msg}}</p>
     <p>================================</p>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Topic</th>
-                    <th>Provider</th>
-                    <th>Buyer</th>
-                    <th>Start time</th>
-                    <th>End time</th>
-                    <th>Created</th>
-                    <th>Modified</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for sku in skus %}
-                <tr>
-                    <td>{{sku.topic}}</td>
-                    <td>{{sku.provider}}</td>
-                    <td>{{sku.buyer.all}}</td>
-                    <td>{{sku.start_time}}</td>
-                    <td>{{sku.end_time}}</td>
-                    <td>{{sku.created}}</td>
-                    <td>{{sku.modified}}</td>
-
-                </tr>
-                {% endfor%}
-            </tbody>
-        </table>
+        
 {% endblock content %}
