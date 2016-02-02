@@ -269,7 +269,11 @@ def act_getinfo(request):
         'is_login': True,
         'current_user': request.user
         }
-        info['unread_anotis'] = act_getanotis(Notification.objects.filter(user=request.user,read=0).order_by('-open_time'))
+        info['unread_anotis'] = act_getanotis(Notification.objects.filter(user=request.user, read=0).order_by('-open_time'))
+        if request.user.provider.status == 0:
+            info['is_provider'] = False
+        else:
+            info['is_provider'] = True
     else:
         info = {
         'is_login': False,
@@ -292,5 +296,5 @@ def act_addorder(skus, buyer):
     result = "Order added, need to pay: CNY¥"+ str(cny_price) +", this order includes: "+str(skus)
     return result
 
-def act_isprovider(current_user):
+def act_counttopic():
     pass

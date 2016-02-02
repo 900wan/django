@@ -39,6 +39,7 @@ class LoginForm(forms.Form):
 class AddSkuForm(forms.Form):
     start_time = forms.DateTimeField()
     end_time = forms.DateTimeField()
+    topic = forms.ModelChoiceField(queryset=Topic.objects.all(),required=False)
 
 class AddRTSForm(forms.Form):
     # sku = forms.ModelChoiceField(queryset=Sku.objects.all())
@@ -65,4 +66,10 @@ class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = ('skus',)
+    
+class HoldSkuForm(forms.ModelForm):
+    class Meta:
+        model = Sku
+        fields = ('status',)
+    
     

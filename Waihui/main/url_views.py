@@ -43,6 +43,7 @@ from main.forms import AddSkuForm
 from main.forms import AddRTSForm
 from main.forms import AddPlanForm
 from main.forms import OrderForm
+from main.forms import HoldSkuForm
 
 from main.mytest import Test_skufunction
 
@@ -125,33 +126,29 @@ def url_tutor(request, offset_id):
     return HttpResponse(act.status)
 
 @login_required
-def url_addsku_backup(request):
+def url_holdsku(request):
     '''make a sku for order, One order can have many skus'''
     info = act_getinfo(request)
-    current_user = info['current_user']
-    if current_user.provider.status == 0:
-        skus = Sku.objects.all()
-        uf = 0
-        msg = "Sorry, You have no rights to add class. Be a teacher first!"
-    else:    
-        skus = Sku.objects.all()
-        uf = AddSkuForm(request.POST)
-        msg = request.method+", user: ["+str(current_user.username)+"], user's buyer: ["+str(current_user.buyer)+"]"
-        if request.method == 'POST':
-            if uf.is_valid():
-                provider = uf.cleaned_data['provider']
-                topic = uf.cleaned_data['topic']
-                start_time = uf.cleaned_data['start_time']
-                end_time = uf.cleaned_data['end_time']
-                result = act_addsku(provider=provider, topic=topic, start_time=start_time, end_time=end_time, buyer=current_user.buyer)
-                msg = result
+    current_user = info['current_user'] 
+    skus = Sku.objects.all()
+    msg = request.method+", user: ["+str(current_user.username)+"], user's buyer: ["+str(current_user.buyer)+"]"
+    if request.method == 'POST':
+        uf = HoldSkuForm(request.POST)
+        if uf.is_valid():
+            provider = uf.cleaned_data['provider']
+            topic = uf.cleaned_data['topic']
+            start_time = uf.cleaned_data['start_time']
+            end_time = uf.cleaned_data['end_time']
+            result = act_addsku(provider=provider, topic=topic, start_time=start_time, end_time=end_time, buyer=current_user.buyer)
+            msg = result
+    else:
+        uf = HoldSkuForm()    
     return render(request, "main/addsku.html", {'info':info, 'uf':uf, 'msg':msg, 'heading':"add sku", 'skus':skus})
     # teachers = Provider.objects.all()
     # topics = Topic.objects.all()
     # 
     # return render(request, "main/addsku.html", {'teacher_list':teachers, 'topic_list':topics,})
 
-    
 def url_order(request, offset_id):
     id = int(offset_id)
     act = act_showindividual(id, 'order')
@@ -283,7 +280,6 @@ def url_test(request):
     return render(request, "main/mytest.html", {'i':i, 'a':a, 'b':b})
 
 def url_idtest(request, set_id):
-
     result = Test_skufunction(set_id)
     return render(request, "main/mytest", {'result':result})
 
@@ -348,9 +344,20 @@ def url_addsku(request):
             if uf.is_valid():
                 start_time = uf.cleaned_data['start_time']
                 end_time = uf.cleaned_data['end_time']
-                result = act_addsku(provider=current_user.provider, start_time=start_time, end_time=end_time)
+                topic = uf.cleaned_data['topic']
+                result = act_addsku(provider=current_user.provider, start_time=start_time, end_time=end_time, topic=topic)
                 msg = result
         else:
             uf = AddSkuForm()
     return render(request, "main/addsku.html", locals())
 
+def url_picktopic(request):
+    info = act_getinfo(request)
+    topics = Topic.objects.all()
+    no_topics = Sku.objects.filter(topic=None)
+    return render(request, 'main/picktopic.html', locals())
+
+def url_skuintopic(request, topic_id):
+    info = act_getinfo(request)
+    skus = Sku.objects.filter(topic_id=topic_id)
+    return render(request, 'main/skuintopic.html', locals())
