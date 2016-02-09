@@ -296,5 +296,5 @@ def act_addorder(skus, buyer):
     result = "Order added, need to pay: CNY¥"+ str(cny_price) +", this order includes: "+str(skus)
     return result
 
-def act_counttopic():
+def act_counttopic(topic_id):
     pass

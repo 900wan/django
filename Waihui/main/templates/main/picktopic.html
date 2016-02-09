@@ -23,7 +23,7 @@
         <tbody>
                 {% for topic in topics %}
             <tr>
-                    <td><a href="{% url 'main:skuintopic' topic.id %}">{{topic.name}}</a> </td>
+                    <td><a href="{% url 'main:skuintopic' topic.id %}">{{topic.name}}&lt;{{topic.sku_set.all|length}}&gt;</a> </td>
                     <td>{{topic.category}}</td>
             </tr>
                 {% endfor %}

@@ -354,6 +354,7 @@ def url_addsku(request):
 def url_picktopic(request):
     info = act_getinfo(request)
     topics = Topic.objects.all()
+    skus = Sku.objects.all()
     no_topics = Sku.objects.filter(topic=None)
     return render(request, 'main/picktopic.html', locals())
 
