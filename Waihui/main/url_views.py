@@ -371,6 +371,7 @@ def url_skuintopic(request, topic_id):
     topic = Topic.objects.get(id=topic_id)
     return render(request, 'main/skuintopic.html', locals())
 
+@login_required
 def url_booksku(request, sku_id, topic_id):
     info = act_getinfo(request)
     uf = BookSkuForm(request.POST)
@@ -383,9 +384,10 @@ def url_booksku(request, sku_id, topic_id):
     msg = str(request.POST) + str(status)
     return render(request, 'main/booksku.html', locals())
 
+@login_required
 def url_bookresult(request):
     info = act_getinfo(request)
-    msg = request
+    msg = request.POST
     return render(request, 'main/bookresult.html', locals())
 
 @login_required
@@ -400,7 +402,6 @@ def url_schedule(request):
     if info['is_provider']:
         if request.method == 'POST':
             uf = ScheduleForm(request.POST)
-            uf.fields['provider'].widget.attrs['readonly'] = True
             if uf.is_valid():
                 raw_schedule_json = uf.cleaned_data['schedule']
                 set_provider = uf.cleaned_data['provider']
@@ -421,7 +422,6 @@ def url_schedule(request):
                 msg=act_generate_skus(provider, schedule)
         else:
             uf = ScheduleForm(initial = {'provider': provider })
-            uf.fields['provider'].widget.attrs['readonly'] = True
         return render(request,"main/schedule.html", locals())
     else:
     # 这说明这个人不是老师
