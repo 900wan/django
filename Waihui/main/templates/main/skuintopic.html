@@ -11,7 +11,7 @@
 
 {% block content %}
     <h1>{{heading}}</h1>
-    {% trans "Here the course waiting you for a long time." %}
+    {% trans "The course is waiting you for a long time." %}
     <p></p>
     Time zone using in this page: {{TIME_ZONE}}
     
@@ -35,7 +35,7 @@
             <tbody>
                 {% for sku in skus %}
                 <tr>
-                    <td><a href="{{sku.id}}">{{sku.topic}}</a></td>
+                    <td><a href="{% url 'main:showsku' sku.id %}">{{sku.topic}}</a></td>
                     <td>{{sku.id}}</td>
                     <td>{{sku.provider}}</td>
                     <td>{{sku.buyer.all|safeseq|join:", "}}</td>
