@@ -154,6 +154,7 @@ class Topic(models.Model):
     def __unicode__(self):
         return u'%s' % self.name
     name = models.CharField(max_length=50)
+    desc = models.TextField()
     category = models.ForeignKey(TopicCategory)
     # default_plan = models.ForeignKey(Plan,blank=True,null=True)
     status = models.IntegerField()

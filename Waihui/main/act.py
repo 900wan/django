@@ -296,5 +296,12 @@ def act_addorder(skus, buyer):
     result = "Order added, need to pay: CNY¥"+ str(cny_price) +", this order includes: "+str(skus)
     return result
 
-def act_counttopic(topic_id):
-    pass
+def act_booksku(sku_id, topic, buyer, status):
+    sku = Sku.objects.get(id=sku_id)
+    sku.topic = topic
+    sku.status = status
+    sku.save()
+    if buyer is not None:
+        sku.buyer.add(buyer)
+    result = "OK," + str(sku.topic) +" booked"
+    return 

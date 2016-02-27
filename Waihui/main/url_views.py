@@ -24,6 +24,7 @@ from main.act import act_showsku
 from main.act import act_getinfo
 from main.act import act_getanotis
 from main.act import act_addorder
+from main.act import act_booksku
 
 from main.ds import  ds_getanoti
 
@@ -44,6 +45,7 @@ from main.forms import AddRTSForm
 from main.forms import AddPlanForm
 from main.forms import OrderForm
 from main.forms import HoldSkuForm
+from main.forms import BookSkuForm
 
 from main.mytest import Test_skufunction
 
@@ -360,5 +362,25 @@ def url_picktopic(request):
 
 def url_skuintopic(request, topic_id):
     info = act_getinfo(request)
-    skus = Sku.objects.filter(topic_id=topic_id)
+    skus_with_topics = Sku.objects.filter(topic_id=topic_id, buyer=None)
+    skus_without_topics = Sku.objects.filter(topic=None, buyer=None)
+    skus = skus_with_topics|skus_without_topics
+    topic = Topic.objects.get(id=topic_id)
     return render(request, 'main/skuintopic.html', locals())
+
+def url_booksku(request, sku_id, topic_id):
+    info = act_getinfo(request)
+    uf = BookSkuForm(request.POST)
+    # if request.method == 'POST':
+    #     if uf.is_vaild():
+    topic = Topic.objects.get(id=topic_id)
+    buyer = info['current_user'].buyer
+    status = '1'
+    result = act_booksku(sku_id=sku_id, topic=topic, buyer=buyer, status=status)
+    msg = str(request.POST) + str(status)
+    return render(request, 'main/booksku.html', locals())
+
+def url_bookresult(request):
+    info = act_getinfo(request)
+    msg = request
+    return render(request, 'main/bookresult.html', locals())

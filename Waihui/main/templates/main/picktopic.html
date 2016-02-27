@@ -30,26 +30,6 @@
         </tbody>
     </table>
     <p></p>
-    {% trans "the courses wait your plan" %}
-    <p></p>
-    <table>
-        <thead>
-            <tr>
-                <th>Provider</th>
-                <th>Start time</th>
-                <th>End time</th>
-            </tr>
-        </thead>
-        <tbody>
-                {% for sku in no_topics %}
-            <tr>
-                    <td>{{sku.provider}}</td>
-                    <td>{{sku.start_time|date:"Y-m-d H:i (e)"}}</td>
-                    <td>{{sku.end_time|date:"Y-m-d H:i (e)"}}</td>
-            </tr>
-                {% endfor %}
-        </tbody>
-    </table>
-    <p></p>
+    
 <a href="{% url 'main:home' %}">{% trans "Get back to home" %}</a>        
 {% endblock content %}

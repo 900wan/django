@@ -71,5 +71,9 @@ class HoldSkuForm(forms.ModelForm):
     class Meta:
         model = Sku
         fields = ('status',)
-    
-    
+
+class BookSkuForm(forms.Form):
+    sku = forms.ModelChoiceField(queryset=None, required=False)
+    provider = forms.ModelChoiceField(queryset=None, required=False)
+    buyer = forms.ModelChoiceField(queryset=None, required=False)
+    topic = forms.ModelChoiceField(queryset=None, required=False)
