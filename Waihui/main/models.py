@@ -88,7 +88,7 @@ class Provider(models.Model):
         return upgrade_status(self, theset)
     def upgrade_hp(self, theset):
         '''upgrade hp of teacher'''
-        user.last_login
+        # user.last_login
         d1 = datetime.datetime.now()
         d2 = self.modified
         if (d1-d2).days >= 1:

@@ -1,0 +1,30 @@
+{% extends "main/base.html" %}
+{% load i18n %} 
+{% load tz %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_timezone as TIME_ZONE %}
+{% block title %}
+    {{heading}}
+{% endblock title %}
+
+{% block content %}
+    <h1>{{heading}}{% trans "Schedule settings" %}</h1>
+    
+    <p>================================</p>
+    <ul>
+        <li>{{msg}}</li>
+        <li>Go <a href="{% url 'main:home' %}">home</a></li>
+        <li>Time zone using in this page: {{TIME_ZONE}}, and now is {{now_tz|date:"Y-m-d H:i:s (O)"}}.</li>
+    </ul>
+    <p>================================</p>
+
+    <ul id="time_ul"></ul>
+
+    <form method="post" enctype="multipart/form-data" action="{% url 'main:schedule' %}">
+        {{uf.as_p}}
+        {% csrf_token %}
+        <input type="submit" name="submit">
+    </form>
+
+
+{% endblock content %}

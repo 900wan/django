@@ -1,5 +1,5 @@
  # -*- coding: utf-8 -*-
-import pytz
+import pytz, json, datetime
 from django.shortcuts import get_object_or_404, render
 from django.utils import translation, timezone
 from django.utils.translation import ugettext as _
@@ -25,6 +25,7 @@ from main.act import act_getinfo
 from main.act import act_getanotis
 from main.act import act_addorder
 from main.act import act_booksku
+from main.act import act_generate_skus
 
 from main.ds import  ds_getanoti
 
@@ -46,6 +47,7 @@ from main.forms import AddPlanForm
 from main.forms import OrderForm
 from main.forms import HoldSkuForm
 from main.forms import BookSkuForm
+from main.forms import ScheduleForm
 
 from main.mytest import Test_skufunction
 
@@ -262,6 +264,7 @@ def url_showsku(request, sku_id):
     return render(request, "main/showsku.html", {'info':info, 'heading':"SKU #"+str(sku.id), 'msg':msg, 'is_provider':is_provider, 'is_involved':is_involved, 'sku':sku, 'has_plan':has_plan,'plan':plan, 'rtss':rtss})
 
 def url_skulist(request):
+    # timezone.activate(pytz.timezone("Asia/Shanghai"))
     info = act_getinfo(request)
     skus = Sku.objects.all()
     msg = str(request)
@@ -384,3 +387,42 @@ def url_bookresult(request):
     info = act_getinfo(request)
     msg = request
     return render(request, 'main/bookresult.html', locals())
+
+@login_required
+def url_schedule(request):
+    timezone.activate(pytz.timezone("Asia/Shanghai"))
+    tz = timezone.get_current_timezone()
+    now_tz = timezone.now()
+    info = act_getinfo(request)    
+    current_user = info['current_user']
+    provider = current_user.provider
+    msg=''
+    if info['is_provider']:
+        if request.method == 'POST':
+            uf = ScheduleForm(request.POST)
+            uf.fields['provider'].widget.attrs['readonly'] = True
+            if uf.is_valid():
+                raw_schedule_json = uf.cleaned_data['schedule']
+                set_provider = uf.cleaned_data['provider']
+                raw_schedule=json.loads(raw_schedule_json)
+                schedule=[]
+                for raw_item in raw_schedule:
+                    item={}
+                    try:
+                        if raw_item.get('topic_id'):
+                            item['topic']=Topic.objects.get(id=int(raw_item.get('topic_id')))
+                        item['start_time']=tz.localize(datetime.datetime.strptime(raw_item['start_time'],"%Y-%m-%d %H:%M:%S"))
+                        item['end_time']=tz.localize(datetime.datetime.strptime(raw_item['end_time'],"%Y-%m-%d %H:%M:%S"))
+                        if item['start_time'] and item['end_time'] and (item['start_time']>now_tz):
+                            schedule.append(item)
+                    except Exception, e:
+                        raise e
+                # msg=schedule
+                msg=act_generate_skus(provider, schedule)
+        else:
+            uf = ScheduleForm(initial = {'provider': provider })
+            uf.fields['provider'].widget.attrs['readonly'] = True
+        return render(request,"main/schedule.html", locals())
+    else:
+    # 这说明这个人不是老师
+        return HttpResponse('You are not an authenticated tutor. 你不是教师，无权访问此页')

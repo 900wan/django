@@ -61,7 +61,11 @@ class AddPlanForm(forms.Form):
     copy_from = forms.ModelChoiceField(queryset=Plan.objects.all(), required=False)
     sumy = forms.CharField(widget=forms.Textarea(), required=False)
 
+class ScheduleForm(forms.Form):
+    provider = forms.ModelChoiceField(queryset=Provider.objects.all(), required=False, empty_label=None, widget=forms.Select(attrs={'disabled':'disabled'}))
+    schedule = forms.CharField(widget=forms.Textarea(), required=True)
     
+
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
@@ -77,3 +81,4 @@ class BookSkuForm(forms.Form):
     provider = forms.ModelChoiceField(queryset=None, required=False)
     buyer = forms.ModelChoiceField(queryset=None, required=False)
     topic = forms.ModelChoiceField(queryset=None, required=False)
+

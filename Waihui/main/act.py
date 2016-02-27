@@ -304,4 +304,24 @@ def act_booksku(sku_id, topic, buyer, status):
     if buyer is not None:
         sku.buyer.add(buyer)
     result = "OK," + str(sku.topic) +" booked"
-    return 
+    return result
+
+def act_generate_skus(provider, schedule):
+    '''生成sku，schedule 是一个list，其中每一个item都是dict，包含 topic, start_time, end_time'''
+    result=[]
+    for item in schedule:
+        result_item=''
+        if item.get('topic') and item['start_time'] and item['end_time']:
+            result_item=act_addsku(
+                provider=provider,
+                start_time=item['start_time'],
+                end_time=item['end_time'],
+                topic=item.get('topic'))
+            result.append(result_item)
+        elif item['start_time'] and item['end_time']:
+            result_item=act_addsku(
+                provider=provider,
+                start_time=item['start_time'],
+                end_time=item['end_time'])
+            result.append(result_item)
+    return result
