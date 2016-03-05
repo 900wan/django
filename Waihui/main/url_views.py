@@ -390,6 +390,7 @@ def url_bookresult(request):
 
 @login_required
 def url_schedule(request):
+    info = act_getinfo(request)
     timezone.activate(pytz.timezone("Asia/Shanghai"))
     tz = timezone.get_current_timezone()
     now_tz = timezone.now()
@@ -426,3 +427,10 @@ def url_schedule(request):
     else:
     # 这说明这个人不是老师
         return HttpResponse('You are not an authenticated tutor. 你不是教师，无权访问此页')
+
+def url_bcancelsku(request):
+    info = act_getinfo(request)
+    skus = Sku.objects.filter(buyer=info['current_user'])
+    msg = skus
+    return render (request, "main/buyer_canclesku.html", locals())
+

@@ -186,6 +186,7 @@ class Sku(models.Model):
         (5, '已备课'),
         (6, '已结束代评价'),
         (7, '已彻底结束 '),
+        (8, '买家申请取消等待处理'),
     )
     
     status = models.IntegerField(
