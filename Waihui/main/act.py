@@ -325,3 +325,10 @@ def act_generate_skus(provider, schedule):
                 end_time=item['end_time'])
             result.append(result_item)
     return result
+
+def act_bwantcancelsku(sku_id, status):
+    sku = Sku.objects.get(id=sku_id)
+    sku.status = status
+    sku.save()
+    result = "OK," + str(sku.topic) +" is going to cancel, waiting for teacher response"
+    pass

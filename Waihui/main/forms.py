@@ -82,3 +82,9 @@ class BookSkuForm(forms.Form):
     buyer = forms.ModelChoiceField(queryset=None, required=False)
     topic = forms.ModelChoiceField(queryset=None, required=False)
 
+class BWantCancelSkuForm(forms.Form):
+    sku = forms.ModelChoiceField(queryset=None, required=False)
+    provider = forms.ModelChoiceField(queryset=None, required=False)
+    buyer = forms.ModelChoiceField(queryset=None, required=False)
+    
+

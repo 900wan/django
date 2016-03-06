@@ -26,6 +26,7 @@ from main.act import act_getanotis
 from main.act import act_addorder
 from main.act import act_booksku
 from main.act import act_generate_skus
+from main.act import act_bwantcancelsku
 
 from main.ds import  ds_getanoti
 
@@ -48,6 +49,7 @@ from main.forms import OrderForm
 from main.forms import HoldSkuForm
 from main.forms import BookSkuForm
 from main.forms import ScheduleForm
+from main.forms import BWantCancelSkuForm
 
 from main.mytest import Test_skufunction
 
@@ -371,6 +373,7 @@ def url_skuintopic(request, topic_id):
     topic = Topic.objects.get(id=topic_id)
     return render(request, 'main/skuintopic.html', locals())
 
+@login_required
 def url_booksku(request, sku_id, topic_id):
     info = act_getinfo(request)
     uf = BookSkuForm(request.POST)
@@ -383,9 +386,10 @@ def url_booksku(request, sku_id, topic_id):
     msg = str(request.POST) + str(status)
     return render(request, 'main/booksku.html', locals())
 
+@login_required
 def url_bookresult(request):
     info = act_getinfo(request)
-    msg = request
+    msg = request.POST
     return render(request, 'main/bookresult.html', locals())
 
 @login_required
@@ -401,7 +405,6 @@ def url_schedule(request):
     if info['is_provider']:
         if request.method == 'POST':
             uf = ScheduleForm(request.POST)
-            uf.fields['provider'].widget.attrs['readonly'] = True
             if uf.is_valid():
                 raw_schedule_json = uf.cleaned_data['schedule']
                 set_provider = uf.cleaned_data['provider']
@@ -422,15 +425,23 @@ def url_schedule(request):
                 msg=act_generate_skus(provider, schedule)
         else:
             uf = ScheduleForm(initial = {'provider': provider })
-            uf.fields['provider'].widget.attrs['readonly'] = True
         return render(request,"main/schedule.html", locals())
     else:
     # 这说明这个人不是老师
         return HttpResponse('You are not an authenticated tutor. 你不是教师，无权访问此页')
 
-def url_bcancelsku(request):
+@login_required
+def url_bwantcancelsku(request, sku_id):
     info = act_getinfo(request)
-    skus = Sku.objects.filter(buyer=info['current_user'])
-    msg = skus
-    return render (request, "main/buyer_canclesku.html", locals())
+    sku = Sku.objects.get(id=sku_id)
+    msg = sku
+    if sku.buyer.filter(id=info['current_user'].buyer.id).exists():
+        uf = BWantCancelSkuForm(request.POST)
+        uf.fields['sku'].queryset = Sku.objects.get(id=sku_id)
+        # if request.method == 'POST':
+        #     if uf.is_vaild():
+        status = '8'
+        result = act_bwantcancelsku(sku_id=sku_id, status=status)
+        msg = str(request.POST) + str(result)
+    return render(request, "main/buyer_cancelsku.html", locals())
 
