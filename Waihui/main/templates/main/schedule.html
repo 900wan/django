@@ -16,9 +16,9 @@
         <li>Time zone using in this page: {{TIME_ZONE}}, and now is {{now_tz|date:"Y-m-d H:i:s (O)"}}.</li>
     </ul>
     <p>================================</p>
-    <p id="addLi">添加列表项</p>
+    {# <p id="addLi">添加列表项</p> #}
     <ul id="time_ul"></ul>
-    <p id="collect">看看结果</p>
+    {# <p id="collect">看看结果</p> #}
 
     <form method="post" enctype="multipart/form-data" action="{% url 'main:schedule' %}">
         {{uf.as_p}}
@@ -33,33 +33,51 @@
 <script type="text/javascript">
 $(document).ready(function(){
 //按钮的点击事件，每次点击的时候动态的创建一个  li对象，jquery直接通过 ul对象的id，使用 append 方法 动态的把li添加到ul里面
+    
+    var weekday=new Array(7);
+    weekday[0]="日";
+    weekday[1]="一";
+    weekday[2]="二";
+    weekday[3]="三";
+    weekday[4]="四";
+    weekday[5]="五";
+    weekday[6]="六";
+
+    var dateitem = new Date();
+    dateitem.setFullYear({{now_tz|date:"Y"}},({{now_tz|date:"m"}}-1),{{now_tz|date:"d"}});
+    var datenow = new Date(dateitem);
+    dateitem.setHours(0,0,0,0);
+    for (var j = 0; j < 3; j++) {
+        var newdayul='<li>'+weekday[dateitem.getDay()]+' '+dateitem.toDateString()+'<ul id="day_ul_'+j+'"></ul></li>';
+        $("#time_ul").append(newdayul);
+        for (var i = 0; i < 48; i++) {
+            var dateitemstr =  new String(dateitem.getFullYear()+"-"+(dateitem.getMonth()+1)+"-"+dateitem.getDate()+" "+dateitem.toTimeString().split(" ",1)[0]);
+            var msg = '<li><input id="'+dateitemstr+'" type="checkbox" name="'+dateitemstr+'" value="'+dateitemstr+'" /> <label for="'+dateitemstr+'"><a href="javascript:void(0)"></a><span style="">' + dateitemstr + '</span></label></li>';
+            var dayul='#day_ul_'+j;
+            if (datenow<dateitem) {
+                $(dayul).append(msg);    
+            }
+            dateitem.setTime(dateitem.getTime()+30*60*1000)
+        }
+    }
+
     $("#addLi").bind("click",function(){ 
-        var google = new Date(jQuery.now());
-        var msg = '<li><input id="'+google+'" type="checkbox" name="'+google+'" value="'+google+'" /> <label for="'+google+'"><a href="javascript:void(0)"></a><span style="">' + google + '</span></label></li>';
-        $("#time_ul").append(msg);
+
+
         //每次添加万一个元素后，都会给改li绑定移除事件
         // bindListener();
     });
     //
-    function bindListener(){
-        //给所有的 ul li重新绑定移除事件
-        $("#time_ul li a").unbind().click(function(){
-          //直接通过.remove() 方法移除掉li元素,页面自动就会刷新
-          $(this).parent().remove();
-        });
-    }
+
     //jquery 检索ul li的所有元素
-    $("#collect").click(function(){
+    $("li").click(function(){
         var schedule_result= new Array()
         var data = "";
-        // $("#time_ul").find("li span").each(function(index,value){
-        //     // data += $(this).text() + "|";
-            
-        // })
+
         $("input[type='checkbox']:checked").each(function(index,value){
             schedule_result.push({
                 'start_time':$(this).val(),
-                'end_time':$(this).val()
+                // 'end_time':$(this).val()
             });
         })
         // alert(data);

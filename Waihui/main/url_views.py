@@ -416,8 +416,11 @@ def url_schedule(request):
                         if raw_item.get('topic_id'):
                             item['topic']=Topic.objects.get(id=int(raw_item.get('topic_id')))
                         item['start_time']=tz.localize(datetime.datetime.strptime(raw_item['start_time'],"%Y-%m-%d %H:%M:%S"))
-                        item['end_time']=tz.localize(datetime.datetime.strptime(raw_item['end_time'],"%Y-%m-%d %H:%M:%S"))
-                        if item['start_time'] and item['end_time'] and (item['start_time']>now_tz):
+                        if raw_item.get('end_time'):
+                            item['end_time']=tz.localize(datetime.datetime.strptime(raw_item['end_time'],"%Y-%m-%d %H:%M:%S"))
+                        else:
+                            item['end_time']=tz.localize(datetime.datetime.strptime(raw_item['start_time'],"%Y-%m-%d %H:%M:%S")+datetime.timedelta(minutes=30))
+                        if item['start_time'] and (item['start_time']>now_tz):
                             schedule.append(item)
                     except Exception, e:
                         raise e
