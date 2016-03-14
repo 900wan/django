@@ -168,6 +168,7 @@ class Sku(models.Model):
     class Meta:
         verbose_name = "Sku"
         verbose_name_plural = "Skus"
+        # ordering = ['-start_time']
 
     def __unicode__(self):
         if self.topic is None:

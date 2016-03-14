@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.utils import translation, timezone
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from main.models import User
 from main.models import Language
 from main.models import Provider
@@ -100,17 +101,27 @@ def act_addsku(provider, start_time, end_time, topic=None, buyer=None, status=0)
     '''it will add a Sku'''
     # provider = Provider.objects.get(id=provider_id)
     # topic = Topic.objects.get(id=topic_id)
-    sku = Sku(
-        provider=provider,
-        status=status,
-        start_time=start_time,
-        end_time=end_time,
-        topic=topic,
-        )
-    sku.save()
-    if buyer is not None:
-        sku.buyer.add(buyer)
-    result = "OK, Sku:" + provider.name + "'s " + str(start_time) + " added!"
+    if start_time>=end_time:
+        result = 'Opps, end_time must be later than start_time!'
+    elif Sku.objects.filter(
+        Q(provider=provider), 
+        Q(start_time__lte=start_time, end_time__gt=start_time) 
+        | Q(start_time__lt=end_time, end_time__gte=end_time) 
+        | Q(start_time__gt=start_time, end_time__lt=end_time)
+        ):
+        result = 'Opps, Time[%s] to [%s] is not available for %s!'  % (start_time, end_time, provider)
+    else:
+        sku = Sku(
+            provider=provider,
+            status=status,
+            start_time=start_time,
+            end_time=end_time,
+            topic=topic,
+            )
+        sku.save()
+        if buyer is not None:
+            sku.buyer.add(buyer)
+        result = "OK, Sku:" + provider.name + "'s " + str(start_time) + " added!"
     return result
 
 def act_addplan(sku, topic, status, content, assignment, slides, roomlink, materiallinks, materialhtml, voc, copy_from, sumy):

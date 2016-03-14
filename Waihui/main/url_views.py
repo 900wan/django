@@ -178,9 +178,6 @@ def url_lesson_rate(request, offset_id):
 def url_classroom(request):
     pass
 
-def url_office(request):
-    pass
-
 def url_user(request,offset_id):
     id = int(offset_id)
     user = act_showindividual(id, 'user')
@@ -297,6 +294,7 @@ def url_dashboard(request):
 
 @login_required
 def url_office(request):
+    timezone.activate(pytz.timezone("Asia/Shanghai"))
     info = act_getinfo(request)
     return render(request, "main/office.html",locals())
 

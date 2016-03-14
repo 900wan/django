@@ -47,7 +47,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for sku in info.current_user.provider.sku_set.all %}
+                {% for sku in info.current_user.provider.sku_set.all|dictsort:"start_time" %}
                 <tr>
                     <td><a href="{% url 'main:showsku' sku.id %}">{{sku.topic}}</a></td>
                     <td>{{sku.id}}</td>
