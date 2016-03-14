@@ -307,10 +307,10 @@ def act_addorder(skus, buyer):
     result = "Order added, need to pay: CNY¥"+ str(cny_price) +", this order includes: "+str(skus)
     return result
 
-def act_booksku(sku_id, topic, buyer, status):
+def act_booksku(sku_id, topic, buyer):
     sku = Sku.objects.get(id=sku_id)
     sku.topic = topic
-    sku.status = status
+    sku.status = '1'
     sku.save()
     sku.buyer.add(buyer)
     result = "OK," + str(sku.topic) +" booked"
@@ -336,9 +336,9 @@ def act_generate_skus(provider, schedule):
             result.append(result_item)
     return result
 
-def act_bwantcancelsku(sku_id, status):
+def act_bcancelsku(sku_id):
     sku = Sku.objects.get(id=sku_id)
-    sku.status = status
+    sku.status = '8'
     sku.save()
-    result = "OK," + str(sku.topic) +" is going to cancel, waiting for teacher response"
-    pass
+    result = "OK," + str(sku.topic) +" is canceled, quite easy!"
+    return result

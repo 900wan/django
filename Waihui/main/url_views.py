@@ -26,7 +26,7 @@ from main.act import act_getanotis
 from main.act import act_addorder
 from main.act import act_booksku
 from main.act import act_generate_skus
-from main.act import act_bwantcancelsku
+from main.act import act_bcancelsku
 
 from main.ds import  ds_getanoti
 
@@ -49,7 +49,7 @@ from main.forms import OrderForm
 from main.forms import HoldSkuForm
 from main.forms import BookSkuForm
 from main.forms import ScheduleForm
-from main.forms import BWantCancelSkuForm
+from main.forms import BCancelSkuForm
 
 from main.mytest import Test_skufunction
 
@@ -379,10 +379,9 @@ def url_booksku(request, sku_id, topic_id):
         if uf.is_valid():
             topic = Topic.objects.get(id=topic_id)
             buyer = info['current_user'].buyer
-            status = '1'
-            result = act_booksku(sku_id=sku_id, topic=topic, buyer=buyer, status=status)
+            result = act_booksku(sku_id=sku_id, topic=topic, buyer=buyer)
             msg = result
-            return render(request, 'main/bookresult.html', locals())   
+            return render(request, 'main/result.html', locals())   
     msg = str(request.POST) 
     return render(request, 'main/booksku.html', locals())
 
@@ -434,17 +433,17 @@ def url_schedule(request):
         return HttpResponse('You are not an authenticated tutor. 你不是教师，无权访问此页')
 
 @login_required
-def url_bwantcancelsku(request, sku_id):
+def url_bcancelsku(request, sku_id):
     info = act_getinfo(request)
     sku = Sku.objects.get(id=sku_id)
-    msg = sku
     if sku.buyer.filter(id=info['current_user'].buyer.id).exists():
-        uf = BWantCancelSkuForm(request.POST)
+        uf = BCancelSkuForm(request.POST)
         uf.fields['sku'].queryset = Sku.objects.get(id=sku_id)
-        # if request.method == 'POST':
-        #     if uf.is_vaild():
-        status = '8'
-        result = act_bwantcancelsku(sku_id=sku_id, status=status)
-        msg = str(request.POST) & str(result)
+        if request.method == 'POST':
+            if uf.is_valid():
+                result = act_bcancelsku(sku_id=sku_id)
+                msg = result
+                return render(request, 'main/result.html', locals())
+    msg = str(request.POST)
     return render(request, "main/buyer_cancelsku.html", locals())
 

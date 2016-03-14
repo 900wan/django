@@ -11,7 +11,7 @@
     <h1>{{heading}}</h1>
     {% trans "When you want to cancel this class, You should want for the provider response." %}
     {% if uf %}
-        <form method="post" enctype="multipart/form-data" action="{% url 'main:bookresult' %}">
+        <form method="post" enctype="multipart/form-data" >
         {% csrf_token %}
         <input type="submit" name="submit">
         </form>

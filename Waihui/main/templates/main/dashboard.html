@@ -67,7 +67,7 @@
                     <td>{{sku.end_time|date:"Y-m-d H:i (e)"}}</td>
                     <td>{{sku.created|date:"Y-m-d H:i (e)"}}</td>
                     <td>{{sku.modified|date:"Y-m-d H:i (e)"}}</td>
-                    <td><a href="{% url 'main:bwantcancelsku' sku.id %}">{{sku.id}}</a></td>
+                    <td><a href="{% url 'main:bcancelsku' sku.id %}">{{sku.id}}</a></td>
 
                 </tr>
                 {% endfor%}
