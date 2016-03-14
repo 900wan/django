@@ -11,7 +11,7 @@
     <h1>{{heading}}</h1>
     {% trans "This the content of booking a course page." %}
     {% if uf %}
-        <form method="post" enctype="multipart/form-data" action="{% url 'main:bookresult' %}">
+        <form method="post" enctype="multipart/form-data">
         <ul>
             <li>{{sku_id}}</li>
             <li>{{topic.name}}</li>

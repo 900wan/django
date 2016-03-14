@@ -301,8 +301,7 @@ def act_booksku(sku_id, topic, buyer, status):
     sku.topic = topic
     sku.status = status
     sku.save()
-    if buyer is not None:
-        sku.buyer.add(buyer)
+    sku.buyer.add(buyer)
     result = "OK," + str(sku.topic) +" booked"
     return result
 

@@ -377,13 +377,15 @@ def url_skuintopic(request, topic_id):
 def url_booksku(request, sku_id, topic_id):
     info = act_getinfo(request)
     uf = BookSkuForm(request.POST)
-    # if request.method == 'POST':
-    #     if uf.is_vaild():
-    topic = Topic.objects.get(id=topic_id)
-    buyer = info['current_user'].buyer
-    status = '1'
-    result = act_booksku(sku_id=sku_id, topic=topic, buyer=buyer, status=status)
-    msg = str(request.POST) + str(status)
+    if request.method == 'POST':
+        if uf.is_valid():
+            topic = Topic.objects.get(id=topic_id)
+            buyer = info['current_user'].buyer
+            status = '1'
+            result = act_booksku(sku_id=sku_id, topic=topic, buyer=buyer, status=status)
+            msg = result
+            return render(request, 'main/bookresult.html', locals())   
+    msg = str(request.POST) 
     return render(request, 'main/booksku.html', locals())
 
 @login_required
@@ -445,6 +447,6 @@ def url_bwantcancelsku(request, sku_id):
         #     if uf.is_vaild():
         status = '8'
         result = act_bwantcancelsku(sku_id=sku_id, status=status)
-        msg = str(request.POST) + str(result)
+        msg = str(request.POST) & str(result)
     return render(request, "main/buyer_cancelsku.html", locals())
 
