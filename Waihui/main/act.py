@@ -20,7 +20,12 @@ from main.models import Log
 from main.models import Notification
 from main.forms import OrderForm
 
-from main.ds import ds_addlog, ds_getanoti, ds_noti_newreply, ds_get_order_cny_price
+from main.ds import ds_addlog
+from main.ds import ds_getanoti
+from main.ds import ds_noti_newreply
+from main.ds import ds_noti_newcancel
+from main.ds import ds_get_order_cny_price
+
 from django.utils.translation import ugettext as _
 
 def act_getlanguage(request):
@@ -186,9 +191,9 @@ def act_addrts(user, type, content, reply_to, sku):
 
     if rts.type == 1:
         for noti_buyer in sku.buyer.all():
-            ds_noti_newreply(reply=rts,user=noti_buyer.user, type=1)
+            ds_noti_newreply(reply=rts, user=noti_buyer.user, type=1)
     elif rts.type == 0:
-        ds_noti_newreply(reply=rts,user=sku.provider.user, type=0)
+        ds_noti_newreply(reply=rts, user=sku.provider.user, type=0)
     
 
     result = "OK, " + user.username + " left a message of" + content
@@ -314,6 +319,7 @@ def act_booksku(sku_id, topic, buyer):
     sku.save()
     sku.buyer.add(buyer)
     result = "OK," + str(sku.topic) +" booked"
+
     return result
 
 def act_generate_skus(provider, schedule):
@@ -336,9 +342,11 @@ def act_generate_skus(provider, schedule):
             result.append(result_item)
     return result
 
-def act_bcancelsku(sku_id):
+def act_cancelsku(sku_id, user):
     sku = Sku.objects.get(id=sku_id)
     sku.status = '8'
     sku.save()
     result = "OK," + str(sku.topic) +" is canceled, quite easy!"
+    type = 1 if sku.provider.user == user else 0
+    ds_noti_newcancel(sku=sku, user=user, type=type) 
     return result

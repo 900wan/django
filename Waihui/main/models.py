@@ -418,7 +418,7 @@ class Notification(models.Model):
         return u'%s' % "[" +str(self.id) + "] " +str(self.noti) + " " + str(self.user)
 
     STATUS_OF_NOTI = (
-        (0, '老师发表了reply'),
+        (0, '老师发表了回复'),
         (1, '老师确认了你的课，已经开始备课'),
         (2, '老师已经备课完成！'),
         (3, '还有半个小时'),

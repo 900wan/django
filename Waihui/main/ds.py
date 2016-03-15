@@ -46,6 +46,9 @@ def ds_getanoti(noti):
     elif noti.noti == 3:
         content = u"the <strong>%s</strong>'s \" <strong>%s</strong> \" class will begin in 30 mins" % (noti.sku.provider.name, noti.sku.topic.name)
         link = reverse('main:showsku', args=[noti.sku.id])
+    elif noti.noti == 9:
+        content = u"Your student <strong>%s</strong> canceled your course:<br/>-- <i>Topic: %s</i>" % (noti.user.buyer.nickname, noti.sku.topic.name)
+        link = reverse('main:showsku', args=[noti.sku.id])
     anoti={
     'id': noti.id,
     'read' : noti.read,
@@ -58,6 +61,15 @@ def ds_noti_newreply(reply, user, type):
     noti = 0 if type == 1 else 10
     notification = Notification(user=user,
         reply=reply, sku=reply.sku, open_time = timezone.now(), close_time = timezone.now() + datetime.timedelta(weeks=100), noti=noti)
+    notification.save()
+    return True
+
+def ds_noti_newcancel(sku, user, type):
+    noti = 6 if type == 1 else 9
+    notification = Notification(user=user,
+        sku=sku, open_time = timezone.now(),
+        close_time = timezone.now() + datetime.timedelta(weeks=100),
+        noti=noti)
     notification.save()
     return True
 
