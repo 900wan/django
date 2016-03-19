@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import pytz, json, datetime
 from django.utils import translation, timezone
 from django.core.urlresolvers import reverse
 from django.db.models import Q
@@ -23,10 +24,13 @@ from main.forms import OrderForm
 from main.ds import ds_addlog
 from main.ds import ds_getanoti
 from main.ds import ds_noti_newreply
-from main.ds import ds_noti_newcancel
 from main.ds import ds_get_order_cny_price
+from main.ds import ds_noti_noprovider
 
 from django.utils.translation import ugettext as _
+
+MIN_CANCEL_TIME = datetime.timedelta(hours=8)
+OK_CANCEL_TIME = datetime.timedelta(hours=12)
 
 def act_getlanguage(request):
     language = request.LANGUAGE_CODE
@@ -350,3 +354,25 @@ def act_cancelsku(sku_id, user):
     type = 1 if sku.provider.user == user else 0
     ds_noti_newcancel(sku=sku, user=user, type=type) 
     return result
+
+def act_provider_cancel_sku(sku, user):
+    if sku.time_to_start() <= MIN_CANCEL_TIME:
+        msg = _(u"马上开始了如果真要取消的话你自己练习学生做好解释工作，再找管理员取消吧。")
+    elif sku.time_to_start() > MIN_CANCEL_TIME and sku.time_to_start() <= OK_CANCEL_TIME:
+        sku.status = 3
+        sku.save()
+        ds_noti_noprovider(sku)
+        msg = _(u"你是取消成功了，但是学生没法上课了，下回别这样了")
+    else:
+        if sku.buyer.exists():
+            sku.status = 2
+            sku.save()
+            msg = _(u"恭喜，取消真轻松。你的学生会进入挽救池")
+        else:
+            sku.topic = None
+            sku.status = 0
+            sku.save()
+            msg = _(u"虽然没有学生，但是也取消了")
+    return msg
+
+

@@ -44,6 +44,7 @@
                     <th>End time</th>
                     <th>Created</th>
                     <th>Modified</th>
+                    <th>Op</th>
                 </tr>
             </thead>
             <tbody>
@@ -64,6 +65,15 @@
                     <td>{{sku.end_time|date:"Y-m-d H:i (e)"}}</td>
                     <td>{{sku.created|date:"Y-m-d H:i (e)"}}</td>
                     <td>{{sku.modified|date:"Y-m-d H:i (e)"}}</td>
+                    <td>
+                        {% if sku.status == 1 %}
+                            <a href="{% url 'main:provider_cancel_sku' sku.id %}">[REFUSE]</a>
+                        {% elif sku.status == 4 %}
+                            <a href="{% url 'main:provider_cancel_sku' sku.id %}">[DROP]</a>     
+                        {% elif sku.status == 2 %}
+                            IN POOL                 
+                        {% endif %}
+                    </td>
 
                 </tr>
                 {% endfor%}

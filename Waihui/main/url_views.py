@@ -27,6 +27,7 @@ from main.act import act_addorder
 from main.act import act_booksku
 from main.act import act_generate_skus
 from main.act import act_cancelsku
+from main.act import act_provider_cancel_sku
 
 from main.ds import  ds_getanoti
 
@@ -227,6 +228,8 @@ def url_addplan(request, sku_id):
     else:
         msg = request.method
         topic = sku.topic
+        sku.status = 4
+        sku.save()
         if request.method == 'POST':
             if uf.is_valid():
                 status = uf.cleaned_data['status']
@@ -446,3 +449,20 @@ def url_bcancelsku(request, sku_id):
                 return render(request, 'main/result.html', locals())
     msg = str(request.POST)
     return render(request, "main/buyer_cancelsku.html", locals())
+
+@login_required
+def url_provider_cancel_sku(request, sku_id):
+    info = act_getinfo(request)
+    sku = Sku.objects.get(id=sku_id)
+    if sku.provider.user == info['current_user']:
+        if sku.status == 1:
+            # 视作无伤害取消
+            msg = act_provider_cancel_sku(sku, info['current_user'])
+        elif sku.status == 4:
+            # 视作有伤害取消
+            msg = act_provider_cancel_sku(sku, info['current_user'])
+        else:
+            msg = _("这个课程的状态不适合取消")
+    else:
+        msg = _("对不起，不是老师不能取消")
+    return render(request, "main/result.html", locals())

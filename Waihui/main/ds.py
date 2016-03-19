@@ -46,8 +46,8 @@ def ds_getanoti(noti):
     elif noti.noti == 3:
         content = u"the <strong>%s</strong>'s \" <strong>%s</strong> \" class will begin in 30 mins" % (noti.sku.provider.name, noti.sku.topic.name)
         link = reverse('main:showsku', args=[noti.sku.id])
-    elif noti.noti == 9:
-        content = u"Your student <strong>%s</strong> canceled your course:<br/>-- <i>Topic: %s</i>" % (noti.user.buyer.nickname, noti.sku.topic.name)
+    elif noti.noti == 6:
+        content = u"Your teacher <strong>%s</strong> canceled your course:<br/>-- <i>Topic: %s</i>" % (noti.user.provider.name, noti.sku.topic.name)
         link = reverse('main:showsku', args=[noti.sku.id])
     anoti={
     'id': noti.id,
@@ -64,16 +64,23 @@ def ds_noti_newreply(reply, user, type):
     notification.save()
     return True
 
-def ds_noti_newcancel(sku, user, type):
-    noti = 6 if type == 1 else 9
-    notification = Notification(user=user,
-        sku=sku, open_time = timezone.now(),
-        close_time = timezone.now() + datetime.timedelta(weeks=100),
-        noti=noti)
-    notification.save()
-    return True
+# def ds_noti_newcancel(sku, user, type):
+#     noti = 6 if type == 1 else 9
+#     notification = Notification(user=user,
+#         sku=sku, open_time = timezone.now(),
+#         close_time = timezone.now() + datetime.timedelta(weeks=100),
+#         noti=noti)
+#     notification.save()
+#     return True
 
 def ds_get_order_cny_price(skus):
     SKU_CNY_PRICE = 90.00
     cny_price = len(skus) * SKU_CNY_PRICE
     return cny_price
+
+def ds_noti_noprovider(sku):
+    """给学生发一个 noti 说完蛋了课不上了"""
+    for buyer in sku.buyer.all():
+        notification = Notification(user=buyer.user ,sku=sku, noti=6, open_time = timezone.now(), close_time = timezone.now() + datetime.timedelta(weeks=100))
+        notification.save()
+    return True

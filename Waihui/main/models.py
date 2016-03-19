@@ -185,9 +185,11 @@ class Sku(models.Model):
         (3, '彻底没人教'),
         (4, '已定'),
         (5, '已备课'),
-        (6, '已结束代评价'),
-        (7, '已彻底结束 '),
-        (8, '买家申请取消等待处理'),
+        (6, '老师ready'),
+        (7, '学生ready'),
+        (8, '已结束待评价'),
+        (9, '已彻底结束 '),
+        (10, '买家申请取消等待处理'),
     )
     
     status = models.IntegerField(
@@ -215,7 +217,9 @@ class Sku(models.Model):
         except Plan.DoesNotExist:
             has_plan = False
         return has_plan
-
+    def time_to_start(self):
+        return self.start_time - timezone.now()
+        
 # index 7
 class Plan(models.Model):
 
