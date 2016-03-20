@@ -53,6 +53,8 @@ def ds_getanoti(noti):
     'id': noti.id,
     'read' : noti.read,
     'content' : content,
+    'open_time': noti.open_time,
+    'close_time': noti.close_time,
     'link' : link,
     }
     return anoti

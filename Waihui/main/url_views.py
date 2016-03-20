@@ -304,7 +304,8 @@ def url_office(request):
 @login_required
 def url_notifications(request):
     info = act_getinfo(request)
-    anotis = act_getanotis(Notification.objects.filter(user=info['current_user']).order_by('-open_time'))
+    upcomming_anotis = act_getanotis(Notification.objects.filter(user=info['current_user'],open_time__gt=timezone.now()).order_by('-open_time'))
+    past_anotis = act_getanotis(Notification.objects.filter(user=info['current_user'],close_time__lt=timezone.now()).order_by('-open_time'))
     return render(request, "main/notifications.html",locals())
 
 @login_required
