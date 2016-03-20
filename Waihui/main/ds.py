@@ -84,3 +84,6 @@ def ds_noti_noprovider(sku):
         notification = Notification(user=buyer.user ,sku=sku, noti=6, open_time = timezone.now(), close_time = timezone.now() + datetime.timedelta(weeks=100))
         notification.save()
     return True
+
+def ds_noti_buyercancel(sku, buyer):
+    pass

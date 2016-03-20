@@ -462,7 +462,16 @@ def url_provider_cancel_sku(request, sku_id):
             # 视作有伤害取消
             msg = act_provider_cancel_sku(sku, info['current_user'])
         else:
-            msg = _("这个课程的状态不适合取消")
+            msg = _(u"这个课程的状态不适合取消")
     else:
-        msg = _("对不起，不是老师不能取消")
+        msg = _(u"对不起，不是老师不能取消")
     return render(request, "main/result.html", locals())
+
+def url_buyer_cancel_sku(request, sku_id):
+    info = act_getinfo(request)
+    sku = Sku.objects.get(id=sku_id)
+    if info['current_user'].buyer not in sku.buyer:
+        msg = _(u"对不起，不是这节课的学生不能取消")
+        
+
+
