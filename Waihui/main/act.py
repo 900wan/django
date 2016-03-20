@@ -289,7 +289,8 @@ def act_getinfo(request):
         'is_login': True,
         'current_user': request.user
         }
-        info['unread_anotis'] = act_getanotis(Notification.objects.filter(user=request.user, read=0).order_by('-open_time'))
+        info['unread_anotis'] = act_getanotis(Notification.objects.filter(user=request.user, open_time__lte=timezone.now(), close_time__gte=timezone.now(),read=0).order_by('-open_time'))
+        info['anotis'] = act_getanotis(Notification.objects.filter(user=request.user,open_time__lte=timezone.now(), close_time__gte=timezone.now()).order_by('-open_time'))
         if request.user.provider.status == 0:
             info['is_provider'] = False
         else:
