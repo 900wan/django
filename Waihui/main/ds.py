@@ -47,7 +47,10 @@ def ds_getanoti(noti):
         content = u"the <strong>%s</strong>'s \" <strong>%s</strong> \" class will begin in 30 mins" % (noti.sku.provider.name, noti.sku.topic.name)
         link = reverse('main:showsku', args=[noti.sku.id])
     elif noti.noti == 6:
-        content = u"Your teacher <strong>%s</strong> canceled your course:<br/>-- <i>Topic: %s</i>" % (noti.user.provider.name, noti.sku.topic.name)
+        content = u"Your teacher <strong>%s</strong> canceled your course:<br/>-- <i>Topic: %s</i>" % (noti.sku.provider.name, noti.sku.topic.name)
+        link = reverse('main:showsku', args=[noti.sku.id])
+    elif noti.noti == 9:
+        content = u"Your student <strong>%s</strong> canceled your corse:<br/>-- <i>Topic:%s</i>" % (noti.sku.buyer.name, noti.sku.topic.name) 
         link = reverse('main:showsku', args=[noti.sku.id])
     anoti={
     'id': noti.id,

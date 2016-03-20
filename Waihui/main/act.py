@@ -380,14 +380,14 @@ def act_provider_cancel_sku(sku, user):
 def act_buyer_cancel_sku(sku, user):
     if sku.status != 1 or 4:
             msg = _(u"Sorry, class status forbit you to cancel")
-        else:
-            if sku.buyer.count() != 1 and 0:
-                sku.buyer.remove(buyer=info['current_user'].buyer)
-                msg = _(u"好了，这节课只有你不用来了，钱以后会打给你")
-            elif sku.buyer.count() = 1:
-                sku.status = 0
-                sku.buyer.remove(buyer=info['current_user'].buyer)
-                sku.topic.clear()
-                if sku.has_plan:sku.has_plan.clear()
-                msg = _(u"好了，这节课没人会来了，钱以后会打给你")
+    else:
+        if sku.buyer.count() != 1 and 0:
+            sku.buyer.remove(buyer=info['current_user'].buyer)
+            msg = _(u"好了，这节课只有你不用来了，钱以后会打给你")
+        elif sku.buyer.count() == 1:
+            sku.status = 0
+            sku.buyer.remove(buyer=info['current_user'].buyer)
+            sku.topic.clear()
+            if sku.has_plan:sku.has_plan.clear()
+            msg = _(u"好了，这节课没人会来了，钱以后会打给你")
                     
