@@ -390,4 +390,4 @@ def act_buyer_cancel_sku(sku, user):
             sku.topic.clear()
             if sku.has_plan:sku.has_plan.clear()
             msg = _(u"好了，这节课没人会来了，钱以后会打给你")
-                    
+    return msg
