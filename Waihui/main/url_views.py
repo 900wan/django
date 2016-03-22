@@ -28,6 +28,7 @@ from main.act import act_booksku
 from main.act import act_generate_skus
 from main.act import act_cancelsku
 from main.act import act_provider_cancel_sku
+from main.act import act_buyer_cancel_sku
 
 from main.ds import  ds_getanoti
 
@@ -471,15 +472,22 @@ def url_provider_cancel_sku(request, sku_id):
 def url_buyer_cancel_sku(request, sku_id):
     info = act_getinfo(request)
     sku = Sku.objects.get(id=sku_id)
-    if info['current_user'].buyer not in sku.buyer:
+    if info['current_user'].buyer not in sku.buyer.all():
         msg = _(u"对不起，不是这节课的学生不能取消")
+    else:
+        if sku.status == 1:
+            msg = act_buyer_cancel_sku(sku=sku, user=info['current_user'])
+        else:
+            msg = _(u"状态不允许取消")
+    return render(request, "main/result.html", locals())
 
 def url_provider_repick_sku(request, sku_id):
-    info =act_getinfo(request)
+    info = act_getinfo(request)
     sku = Sku.objects.get(id=sku_id)
     if info['current_user'].provider != 0 or info['current_user'].provider.exists():
         msg = _(u"对，你是教师，接下来要抢单")
     else:
         msg = _(u"对不起，不是老师不能抢单")
+    return render(request, "main/repick.html", locals())
 
 

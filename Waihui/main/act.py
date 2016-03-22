@@ -25,7 +25,8 @@ from main.ds import ds_addlog
 from main.ds import ds_getanoti
 from main.ds import ds_noti_newreply
 from main.ds import ds_get_order_cny_price
-from main.ds import ds_noti_noprovider
+from main.ds import ds_noti_tobuyer_noprovider
+from main.ds import ds_noti_toprovider_lostbuyer
 
 from django.utils.translation import ugettext as _
 
@@ -362,7 +363,7 @@ def act_provider_cancel_sku(sku, user):
     elif sku.time_to_start() > MIN_CANCEL_TIME and sku.time_to_start() <= OK_CANCEL_TIME:
         sku.status = 3
         sku.save()
-        ds_noti_noprovider(sku)
+        ds_noti_tobuyer_noprovider(sku)
         msg = _(u"你是取消成功了，但是学生没法上课了，下回别这样了")
     else:
         if sku.buyer.exists():
@@ -378,16 +379,21 @@ def act_provider_cancel_sku(sku, user):
 
 
 def act_buyer_cancel_sku(sku, user):
-    if sku.status != 1 or 4:
+    if sku.status != (1 or 4):
             msg = _(u"Sorry, class status forbit you to cancel")
     else:
         if sku.buyer.count() != 1 and 0:
-            sku.buyer.remove(buyer=info['current_user'].buyer)
+            # '''不知道remove对不对啊，好像是删掉这个buyer本身的意思'''
+            sku.buyer.remove(user)
             msg = _(u"好了，这节课只有你不用来了，钱以后会打给你")
         elif sku.buyer.count() == 1:
+            if sku.has_plan(): sku.plan.clear()
+            sku.topic = None
+            sku.buyer.clear()
             sku.status = 0
-            sku.buyer.remove(buyer=info['current_user'].buyer)
-            sku.topic.clear()
-            if sku.has_plan:sku.has_plan.clear()
+            sku.save()
             msg = _(u"好了，这节课没人会来了，钱以后会打给你")
+        ds_noti_toprovider_lostbuyer(sku=sku)
     return msg
+                    
+
