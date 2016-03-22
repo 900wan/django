@@ -50,7 +50,7 @@ def ds_getanoti(noti):
         content = u"Your teacher <strong>%s</strong> canceled your course:<br/>-- <i>Topic: %s</i>" % (noti.sku.provider.name, noti.sku.topic.name)
         link = reverse('main:showsku', args=[noti.sku.id])
     elif noti.noti == 9:
-        content = u"Your student <strong>%s</strong> canceled your corse:<br/>-- <i>Topic:%s</i>" % (noti.sku.buyer.name, noti.sku.topic.name) 
+        content = u"Your student canceled your course:<br/>"  
         link = reverse('main:showsku', args=[noti.sku.id])
     anoti={
     'id': noti.id,
@@ -83,12 +83,18 @@ def ds_get_order_cny_price(skus):
     cny_price = len(skus) * SKU_CNY_PRICE
     return cny_price
 
-def ds_noti_noprovider(sku):
+def ds_noti_tobuyer_noprovider(sku):
     """给学生发一个 noti 说完蛋了课不上了"""
     for buyer in sku.buyer.all():
-        notification = Notification(user=buyer.user ,sku=sku, noti=6, open_time = timezone.now(), close_time = timezone.now() + datetime.timedelta(weeks=100))
+        notification = Notification(user=buyer.user, sku=sku,
+                                    noti=6, open_time=timezone.now(),
+                                    close_time=timezone.now() + datetime.timedelta(weeks=100))
         notification.save()
     return True
 
-def ds_noti_buyercancel(sku, buyer):
-    pass
+def ds_noti_toprovider_lostbuyer(sku):
+    notification = Notification(user=sku.provider.user, sku=sku, noti=9,
+                                open_time=timezone.now(),
+                                close_time=timezone.now() + datetime.timedelta(weeks=100))
+    notification.save()
+    return True
