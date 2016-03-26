@@ -42,7 +42,7 @@
                     <td>{{sku.created|date:"Y-m-d H:i (e)"}}</td>
                     <td>{{sku.modified|date:"Y-m-d H:i (e)"}}</td>
                     <td>
-                        
+                        <a href="{% url 'main:provider_repick' sku.id%}"></a>
                     </td>
 
                 </tr>
