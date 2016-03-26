@@ -481,4 +481,12 @@ def url_buyer_cancel_sku(request, sku_id):
             msg = _(u"状态不允许取消")
     return render(request, "main/result.html", locals())
 
+def url_provider_repickpool(request):
+    info = act_getinfo(request)
+    if info['current_user'].provider != 0 or info['current_user'].provider.exists():
+        msg = _(u"对，你是教师，接下来要抢单")
+    else:
+        msg = _(u"对不起，不是老师不能抢单")
+    return render(request, "main/repickpool.html", locals())
+
 
