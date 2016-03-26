@@ -10,6 +10,9 @@
 
 {% block content %}
     <h1>{% trans "My Repick pool" %}</h1>
+    <p>=========================================</p>
+    <p>{{msg}}</p>
+    <p>=========================================</p>
         <table>
             <thead>
                 <tr>
@@ -42,7 +45,7 @@
                     <td>{{sku.created|date:"Y-m-d H:i (e)"}}</td>
                     <td>{{sku.modified|date:"Y-m-d H:i (e)"}}</td>
                     <td>
-                        <a href="{% url 'main:provider_repick' sku.id%}"></a>
+                        <a href="{% url 'main:provider_repick' sku.id%}">[Repick]</a>
                     </td>
 
                 </tr>

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.utils import translation, timezone
+from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
 from main.models import User
 from main.models import Language
@@ -52,6 +53,9 @@ def ds_getanoti(noti):
     elif noti.noti == 9:
         content = u"Your student canceled your course:<br/>"  
         link = reverse('main:showsku', args=[noti.sku.id])
+    elif noti.noti == 5:
+        content = u"Your course's teacher has changed to : <strong>%s</strong><br/>-- <i>Topic: %s</i>" % (noti.sku.provider.name, noti.sku.topic.name)
+        link = reverse('main:showsku', args=[noti.sku.id])
     anoti={
     'id': noti.id,
     'read' : noti.read,
@@ -97,4 +101,20 @@ def ds_noti_toprovider_lostbuyer(sku):
                                 open_time=timezone.now(),
                                 close_time=timezone.now() + datetime.timedelta(weeks=100))
     notification.save()
+    return True
+
+def ds_change_provider(sku, new_provider):
+    sku.provider = new_provider
+    sku.save()
+    ds_noti_tobuyer_changeprovider(sku)
+    msg = _(u'教师已变更')
+    return msg
+
+def ds_noti_tobuyer_changeprovider(sku):
+    """给学生发一个 noti 说课换老师了"""
+    for buyer in sku.buyer.all():
+        notification = Notification(user=buyer.user, sku=sku,
+                                    noti=5, open_time=timezone.now(),
+                                    close_time=sku.start_time + datetime.timedelta(hours=1))
+        notification.save()
     return True
