@@ -396,4 +396,3 @@ def act_buyer_cancel_sku(sku, user):
         ds_noti_toprovider_lostbuyer(sku=sku)
     return msg
                     
-
