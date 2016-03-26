@@ -31,8 +31,30 @@
             </ul>
         </ul>
         
-        {% if info.anotis %}
-            <h2>* Your have {{info.unread_anotis|length}} unread notifications</h2>
+
+        <h2>* Your have {{info.unread_anotis|length}}  unread notifications</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for anoti in info.anotis %}
+                        <tr style="vertical-align:top;font-weight:{% if anoti.read %}normal{% else %}bold{% endif %};">
+                            <td style="color:{% if anoti.read %}black{% else %}red{% endif %};"><strong>[{% if anoti.read %}READ{% else %}UNREAD{% endif %}]</strong></td>
+                            <td>{{anoti.content|safe}}</td>
+                            <td><a href="{% url 'main:notification_go' anoti.id %}">&lt;GO&gt;</a></td>
+
+                        </tr>
+                    {% endfor%}
+                </tbody>
+            </table>
+        {% if upcomming_anotis %}
+            <h2>* Your have {{upcomming_anotis|length}} upcomming notifications</h2>
                 <table>
                     <thead>
                         <tr>
@@ -43,64 +65,39 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for anoti in info.anotis %}
+                        {% for anoti in upcomming_anotis %}
                             <tr style="vertical-align:top;font-weight:{% if anoti.read %}normal{% else %}bold{% endif %};">
                                 <td style="color:{% if anoti.read %}black{% else %}red{% endif %};"><strong>[{% if anoti.read %}READ{% else %}UNREAD{% endif %}]</strong></td>
-                                <td>{{anoti.content|safe}}</td>
+                                <td>{{anoti.content|safe}}, will start at {{anoti.open_time}}</td>
                                 <td><a href="{% url 'main:notification_go' anoti.id %}">&lt;GO&gt;</a></td>
 
                             </tr>
                         {% endfor%}
                     </tbody>
                 </table>
-            {% if upcomming_anotis %}
-                <h2>* Your have {{upcomming_anotis|length}} upcomming notifications</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+        {% endif %}
+        {% if past_anotis %}
+            <h2>* Your have {{past_anotis|length}} past notifications, and they are invalid.</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for anoti in past_anotis %}
+                            <tr style="vertical-align:top;font-weight:{% if anoti.read %}normal{% else %}bold{% endif %};">
+                                <td style="color:{% if anoti.read %}black{% else %}red{% endif %};"><strong>[{% if anoti.read %}READ{% else %}UNREAD{% endif %}]</strong></td>
+                                <td>{{anoti.content|safe}}, closed at {{anoti.close_time}}</td>
+                                <td><a href="{% url 'main:notification_go' anoti.id %}">&lt;GO&gt;</a></td>
 
                             </tr>
-                        </thead>
-                        <tbody>
-                            {% for anoti in upcomming_anotis %}
-                                <tr style="vertical-align:top;font-weight:{% if anoti.read %}normal{% else %}bold{% endif %};">
-                                    <td style="color:{% if anoti.read %}black{% else %}red{% endif %};"><strong>[{% if anoti.read %}READ{% else %}UNREAD{% endif %}]</strong></td>
-                                    <td>{{anoti.content|safe}}, will start at {{anoti.open_time}}</td>
-                                    <td><a href="{% url 'main:notification_go' anoti.id %}">&lt;GO&gt;</a></td>
-
-                                </tr>
-                            {% endfor%}
-                        </tbody>
-                    </table>
-            {% endif %}
-            {% if past_anotis %}
-                <h2>* Your have {{past_anotis|length}} past notifications, and they are invalid.</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for anoti in past_anotis %}
-                                <tr style="vertical-align:top;font-weight:{% if anoti.read %}normal{% else %}bold{% endif %};">
-                                    <td style="color:{% if anoti.read %}black{% else %}red{% endif %};"><strong>[{% if anoti.read %}READ{% else %}UNREAD{% endif %}]</strong></td>
-                                    <td>{{anoti.content|safe}}, closed at {{anoti.close_time}}</td>
-                                    <td><a href="{% url 'main:notification_go' anoti.id %}">&lt;GO&gt;</a></td>
-
-                                </tr>
-                            {% endfor%}
-                        </tbody>
-                    </table>
-            {% endif %}
-        {% else %}
-            <h2>Great, you have no notification!</h2>
+                        {% endfor%}
+                    </tbody>
+                </table>
         {% endif %}
 
 

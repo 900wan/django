@@ -27,6 +27,7 @@ from main.ds import ds_noti_newreply
 from main.ds import ds_get_order_cny_price
 from main.ds import ds_noti_tobuyer_noprovider
 from main.ds import ds_noti_toprovider_lostbuyer
+from main.ds import ds_change_provider
 
 from django.utils.translation import ugettext as _
 
@@ -290,8 +291,8 @@ def act_getinfo(request):
         'is_login': True,
         'current_user': request.user
         }
-        info['unread_anotis'] = act_getanotis(Notification.objects.filter(user=request.user, open_time__lte=timezone.now(), close_time__gte=timezone.now(),read=0).order_by('-open_time'))
-        info['anotis'] = act_getanotis(Notification.objects.filter(user=request.user,open_time__lte=timezone.now(), close_time__gte=timezone.now()).order_by('-open_time'))
+        info['anotis'] =        act_getanotis(Notification.objects.filter(user=request.user, open_time__lte=timezone.now(), close_time__gte=timezone.now()).order_by('-open_time'))
+        info['unread_anotis'] = act_getanotis(Notification.objects.filter(user=request.user, open_time__lte=timezone.now(), close_time__gte=timezone.now(), read=0).order_by('-open_time'))
         if request.user.provider.status == 0:
             info['is_provider'] = False
         else:
@@ -395,5 +396,15 @@ def act_buyer_cancel_sku(sku, user):
             msg = _(u"好了，这节课没人会来了，钱以后会打给你")
         ds_noti_toprovider_lostbuyer(sku=sku)
     return msg
-                    
 
+def act_provider_repick(sku, new_provider):
+    if sku.status == 2:
+        msg=ds_change_provider(sku, new_provider)
+        if sku.has_plan():
+            sku.status = 5
+        else:
+            sku.status = 4
+        sku.save()
+    else:
+        msg=_(u'这不是一节待抢课程。')
+    return msg
