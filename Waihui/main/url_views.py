@@ -26,7 +26,7 @@ from main.act import act_getanotis
 from main.act import act_addorder
 from main.act import act_booksku
 from main.act import act_generate_skus
-from main.act import act_cancelsku
+# from main.act import act_cancelsku
 from main.act import act_provider_cancel_sku
 from main.act import act_buyer_cancel_sku
 from main.act import act_provider_repick
@@ -438,20 +438,20 @@ def url_schedule(request):
     # 这说明这个人不是老师
         return HttpResponse('You are not an authenticated tutor. 你不是教师，无权访问此页')
 
-@login_required
-def url_bcancelsku(request, sku_id):
-    info = act_getinfo(request)
-    sku = Sku.objects.get(id=sku_id)
-    if sku.buyer.filter(id=info['current_user'].buyer.id).exists():
-        uf = CancelSkuForm(request.POST)
-        uf.fields['sku'].queryset = Sku.objects.get(id=sku_id)
-        if request.method == 'POST':
-            if uf.is_valid():
-                result = act_cancelsku(sku_id=sku_id, user=info['current_user'])
-                msg = result
-                return render(request, 'main/result.html', locals())
-    msg = str(request.POST)
-    return render(request, "main/buyer_cancelsku.html", locals())
+# @login_required
+# def url_bcancelsku(request, sku_id):
+#     info = act_getinfo(request)
+#     sku = Sku.objects.get(id=sku_id)
+#     if sku.buyer.filter(id=info['current_user'].buyer.id).exists():
+#         uf = CancelSkuForm(request.POST)
+#         uf.fields['sku'].queryset = Sku.objects.get(id=sku_id)
+#         if request.method == 'POST':
+#             if uf.is_valid():
+#                 result = act_cancelsku(sku_id=sku_id, user=info['current_user'])
+#                 msg = result
+#                 return render(request, 'main/result.html', locals())
+#     msg = str(request.POST)
+#     return render(request, "main/buyer_cancelsku.html", locals())
 
 @login_required
 def url_provider_cancel_sku(request, sku_id):

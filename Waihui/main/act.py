@@ -28,6 +28,7 @@ from main.ds import ds_get_order_cny_price
 from main.ds import ds_noti_tobuyer_noprovider
 from main.ds import ds_noti_toprovider_lostbuyer
 from main.ds import ds_change_provider
+from main.ds import ds_noti_toprovider_skubooked
 
 from django.utils.translation import ugettext as _
 
@@ -115,7 +116,7 @@ def act_addsku(provider, start_time, end_time, topic=None, buyer=None, status=0)
     if start_time>=end_time:
         result = 'Opps, end_time must be later than start_time!'
     elif Sku.objects.filter(
-        Q(provider=provider), 
+        Q(provider=provider) & ~Q(status = 10), 
         Q(start_time__lte=start_time, end_time__gt=start_time) 
         | Q(start_time__lt=end_time, end_time__gte=end_time) 
         | Q(start_time__gt=start_time, end_time__lt=end_time)
@@ -325,6 +326,7 @@ def act_booksku(sku_id, topic, buyer):
     sku.status = '1'
     sku.save()
     sku.buyer.add(buyer)
+    ds_noti_toprovider_skubooked(sku)
     result = "OK," + str(sku.topic) +" booked"
 
     return result
@@ -349,14 +351,14 @@ def act_generate_skus(provider, schedule):
             result.append(result_item)
     return result
 
-def act_cancelsku(sku_id, user):
-    sku = Sku.objects.get(id=sku_id)
-    sku.status = '8'
-    sku.save()
-    result = "OK," + str(sku.topic) +" is canceled, quite easy!"
-    type = 1 if sku.provider.user == user else 0
-    ds_noti_newcancel(sku=sku, user=user, type=type) 
-    return result
+# def act_cancelsku(sku_id, user):
+#     sku = Sku.objects.get(id=sku_id)
+#     sku.status = '8'
+#     sku.save()
+#     result = "OK," + str(sku.topic) +" is canceled, quite easy!"
+#     type = 1 if sku.provider.user == user else 0
+#     ds_noti_newcancel(sku=sku, user=user, type=type) 
+#     return result
 
 def act_provider_cancel_sku(sku, user):
     if sku.time_to_start() <= MIN_CANCEL_TIME:
@@ -383,17 +385,20 @@ def act_buyer_cancel_sku(sku, user):
     if sku.status != (1 or 4):
             msg = _(u"Sorry, class status forbit you to cancel")
     else:
-        if sku.buyer.count() != 1 and 0:
+        if sku.buyer.count() > 1:
             # '''不知道remove对不对啊，好像是删掉这个buyer本身的意思'''
-            sku.buyer.remove(user)
+            sku.buyer.remove(user.buyer)
             msg = _(u"好了，这节课只有你不用来了，钱以后会打给你")
         elif sku.buyer.count() == 1:
-            if sku.has_plan(): sku.plan.clear()
-            sku.topic = None
-            sku.buyer.clear()
-            sku.status = 0
+            # 改成保留这个sku，保留证据！
+            sku.status = 10
             sku.save()
             msg = _(u"好了，这节课没人会来了，钱以后会打给你")
+            # 下面给这个老师再创建一个新的可约sku
+            msg = msg + act_addsku(
+                provider=sku.provider,
+                start_time=sku.start_time,
+                end_time=sku.end_time)
         ds_noti_toprovider_lostbuyer(sku=sku)
     return msg
 

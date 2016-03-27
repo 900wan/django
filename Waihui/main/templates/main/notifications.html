@@ -4,6 +4,13 @@
 {% get_current_language as LANGUAGE_CODE %}
 {% get_current_timezone as TIME_ZONE %}
 
+{% block stylesheet %}
+<style>
+    i{color:gray;
+        font-size: small;}
+</style>
+{% endblock stylesheet %}
+
 {% block title %}
     My Notifications
 {% endblock title %}
@@ -44,8 +51,8 @@
                 </thead>
                 <tbody>
                     {% for anoti in info.anotis %}
-                        <tr style="vertical-align:top;font-weight:{% if anoti.read %}normal{% else %}bold{% endif %};">
-                            <td style="color:{% if anoti.read %}black{% else %}red{% endif %};"><strong>[{% if anoti.read %}READ{% else %}UNREAD{% endif %}]</strong></td>
+                        <tr style="vertical-align:top;">
+                            <td style="font-weight:{% if anoti.read %}normal{% else %}bold{% endif %};color:{% if anoti.read %}black{% else %}red{% endif %};"><strong>[{% if anoti.read %}READ{% else %}UNREAD{% endif %}]</strong></td>
                             <td>{{anoti.content|safe}}</td>
                             <td><a href="{% url 'main:notification_go' anoti.id %}">&lt;GO&gt;</a></td>
 

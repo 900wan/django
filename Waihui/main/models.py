@@ -179,17 +179,17 @@ class Sku(models.Model):
     buyer = models.ManyToManyField(Buyer, blank=True)
 
     STATUS_OF_SKU_CHOICES = (
-        (0, _(u'可预约')),
-        (1, '已预约'),
-        (2, '被拒绝扔池子的'),
-        (3, '彻底没人教'),
+        (0, _(u'可约')),
+        (1, '已约'),
+        (2, '待抢'),
+        (3, '没有教师了'),
         (4, '已定'),
         (5, '已备课'),
         (6, '老师ready'),
         (7, '学生ready'),
         (8, '已结束待评价'),
-        (9, '已彻底结束 '),
-        (10, '买家申请取消等待处理'),
+        (9, '已结束 '),
+        (10, '学生取消'),
     )
     
     status = models.IntegerField(

@@ -38,6 +38,7 @@
                     <th>Topic</th>
                     <th>ID</th>
                     <th>Provider</th>
+                    <th>Status</th>
                     <th>Has plan?</th>
                     <th>Buyer</th>
                     <th>Start time</th>
@@ -53,6 +54,7 @@
                     <td><a href="{% url 'main:showsku' sku.id %}">{{sku.topic}}</a></td>
                     <td>{{sku.id}}</td>
                     <td>{{sku.provider}}</td>
+                    <td>{{sku.status}}({{sku.get_status_display}})</td>
                     <td>
                         {% if sku.has_plan %}
                             yes
