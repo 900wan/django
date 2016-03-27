@@ -417,4 +417,4 @@ def act_provider_repick(sku, new_provider):
         msg=_(u'这不是一节待抢课程。')
     return msg
 def act_is_course_ready(sku):
-     return True if info['now_tz'] + BEFORE_COURSE_TIME < sku.start_time else False
+     return True if sku.time_to_start() < BEFORE_COURSE_TIME else False
