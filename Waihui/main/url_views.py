@@ -30,6 +30,7 @@ from main.act import act_cancelsku
 from main.act import act_provider_cancel_sku
 from main.act import act_buyer_cancel_sku
 from main.act import act_provider_repick
+from main.act import act_is_course_ready
 
 from main.ds import  ds_getanoti
 
@@ -301,6 +302,7 @@ def url_dashboard(request):
 def url_office(request):
     timezone.activate(pytz.timezone("Asia/Shanghai"))
     info = act_getinfo(request)
+    ready = act_is_course_ready(sku)
     return render(request, "main/office.html",locals())
 
 @login_required
@@ -470,6 +472,7 @@ def url_provider_cancel_sku(request, sku_id):
         msg = _(u"对不起，不是老师不能取消")
     return render(request, "main/result.html", locals())
 
+@login_required
 def url_buyer_cancel_sku(request, sku_id):
     info = act_getinfo(request)
     sku = Sku.objects.get(id=sku_id)
@@ -482,6 +485,7 @@ def url_buyer_cancel_sku(request, sku_id):
             msg = _(u"状态不允许取消")
     return render(request, "main/result.html", locals())
 
+@login_required
 def url_repickpool(request):
     info = act_getinfo(request)
     if info.get('is_provider'):
@@ -499,3 +503,9 @@ def url_provider_repick(request, sku_id):
         msg = act_provider_repick(sku=sku, new_provider=info['current_user'].provider)
     return render(request, "main/result.html", locals())
 
+# @login_required
+# def url_provider_start_sku(request, sku_id):
+#     info = act_getinfo(request)
+#     sku = Sku.objects.get(id=sku_id)
+#     ready = act_is_course_ready(sku)
+#     return render(request, "main/")

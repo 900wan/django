@@ -36,6 +36,7 @@
             <thead>
                 <tr>
                     <th>Topic</th>
+                    <th>Ready?</th>
                     <th>ID</th>
                     <th>Provider</th>
                     <th>Has plan?</th>
@@ -51,6 +52,10 @@
                 {% for sku in info.current_user.provider.sku_set.all|dictsort:"start_time" %}
                 <tr>
                     <td><a href="{% url 'main:showsku' sku.id %}">{{sku.topic}}</a></td>
+                    {# <td><a href="{% url 'main:providerstartsku' %}">{% trans "start!" %}</a></td> #}
+                    {% if ready %}
+                        <td>Ready!</td>
+                    {% endif %}
                     <td>{{sku.id}}</td>
                     <td>{{sku.provider}}</td>
                     <td>
@@ -79,5 +84,6 @@
                 {% endfor%}
             </tbody>
         </table>
+        <h2>* <a href="{% url 'main:repickpool' %}">{% trans "Repick pool" %}</a></h2>
 
 {% endblock content %}

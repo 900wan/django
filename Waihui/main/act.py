@@ -33,6 +33,7 @@ from django.utils.translation import ugettext as _
 
 MIN_CANCEL_TIME = datetime.timedelta(hours=8)
 OK_CANCEL_TIME = datetime.timedelta(hours=12)
+BEFORE_COURSE_TIME = datetime.timedelta(minutes=15)
 
 def act_getlanguage(request):
     language = request.LANGUAGE_CODE
@@ -291,6 +292,8 @@ def act_getinfo(request):
         'is_login': True,
         'current_user': request.user
         }
+        timezone.activate(pytz.timezone("Asia/Shanghai"))
+        info['now_tz'] = timezone.now()
         info['anotis'] =        act_getanotis(Notification.objects.filter(user=request.user, open_time__lte=timezone.now(), close_time__gte=timezone.now()).order_by('-open_time'))
         info['unread_anotis'] = act_getanotis(Notification.objects.filter(user=request.user, open_time__lte=timezone.now(), close_time__gte=timezone.now(), read=0).order_by('-open_time'))
         if request.user.provider.status == 0:
@@ -408,3 +411,5 @@ def act_provider_repick(sku, new_provider):
     else:
         msg=_(u'这不是一节待抢课程。')
     return msg
+def act_is_course_ready(sku):
+     return True if info['now_tz'] + BEFORE_COURSE_TIME < sku.start_time else False
