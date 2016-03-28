@@ -7,6 +7,7 @@ from django.utils.translation import ugettext as _
 import datetime
 # from main.act import act_upgrade_hp
 # 无法导入acts
+BEFORE_COURSE_TIME = datetime.timedelta(minutes=15)
 
 def upgrade_hp(self,theset):
     """upgrade the hp by input a int """
@@ -219,6 +220,8 @@ class Sku(models.Model):
         return has_plan
     def time_to_start(self):
         return self.start_time - timezone.now()
+    def ready(self):
+        pass
         
 # index 7
 class Plan(models.Model):

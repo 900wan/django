@@ -354,15 +354,6 @@ def act_generate_skus(provider, schedule):
             result.append(result_item)
     return result
 
-# def act_cancelsku(sku_id, user):
-#     sku = Sku.objects.get(id=sku_id)
-#     sku.status = '8'
-#     sku.save()
-#     result = "OK," + str(sku.topic) +" is canceled, quite easy!"
-#     type = 1 if sku.provider.user == user else 0
-#     ds_noti_newcancel(sku=sku, user=user, type=type) 
-#     return result
-
 def act_provider_cancel_sku(sku, user):
     if sku.time_to_start() <= MIN_CANCEL_TIME:
         msg = _(u"马上开始了如果真要取消的话你自己练习学生做好解释工作，再找管理员取消吧。")
@@ -416,5 +407,8 @@ def act_provider_repick(sku, new_provider):
     else:
         msg=_(u'这不是一节待抢课程。')
     return msg
-def act_is_course_ready(sku):
-     return True if sku.time_to_start() < BEFORE_COURSE_TIME else False
+def act_is_course_ready(skus):
+    for sku in skus:
+        sku['ready'] = True if sku.time_to_start() < BEFORE_COURSE_TIME else False
+        skus = sku.append(sku['ready'])
+    return 
