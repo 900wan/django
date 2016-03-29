@@ -54,11 +54,11 @@
                 <tr>
                     <td><a href="{% url 'main:showsku' sku.id %}">{{sku.topic}}</a></td>
                     {# <td><a href="{% url 'main:providerstartsku' %}">{% trans "start!" %}</a></td> #}
-                    {% if ready %}
-                        <td>Ready!</td>
+                    <td>{% if ready %}
+                        Ready!
                     {% else %}
-                        <td>No!</td>
-                    {% endif %}
+                        Not yet
+                    {% endif %}</td>
                     <td>{{sku.id}}</td>
                     <td>{{sku.provider}}</td>
                     <td>{{sku.status}}({{sku.get_status_display}})</td>
