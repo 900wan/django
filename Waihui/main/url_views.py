@@ -303,7 +303,7 @@ def url_office(request):
     timezone.activate(pytz.timezone("Asia/Shanghai"))
     info = act_getinfo(request)
     skus = Sku.objects.filter(provider=info['current_user'].provider)
-    ready = act_is_course_ready(skus)
+    skus = act_is_course_ready(skus)
     return render(request, "main/office.html",locals())
 
 @login_required

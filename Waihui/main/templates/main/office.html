@@ -56,6 +56,8 @@
                     {# <td><a href="{% url 'main:providerstartsku' %}">{% trans "start!" %}</a></td> #}
                     {% if ready %}
                         <td>Ready!</td>
+                    {% else %}
+                        <td>No!</td>
                     {% endif %}
                     <td>{{sku.id}}</td>
                     <td>{{sku.provider}}</td>

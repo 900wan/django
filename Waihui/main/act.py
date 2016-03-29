@@ -409,6 +409,7 @@ def act_provider_repick(sku, new_provider):
     return msg
 def act_is_course_ready(skus):
     for sku in skus:
-        sku['ready'] = True if sku.time_to_start() < BEFORE_COURSE_TIME else False
-        skus = sku.append(sku['ready'])
-    return 
+        skus_result = []
+        setattr(sku, 'ready', True) if sku.time_to_start() < BEFORE_COURSE_TIME else setattr(sku, 'ready', False)
+        skus_result.append(sku)
+    return skus_result
