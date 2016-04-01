@@ -34,7 +34,7 @@ from django.utils.translation import ugettext as _
 
 MIN_CANCEL_TIME = datetime.timedelta(hours=8)
 OK_CANCEL_TIME = datetime.timedelta(hours=12)
-BEFORE_COURSE_TIME = datetime.timedelta(minutes=15)
+START_SOON_TIME = datetime.timedelta(minutes=15)
 
 def act_getlanguage(request):
     language = request.LANGUAGE_CODE
@@ -407,9 +407,13 @@ def act_provider_repick(sku, new_provider):
     else:
         msg=_(u'这不是一节待抢课程。')
     return msg
-def act_is_course_ready(skus):
+def act_expand_skus(skus):
+    '''用来扩展 skus，增加不存在于 models 里的属性。'''
+    skus_result = []
     for sku in skus:
-        skus_result = []
-        setattr(sku, 'ready', True) if sku.time_to_start() < BEFORE_COURSE_TIME else setattr(sku, 'ready', False)
+        setattr(sku, 'is_start_later', (sku.time_to_start() > START_SOON_TIME)) # 这节课是不是距离开始还早着呢
+        setattr(sku, 'is_start_soon', (datetime.timedelta() < sku.time_to_start() < START_SOON_TIME)) # 这节课是不是马上就要开始啦？目前是15分钟内
+        setattr(sku, 'is_should_in_progress', (sku.start_time < timezone.now() < sku.end_time)) # 这节课是不是应该在进行中
+        setattr(sku, 'is_past', (timezone.now() > sku.end_time)) # 该结束了
         skus_result.append(sku)
     return skus_result

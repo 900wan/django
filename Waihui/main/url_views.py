@@ -30,7 +30,7 @@ from main.act import act_generate_skus
 from main.act import act_provider_cancel_sku
 from main.act import act_buyer_cancel_sku
 from main.act import act_provider_repick
-from main.act import act_is_course_ready
+from main.act import act_expand_skus
 
 from main.ds import  ds_getanoti
 
@@ -303,7 +303,7 @@ def url_office(request):
     timezone.activate(pytz.timezone("Asia/Shanghai"))
     info = act_getinfo(request)
     skus = Sku.objects.filter(provider=info['current_user'].provider)
-    skus = act_is_course_ready(skus)
+    skus = act_expand_skus(skus)
     return render(request, "main/office.html",locals())
 
 @login_required

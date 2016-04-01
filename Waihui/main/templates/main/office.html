@@ -36,7 +36,7 @@
             <thead>
                 <tr>
                     <th>Topic</th>
-                    <th>Ready?</th>
+                    <th>Timeflag</th>
                     <th>ID</th>
                     <th>Provider</th>
                     <th>Status</th>
@@ -44,8 +44,6 @@
                     <th>Buyer</th>
                     <th>Start time</th>
                     <th>End time</th>
-                    <th>Created</th>
-                    <th>Modified</th>
                     <th>Op</th>
                 </tr>
             </thead>
@@ -54,11 +52,17 @@
                 <tr>
                     <td><a href="{% url 'main:showsku' sku.id %}">{{sku.topic}}</a></td>
                     {# <td><a href="{% url 'main:providerstartsku' %}">{% trans "start!" %}</a></td> #}
-                    <td>{% if ready %}
-                        Ready!
-                    {% else %}
-                        <strong>Not yet</strong>
-                    {% endif %}</td>
+                    <td>
+                        {% if sku.is_start_later %}
+                            waiting...
+                        {% elif sku.is_start_soon %}
+                            <strong>SOON-countdown: <br/ >{{sku.time_to_start}}</strong>
+                        {% elif sku.is_should_in_progress%}
+                            NOW
+                        {% elif sku.is_past%}
+                            past
+                        {% endif %}
+                    </td>
                     <td>{{sku.id}}</td>
                     <td>{{sku.provider}}</td>
                     <td>{{sku.status}}({{sku.get_status_display}})</td>
@@ -72,8 +76,6 @@
                     <td>{{sku.buyer.all|safeseq|join:", "}}</td>
                     <td>{{sku.start_time|date:"Y-m-d H:i (e)"}}</td>
                     <td>{{sku.end_time|date:"Y-m-d H:i (e)"}}</td>
-                    <td>{{sku.created|date:"Y-m-d H:i (e)"}}</td>
-                    <td>{{sku.modified|date:"Y-m-d H:i (e)"}}</td>
                     <td>
                         {% if sku.status == 1 %}
                             <a href="{% url 'main:provider_cancel_sku' sku.id %}">[REFUSE]</a>
