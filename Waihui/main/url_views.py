@@ -233,8 +233,6 @@ def url_addplan(request, sku_id):
     else:
         msg = request.method
         topic = sku.topic
-        sku.status = 4
-        sku.save()
         if request.method == 'POST':
             if uf.is_valid():
                 status = uf.cleaned_data['status']
@@ -247,10 +245,15 @@ def url_addplan(request, sku_id):
                 voc = uf.cleaned_data['voc']
                 copy_from = uf.cleaned_data['copy_from']
                 sumy = uf.cleaned_data['sumy']
-                result = act_addplan(sku=sku, topic=topic, status=status, content=content, 
-                    assignment=assignment, slides=slides, roomlink = roomlink, materialhtml=materialhtml, materiallinks=materiallinks, voc=voc,
-                    copy_from=copy_from, sumy=sumy)
+                result = act_addplan(sku=sku, topic=topic, status=status, content=content,
+                                     assignment=assignment, slides=slides, roomlink=roomlink,
+                                     materialhtml=materialhtml, materiallinks=materiallinks, voc=voc,
+                                     copy_from=copy_from, sumy=sumy)
+                sku.status = 5
                 msg = result
+        else:
+            if sku.status != 5: sku.status = 4
+        sku.save()
     return render(request, "main/addplan.html", {'info':info, 'uf':uf, 'msg':msg, 'heading':"Add a plan on SKU", 'sku':sku})
 
 @login_required
@@ -496,12 +499,17 @@ def url_provider_ready_sku(request, sku_id):
     info = act_getinfo(request)
     sku = Sku.objects.get(id=sku_id)
     if info.get('is_provider'):
-        if request.method == 'POST':
-            uf = RoomlinkForm(request.POST)
-            if uf.is_valid():
-                roomlink = uf.cleaned_data['roomlink']
-                msg = act_provider_ready_sku(sku=sku, roomlink=roomlink)
+        if sku.has_plan():
+            if request.method == 'POST':
+                uf = RoomlinkForm(request.POST)
+                if uf.is_valid():
+                    roomlink = uf.cleaned_data['roomlink']
+                    if act_provider_ready_sku(sku=sku, roomlink=roomlink):
+                        return HttpResponseRedirect(reverse('main:showsku', args=[sku.id]))
+            else:
+                uf = RoomlinkForm(initial={'roomlink':sku.plan.roomlink})
+        else:
+            msg = _(u"必须备课才能上课")
     else:
-        uf = RoomlinkForm(initial={'roomlink':sku.roomlink})
         msg = _(u"对不起，不是老师不能开始上课")
     return render(request, "main/pready.html", locals())

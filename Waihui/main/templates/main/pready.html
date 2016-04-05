@@ -13,7 +13,10 @@
         {{buyer}} 
     {% endfor %} the {{sku.topic}}</h1>
     <p>Please comform your course link</p>
-    <form action="{% url 'main:showsku' sku.id %}" method="POST" enctype="multipart/form-data">
+    <p>=====================================================</p>
+    {{msg}}
+    <p>=====================================================</p>
+    <form method="POST" enctype="multipart/form-data">
         {{uf.roomlink}}
         {% csrf_token %}
         <input type="submit" name="submit">

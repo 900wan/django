@@ -420,5 +420,9 @@ def act_expand_skus(skus):
     return skus_result
 
 def act_provider_ready_sku(sku, roomlink):
-    if sku.status == (5 or 4 or 1):
+    if sku.status == 5 or sku.status == 6:
         sku.status = 6
+        sku.save()
+        sku.plan.roomlink = roomlink
+        sku.plan.save()
+    return True
