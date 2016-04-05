@@ -30,6 +30,7 @@ from main.act import act_generate_skus
 from main.act import act_provider_cancel_sku
 from main.act import act_buyer_cancel_sku
 from main.act import act_provider_repick
+from main.act import act_provider_ready_sku
 from main.act import act_expand_skus
 
 from main.ds import  ds_getanoti
@@ -54,6 +55,7 @@ from main.forms import HoldSkuForm
 from main.forms import BookSkuForm
 from main.forms import ScheduleForm
 from main.forms import CancelSkuForm
+from main.forms import RoomlinkForm
 
 from main.mytest import Test_skufunction
 
@@ -489,9 +491,17 @@ def url_provider_repick(request, sku_id):
         msg = act_provider_repick(sku=sku, new_provider=info['current_user'].provider)
     return render(request, "main/result.html", locals())
 
-# @login_required
-# def url_provider_start_sku(request, sku_id):
-#     info = act_getinfo(request)
-#     sku = Sku.objects.get(id=sku_id)
-#     ready = act_is_course_ready(sku)
-#     return render(request, "main/")
+@login_required
+def url_provider_ready_sku(request, sku_id):
+    info = act_getinfo(request)
+    sku = Sku.objects.get(id=sku_id)
+    if info.get('is_provider'):
+        if request.method == 'POST':
+            uf = RoomlinkForm(request.POST)
+            if uf.is_valid():
+                roomlink = uf.cleaned_data['roomlink']
+                msg = act_provider_ready_sku(sku=sku, roomlink=roomlink)
+    else:
+        uf = RoomlinkForm(initial={'roomlink':sku.roomlink})
+        msg = _(u"对不起，不是老师不能开始上课")
+    return render(request, "main/pready.html", locals())

@@ -326,7 +326,7 @@ def act_addorder(skus, buyer):
 def act_booksku(sku_id, topic, buyer):
     sku = Sku.objects.get(id=sku_id)
     sku.topic = topic
-    sku.status = '1'
+    sku.status = 1
     sku.save()
     sku.buyer.add(buyer)
     ds_noti_toprovider_skubooked(sku)
@@ -407,6 +407,7 @@ def act_provider_repick(sku, new_provider):
     else:
         msg=_(u'这不是一节待抢课程。')
     return msg
+
 def act_expand_skus(skus):
     '''用来扩展 skus，增加不存在于 models 里的属性。'''
     skus_result = []
@@ -417,3 +418,7 @@ def act_expand_skus(skus):
         setattr(sku, 'is_past', (timezone.now() > sku.end_time)) # 该结束了
         skus_result.append(sku)
     return skus_result
+
+def act_provider_ready_sku(sku, roomlink):
+    if sku.status == (5 or 4 or 1):
+        sku.status = 6
