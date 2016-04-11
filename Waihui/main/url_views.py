@@ -513,3 +513,4 @@ def url_provider_ready_sku(request, sku_id):
     else:
         msg = _(u"对不起，不是老师不能开始上课")
     return render(request, "main/pready.html", locals())
+    

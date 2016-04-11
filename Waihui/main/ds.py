@@ -29,7 +29,7 @@ def ds_showtopic(id=0, bywhat=0):
     return topic
 
 def ds_addlog(source, type, user, character):
-    user=User.objects.get(id=user)
+    user = User.objects.get(id=user)
     log = Log(source=source,
         type=type,
         user=user,
@@ -60,14 +60,13 @@ def ds_getanoti(noti):
         content = u"A student %s booked your course! please confirm and prepare:<br/>-- <i>Topic: %s Time: %s</i>" % (noti.sku.buyer.all().last(), noti.sku.topic.name, noti.sku.start_time)
         link = reverse('main:showsku', args=[noti.sku.id])
 
-    anoti={
-    'id': noti.id,
-    'read' : noti.read,
-    'content' : content,
-    'open_time': noti.open_time,
-    'close_time': noti.close_time,
-    'link' : link,
-    }
+    anoti = {'id': noti.id,
+             'read' : noti.read,
+             'content' : content,
+             'open_time': noti.open_time,
+             'close_time': noti.close_time,
+             'link' : link,
+            }
     return anoti
 
 def ds_noti_newreply(reply, user, type):
@@ -101,6 +100,7 @@ def ds_noti_tobuyer_noprovider(sku):
     return True
 
 def ds_noti_toprovider_lostbuyer(sku):
+    """给sku的教师发消息，减少了某学生"""
     notification = Notification(user=sku.provider.user, sku=sku, noti=9,
                                 open_time=timezone.now(),
                                 close_time=sku.end_time)
@@ -108,6 +108,7 @@ def ds_noti_toprovider_lostbuyer(sku):
     return True
 
 def ds_change_provider(sku, new_provider):
+    """变更教师，传入sku及provider"""
     sku.provider = new_provider
     sku.save()
     ds_noti_tobuyer_changeprovider(sku)
@@ -116,7 +117,7 @@ def ds_change_provider(sku, new_provider):
 
 def ds_noti_tobuyer_changeprovider(sku):
     """给学生发一个 noti 说课换老师了"""
-    for buyer in sku.buyer.all():
+    for buyer   in sku.buyer.all():
         notification = Notification(user=buyer.user, sku=sku,
                                     noti=5, open_time=timezone.now(),
                                     close_time=sku.start_time + datetime.timedelta(hours=1))
@@ -124,6 +125,8 @@ def ds_noti_tobuyer_changeprovider(sku):
     return True
 
 def ds_noti_toprovider_skubooked(sku):
-    notification=Notification(user=sku.provider.user, sku=sku, noti=8, open_time=timezone.now(), close_time=sku.end_time)
+    """跟教师发通知说sku已被预订"""
+    notification = Notification(user=sku.provider.user, sku=sku, noti=8, open_time=timezone.now(),
+                                close_time=sku.end_time)
     notification.save()
     return True
