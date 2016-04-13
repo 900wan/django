@@ -31,6 +31,7 @@ from main.act import act_provider_cancel_sku
 from main.act import act_buyer_cancel_sku
 from main.act import act_provider_repick
 from main.act import act_provider_ready_sku
+from main.act import act_buyer_ready_sku
 from main.act import act_expand_skus
 
 from main.ds import  ds_getanoti
@@ -513,4 +514,21 @@ def url_provider_ready_sku(request, sku_id):
     else:
         msg = _(u"对不起，不是老师不能开始上课")
     return render(request, "main/pready.html", locals())
-    
+
+@login_required
+def url_buyer_ready_sku(request, sku_id):
+    '''设定学生已准备好，之前会判断是否是这节课的学生，sku是否为6（教师已准备好），传入request与sku_id'''
+    info = act_getinfo(request)
+    sku = Sku.objects.get(id=sku_id)
+    # sku = act_expand_skus(sku)
+    if info['current_user'].buyer in sku.buyer.all():
+        if sku.status == 6:
+            if act_buyer_ready_sku(sku=sku):
+                return HttpResponseRedirect(reverse('main:showsku', args=[sku.id]))
+        elif sku.status == 7:
+            msg = _(u"已经上课，通讯地址为：") + sku.plan.roomlink
+        else:
+            msg = _(u"对不起，教师尚未准备好")
+    else:
+        msg = _(u"诶，你不是这节课的学生呀")
+    return render(request, "main/bready.html", locals())
