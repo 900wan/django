@@ -302,6 +302,8 @@ def url_idtest(request, set_id):
 @login_required
 def url_dashboard(request):
     info = act_getinfo(request)
+    skus = info.get('current_user').buyer.sku_set.all()
+    skus = act_expand_skus(skus)
     return render(request, "main/dashboard.html",locals())
 
 @login_required
