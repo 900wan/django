@@ -336,18 +336,18 @@ def act_booksku(sku_id, topic, buyer):
 
 def act_generate_skus(provider, schedule):
     '''生成sku，schedule 是一个list，其中每一个item都是dict，包含 topic, start_time, end_time'''
-    result=[]
+    result = []
     for item in schedule:
-        result_item=''
+        result_item = ''
         if item.get('topic') and item['start_time'] and item['end_time']:
-            result_item=act_addsku(
+            result_item = act_addsku(
                 provider=provider,
                 start_time=item['start_time'],
                 end_time=item['end_time'],
                 topic=item.get('topic'))
             result.append(result_item)
         elif item['start_time'] and item['end_time']:
-            result_item=act_addsku(
+            result_item = act_addsku(
                 provider=provider,
                 start_time=item['start_time'],
                 end_time=item['end_time'])
@@ -377,7 +377,7 @@ def act_provider_cancel_sku(sku, user):
 
 def act_buyer_cancel_sku(sku, user):
     if sku.status != (1 or 4):
-            msg = _(u"Sorry, class status forbit you to cancel")
+        msg = _(u"Sorry, class status forbit you to cancel")
     else:
         if sku.buyer.count() > 1:
             # '''不知道remove对不对啊，好像是删掉这个buyer本身的意思'''
@@ -398,14 +398,14 @@ def act_buyer_cancel_sku(sku, user):
 
 def act_provider_repick(sku, new_provider):
     if sku.status == 2:
-        msg=ds_change_provider(sku, new_provider)
+        msg = ds_change_provider(sku, new_provider)
         if sku.has_plan():
             sku.status = 5
         else:
             sku.status = 4
         sku.save()
     else:
-        msg=_(u'这不是一节待抢课程。')
+        msg = _(u'这不是一节待抢课程。')
     return msg
 
 def act_expand_skus(skus):
@@ -420,9 +420,17 @@ def act_expand_skus(skus):
     return skus_result
 
 def act_provider_ready_sku(sku, roomlink):
+    '''设定sku中status为6（教师ready），传入最新的roomlink'''
     if sku.status == 5 or sku.status == 6:
         sku.status = 6
         sku.save()
         sku.plan.roomlink = roomlink
         sku.plan.save()
+    return True
+
+def act_buyer_ready_sku(sku):
+    '''设定sku中status为7（学生ready）'''
+    if sku.status == 6:
+        sku.status = 7
+        sku.save()
     return True

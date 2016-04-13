@@ -67,8 +67,10 @@
                     <td>{{sku.end_time|date:"Y-m-d H:i (e)"}}</td>
                     <td>{{sku.created|date:"Y-m-d H:i (e)"}}</td>
                     <td>{{sku.modified|date:"Y-m-d H:i (e)"}}</td>
-                    <td><a href="{% url 'main:buyer_cancel_sku' sku.id %}">[CANCEL]</a></td>
-
+                    <td><a href="{% url 'main:buyer_cancel_sku' sku.id %}">[CANCEL]</a>
+                    {% if sku.has_plan %}
+                        <strong><a href="{% url 'main:buyer_ready_sku' sku.id%}">[Ready!]</a></strong>
+                    {% endif %}</td>
                 </tr>
                 {% endfor%}
             </tbody>

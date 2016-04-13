@@ -86,7 +86,7 @@
                         {% endif %}
                         {% if sku.has_plan and not sku.is_past %}
                                 <strong><a href="{% url 'main:provider_ready_sku' sku.id %}">[Ready!]</a></strong>
-                            {% elif not sku.is_past %}
+                            {% elif not sku.is_past and sku.topic %}
                                 <a href="{% url 'main:addplan' sku.id %}">[Add Plan]</a>
                             {% endif %}
                     </td>
