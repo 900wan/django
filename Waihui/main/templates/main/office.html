@@ -84,11 +84,11 @@
                         {% elif sku.status == 2 %}
                             IN POOL                 
                         {% endif %}
-                        {% if sku.has_plan and not sku.is_past %}
+                        {% if sku.has_plan and sku.is_start_soon and not sku.status == 6 %}
                                 <strong><a href="{% url 'main:provider_ready_sku' sku.id %}">[Ready!]</a></strong>
-                            {% elif not sku.is_past %}
+                        {% elif not sku.has_plan and not sku.status == 0 and not sku.is_past %}
                                 <a href="{% url 'main:addplan' sku.id %}">[Add Plan]</a>
-                            {% endif %}
+                        {% endif %}
                     </td>
 
                 </tr>
