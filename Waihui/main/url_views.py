@@ -1,6 +1,7 @@
  # -*- coding: utf-8 -*-
 import pytz, json, datetime
 from django.shortcuts import get_object_or_404, render
+from django.db.models import Q
 from django.utils import translation, timezone
 from django.utils.translation import ugettext as _
 from django.contrib.auth import authenticate, login, logout
@@ -534,3 +535,19 @@ def url_buyer_ready_sku(request, sku_id):
     else:
         msg = _(u"诶，你不是这节课的学生呀")
     return render(request, "main/bready.html", locals())
+
+def url_provider_profile(request, provider_id):
+    info = act_getinfo(request)    
+    provider = Provider.objects.get(id=provider_id)
+    skus = Sku.objects.filter(provider=provider, status=0)
+    finished_skus_count = Sku.objects.filter(Q(status=8) | Q(status=9)).count()
+    return render(request, "main/provider_profile.html", locals())
+
+# def url_provider_profile_edit(request, provider_id):
+#     into = act_getinfo(request)
+#     provider = Provider.objects.get(id=provider_id)
+#     if info['current_user'] == provider.user:
+#         if request.method == 'POST':
+#             uf = ProviderProfileForm(requset.POST)
+#             if uf.is_valid():
+#                 avatar = 

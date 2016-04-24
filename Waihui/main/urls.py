@@ -1,5 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
 from main import url_views
 from main import test_views
 
@@ -36,6 +38,7 @@ urlpatterns =  patterns('',
                         url(r'^sku/(\d+)/t/ready/$', url_views.url_provider_ready_sku, name="provider_ready_sku"),
                         url(r'^sku/(\d+)/b/ready/$', url_views.url_buyer_ready_sku, name="buyer_ready_sku"),
                         url(r'^addorder/$', url_views.url_addorder, name="addorder"),
+                        url(r'^tutor/(\d+)/$', url_views.url_provider_profile, name="provider_profile"),
                         url(r'^dashboard/$', url_views.url_dashboard, name="dashboard"),
                         url(r'^dashboard/cancel/(\d+)/$', url_views.url_buyer_cancel_sku, name="buyer_cancel_sku"),
                         url(r'^office/$', url_views.url_office, name="office"),
@@ -47,4 +50,4 @@ urlpatterns =  patterns('',
                         url(r'^mytest/$', url_views.url_test, name="mytest"),
                         url(r'^mytest/(\d+)/$', url_views.url_idtest, name="idtest"),
                         # url(r'^reviews/$', url_views.url_reviews, name='reviews'),
-                       )
+                       ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

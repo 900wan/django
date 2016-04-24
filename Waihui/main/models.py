@@ -72,6 +72,10 @@ class Provider(models.Model):
     weekday_pattern = models.CommaSeparatedIntegerField(max_length=200, blank=True, null=True)
     fee_rate = models.FloatField(default=1)
     hp = models.FloatField(default=100)
+    teaching_language = models.ManyToManyField(Language, blank=True)
+    bio = models.TextField(blank=True)
+    video = models.TextField(blank=True, null=True)
+    avatar = models.ImageField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
