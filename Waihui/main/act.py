@@ -434,3 +434,6 @@ def act_buyer_ready_sku(sku):
         sku.status = 7
         sku.save()
     return True
+
+def act_edit_provider_profile(provider, avatar, name, video, teaching_language):
+    provider.avatar = avatar

@@ -34,6 +34,7 @@ from main.act import act_provider_repick
 from main.act import act_provider_ready_sku
 from main.act import act_buyer_ready_sku
 from main.act import act_expand_skus
+from main.act import act_edit_provider_profile
 
 from main.ds import  ds_getanoti
 
@@ -58,6 +59,7 @@ from main.forms import BookSkuForm
 from main.forms import ScheduleForm
 from main.forms import CancelSkuForm
 from main.forms import RoomlinkForm
+from main.forms import ProviderProfileForm
 
 from main.mytest import Test_skufunction
 
@@ -536,18 +538,34 @@ def url_buyer_ready_sku(request, sku_id):
         msg = _(u"诶，你不是这节课的学生呀")
     return render(request, "main/bready.html", locals())
 
+def url_my_profile(request):
+    info = act_getinfo(request)    
+    provider = info.get('current_user').provider
+    skus = Sku.objects.filter(provider=provider, status=0)
+    finished_skus_count = Sku.objects.filter(Q(status=8) | Q(status=9)).count()
+    return render(request, "main/my_profile.html", locals())
+
 def url_provider_profile(request, provider_id):
     info = act_getinfo(request)    
     provider = Provider.objects.get(id=provider_id)
     skus = Sku.objects.filter(provider=provider, status=0)
     finished_skus_count = Sku.objects.filter(Q(status=8) | Q(status=9)).count()
-    return render(request, "main/provider_profile.html", locals())
+    return render(request, "main/profile_provider.html", locals())
 
-# def url_provider_profile_edit(request, provider_id):
-#     into = act_getinfo(request)
-#     provider = Provider.objects.get(id=provider_id)
-#     if info['current_user'] == provider.user:
-#         if request.method == 'POST':
-#             uf = ProviderProfileForm(requset.POST)
-#             if uf.is_valid():
-#                 avatar = 
+def url_provider_profile_edit(request, provider_id):
+    info = act_getinfo(request)
+    provider = Provider.objects.get(id=provider_id)
+    if info['current_user'] == provider.user:
+        if request.method == 'POST':
+            uf = ProviderProfileForm(request.POST, request.FILES)
+            if uf.is_valid():
+                avatar = uf.cleaned_data['avatar']
+                name = uf.cleaned_data['name']
+                video = uf.cleaned_data['video']
+                teaching_language = uf.cleaned_data['teaching_language']
+                result = act_edit_provider_profile(provider=provider,
+                                                   avatar=avatar,
+                                                   name=name,
+                                                   video=video,
+                                                   teaching_language=teaching_language)
+

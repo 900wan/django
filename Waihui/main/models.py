@@ -53,6 +53,7 @@ class Provider(models.Model):
     class Meta:
         verbose_name = "Provider"
         verbose_name_plural = "Providers"
+        db_tablespace = "ImageStore"
 
     def __unicode__(self):
         return u'%s' % self.name
@@ -75,7 +76,9 @@ class Provider(models.Model):
     teaching_language = models.ManyToManyField(Language, blank=True)
     bio = models.TextField(blank=True)
     video = models.TextField(blank=True, null=True)
-    avatar = models.ImageField(blank=True, null=True)
+    avatar = models.ImageField(upload_to="avatar", default='/media/none/a.png', blank=True, null=True)
+    assigned_location = models.TextField(blank=True, null=True)
+    assigned_nationality = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
@@ -130,6 +133,8 @@ class Buyer(models.Model):
     time_zone = models.CharField(max_length=50)
     hp = models.IntegerField(default=100)
     provider = models.ForeignKey(Provider, blank=True, null=True)
+    location = models.TextField(blank=True, null=True)
+    nationality = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     def set_provider(self, provider):

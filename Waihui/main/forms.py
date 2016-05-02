@@ -6,6 +6,7 @@ from main.models import Sku
 from main.models import ReplyToSku
 from main.models import Plan
 from main.models import Order
+from main.models import Language
 
 class SignupForm(forms.Form):
     nickname = forms.CharField(
@@ -90,5 +91,13 @@ class CancelSkuForm(forms.Form):
 class RoomlinkForm(forms.Form):
     roomlink = forms.URLField(required=True)
 
-# class ProviderProfileForm(forms.Form):
-#     # TODO: Define form fields here
+class ImageUploadForm(forms.Form):
+    """image upload form"""
+    image = forms.ImageField()
+
+class ProviderProfileForm(forms.Form):
+    """edit provider profile form"""
+    avatar = forms.ImageField()
+    name = forms.CharField()
+    video = forms.URLField()
+    teaching_language = forms.MultipleChoiceField(queryset=Language.objects.all())
