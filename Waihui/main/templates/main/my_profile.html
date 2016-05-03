@@ -8,6 +8,7 @@
     {{heading}}
 {% endblock title %}
 {% block content %}
+    <p><a href="{% url 'main:edit_profile' %}">============={% trans "edit" %}==============</a></p>
     {% if provider.avatar %}
         <img src="{{provider.avatar.url}}" width="100px" alt="">
     {% endif %}

@@ -550,11 +550,12 @@ def url_provider_profile(request, provider_id):
     provider = Provider.objects.get(id=provider_id)
     skus = Sku.objects.filter(provider=provider, status=0)
     finished_skus_count = Sku.objects.filter(Q(status=8) | Q(status=9)).count()
-    return render(request, "main/profile_provider.html", locals())
+    return render(request, "main/provider_profile.html", locals())
 
-def url_provider_profile_edit(request, provider_id):
+@login_required
+def url_provider_profile_edit(request,):
     info = act_getinfo(request)
-    provider = Provider.objects.get(id=provider_id)
+    provider = info.get('current_user').provider
     if info['current_user'] == provider.user:
         if request.method == 'POST':
             uf = ProviderProfileForm(request.POST, request.FILES)
@@ -568,4 +569,7 @@ def url_provider_profile_edit(request, provider_id):
                                                    name=name,
                                                    video=video,
                                                    teaching_language=teaching_language)
+        else:
+            uf = ProviderProfileForm()
+    return render(request, "main/provider_profile_edit.html", locals())
 

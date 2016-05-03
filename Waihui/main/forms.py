@@ -100,4 +100,5 @@ class ProviderProfileForm(forms.Form):
     avatar = forms.ImageField()
     name = forms.CharField()
     video = forms.URLField()
-    teaching_language = forms.MultipleChoiceField(queryset=Language.objects.all())
+    teaching_language = forms.ModelMultipleChoiceField(queryset=Language.objects.all())
+    
