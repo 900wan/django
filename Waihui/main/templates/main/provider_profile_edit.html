@@ -11,7 +11,7 @@
     <p>===================</p>
     <p>{{result}}</p>
     <p>===================</p>
-    <form action="main:self_provider" method="post" enctype="mutipart/form-data">
+    <form method="post" enctype="mutipart/form-data">
         {{uf.as_p}}
         {% csrf_token %}
         <input type="submit" name="submit">

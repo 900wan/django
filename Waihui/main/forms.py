@@ -97,7 +97,7 @@ class ImageUploadForm(forms.Form):
 
 class ProviderProfileForm(forms.Form):
     """edit provider profile form"""
-    avatar = forms.ImageField()
+    # avatar = forms.ImageField()
     name = forms.CharField()
     video = forms.URLField()
     teaching_language = forms.ModelMultipleChoiceField(queryset=Language.objects.all())

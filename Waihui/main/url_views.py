@@ -38,6 +38,7 @@ from main.act import act_edit_provider_profile
 
 from main.ds import  ds_getanoti
 
+from main.models import User
 from main.models import Language
 from main.models import Provider
 from main.models import Buyer
@@ -545,9 +546,9 @@ def url_my_profile(request):
     finished_skus_count = Sku.objects.filter(Q(status=8) | Q(status=9)).count()
     return render(request, "main/my_profile.html", locals())
 
-def url_provider_profile(request, provider_id):
+def url_provider_profile(request, user_id):
     info = act_getinfo(request)    
-    provider = Provider.objects.get(id=provider_id)
+    provider = User.objects.get(id=user_id).provider
     skus = Sku.objects.filter(provider=provider, status=0)
     finished_skus_count = Sku.objects.filter(Q(status=8) | Q(status=9)).count()
     return render(request, "main/provider_profile.html", locals())
@@ -556,20 +557,22 @@ def url_provider_profile(request, provider_id):
 def url_provider_profile_edit(request,):
     info = act_getinfo(request)
     provider = info.get('current_user').provider
-    if info['current_user'] == provider.user:
-        if request.method == 'POST':
-            uf = ProviderProfileForm(request.POST, request.FILES)
-            if uf.is_valid():
-                avatar = uf.cleaned_data['avatar']
-                name = uf.cleaned_data['name']
-                video = uf.cleaned_data['video']
-                teaching_language = uf.cleaned_data['teaching_language']
-                result = act_edit_provider_profile(provider=provider,
-                                                   avatar=avatar,
-                                                   name=name,
-                                                   video=video,
-                                                   teaching_language=teaching_language)
-        else:
-            uf = ProviderProfileForm()
+    if request.method == 'POST':
+        uf = ProviderProfileForm(request.POST, request.FILES)
+        if uf.is_valid():
+            # avatar = uf.cleaned_data['avatar']
+            name = uf.cleaned_data['name']
+            video = uf.cleaned_data['video']
+            teaching_language = uf.cleaned_data['teaching_language']
+            result = act_edit_provider_profile(provider=provider,
+                                               # avatar=avatar,
+                                               name=name,
+                                               video=video,
+                                               teaching_language=teaching_language)
+    else:
+        uf = ProviderProfileForm(initial={'name':provider.name,
+                                          'video':provider.video,
+                                          'teaching_language':provider.teaching_language.all()})
+        
     return render(request, "main/provider_profile_edit.html", locals())
 
