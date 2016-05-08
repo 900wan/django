@@ -543,15 +543,18 @@ def url_my_profile(request):
     info = act_getinfo(request)    
     provider = info.get('current_user').provider
     skus = Sku.objects.filter(provider=provider, status=0)
-    finished_skus_count = Sku.objects.filter(Q(status=8) | Q(status=9)).count()
+    finished_skus_count = Sku.objects.filter(Q(status=8) | Q(status=9), Q(provider=provider)).count()
     return render(request, "main/my_profile.html", locals())
 
 def url_provider_profile(request, user_id):
     info = act_getinfo(request)    
     provider = User.objects.get(id=user_id).provider
     skus = Sku.objects.filter(provider=provider, status=0)
-    finished_skus_count = Sku.objects.filter(Q(status=8) | Q(status=9)).count()
+    finished_skus_count = Sku.objects.filter(Q(status=8) | Q(status=9), Q(provider=provider)).count()
     return render(request, "main/provider_profile.html", locals())
+
+def url_profile_me(request):
+    pass
 
 @login_required
 def url_provider_profile_edit(request,):
@@ -576,3 +579,7 @@ def url_provider_profile_edit(request,):
         
     return render(request, "main/provider_profile_edit.html", locals())
 
+def url_providers(request):
+    info = act_getinfo(request)
+    providers = Provider.objects.all()
+    return render(request, "main/providers.html", locals())
