@@ -62,8 +62,6 @@ from main.forms import CancelSkuForm
 from main.forms import RoomlinkForm
 from main.forms import ProviderProfileForm
 
-from main.mytest import Test_skufunction
-
 def url_homepage(request):
     language = act_getlanguage(request)
     # user_language = language
@@ -552,9 +550,6 @@ def url_provider_profile(request, user_id):
     skus = Sku.objects.filter(provider=provider, status=0)
     finished_skus_count = Sku.objects.filter(Q(status=8) | Q(status=9), Q(provider=provider)).count()
     return render(request, "main/provider_profile.html", locals())
-
-def url_profile_me(request):
-    pass
 
 @login_required
 def url_provider_profile_edit(request,):
