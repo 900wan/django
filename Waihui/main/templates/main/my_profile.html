@@ -13,6 +13,10 @@
         <a href="{% url 'main:provider_avatar' %}">
             <img src="{{provider.avatar.url}}" width="100px" alt=""> (need a new avatar?)
         </a>
+    {% else %}
+        <a href="{% url 'main:provider_avatar' %}">
+            (Upload an avatar)
+        </a>
     {% endif %}
     <p>
         Video:[{{provider.video}}]
