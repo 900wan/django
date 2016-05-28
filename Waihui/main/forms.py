@@ -91,9 +91,9 @@ class CancelSkuForm(forms.Form):
 class RoomlinkForm(forms.Form):
     roomlink = forms.URLField(required=True)
 
-class ImageUploadForm(forms.Form):
-    """image upload form"""
-    image = forms.ImageField()
+# class ImageUploadForm(forms.Form):
+#     """image upload form"""
+#     image = forms.ImageField()
 
 class ProviderProfileForm(forms.Form):
     """edit provider profile form"""
@@ -101,4 +101,8 @@ class ProviderProfileForm(forms.Form):
     name = forms.CharField()
     video = forms.URLField()
     teaching_language = forms.ModelMultipleChoiceField(queryset=Language.objects.all())
+
+class ProviderAvatarForm(forms.Form):
+    """Form for providers to upload their avatars"""
+    avatar = forms.ImageField()
     

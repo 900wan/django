@@ -76,7 +76,7 @@ class Provider(models.Model):
     teaching_language = models.ManyToManyField(Language, blank=True)
     bio = models.TextField(blank=True)
     video = models.TextField(blank=True, null=True)
-    avatar = models.ImageField(upload_to="avatar", default='/media/none/a.png', blank=True, null=True)
+    avatar = models.ImageField(upload_to="provider_avatars/%Y/%m/%d/", default='/media/none/a.png', blank=True, null=True)
     assigned_location = models.TextField(blank=True, null=True)
     assigned_nationality = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -464,6 +464,13 @@ class Notification(models.Model):
     modified = models.DateTimeField(auto_now=True)
     
 
+
+#upload path methods:
+
+def provider_avatar_path(instance, filename):
+    # TODO 暂未启用
+    # file will be uploaded to MEDIA_ROOT/provider_avatars/user_<id>/
+    return 'provider_avatars/user_{0}/{1}'.format(instance.user.id, filename)
 
 # TODO 有空时咱们一起进行：
 # 默认值、是否必填等有些还需要再调整

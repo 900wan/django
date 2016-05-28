@@ -435,11 +435,16 @@ def act_buyer_ready_sku(sku):
         sku.save()
     return True
 
-def act_edit_provider_profile(provider, avatar, name, video, teaching_language):
+def act_edit_provider_profile(provider, name, video, teaching_language):
     '''对Provider的profile其中的属性进行加工'''
     # provider.avatar = avatar
     provider.name = name
     provider.video = video
     provider.teaching_language = teaching_language
+    provider.save()
+    return True
+
+def act_upload_provider_avatar(provider, new_avatar):
+    provider.avatar = new_avatar
     provider.save()
     return True

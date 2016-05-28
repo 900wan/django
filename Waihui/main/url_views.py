@@ -35,6 +35,7 @@ from main.act import act_provider_ready_sku
 from main.act import act_buyer_ready_sku
 from main.act import act_expand_skus
 from main.act import act_edit_provider_profile
+from main.act import act_upload_provider_avatar
 
 from main.ds import  ds_getanoti
 
@@ -61,6 +62,7 @@ from main.forms import ScheduleForm
 from main.forms import CancelSkuForm
 from main.forms import RoomlinkForm
 from main.forms import ProviderProfileForm
+from main.forms import ProviderAvatarForm
 
 def url_homepage(request):
     language = act_getlanguage(request)
@@ -540,14 +542,14 @@ def url_buyer_ready_sku(request, sku_id):
 def url_my_profile(request):
     info = act_getinfo(request)    
     provider = info.get('current_user').provider
-    skus = Sku.objects.filter(provider=provider, status=0)
+    skus = act_expand_skus(Sku.objects.filter(provider=provider, status=0))
     finished_skus_count = Sku.objects.filter(Q(status=8) | Q(status=9), Q(provider=provider)).count()
     return render(request, "main/my_profile.html", locals())
 
 def url_provider_profile(request, user_id):
     info = act_getinfo(request)    
     provider = User.objects.get(id=user_id).provider
-    skus = Sku.objects.filter(provider=provider, status=0)
+    skus = act_expand_skus(Sku.objects.filter(provider=provider, status=0))
     finished_skus_count = Sku.objects.filter(Q(status=8) | Q(status=9), Q(provider=provider)).count()
     return render(request, "main/provider_profile.html", locals())
 
@@ -573,6 +575,22 @@ def url_provider_profile_edit(request,):
                                           'teaching_language':provider.teaching_language.all()})
         
     return render(request, "main/provider_profile_edit.html", locals())
+
+@login_required
+def url_provider_profile_avatar(request):
+    info = act_getinfo(request)
+    provider = info.get('current_user').provider
+    heading = "Provider's avatar"
+    if request.method == 'POST':
+        uf = ProviderAvatarForm(request.POST, request.FILES)
+        if uf.is_valid():
+            uploadact = act_upload_provider_avatar(provider=provider,
+                                                new_avatar=request.FILES['avatar'])
+            if uploadact:
+                result = "Your new avatar uploaded!"
+    else:
+        uf = ProviderAvatarForm()
+    return render(request, "main/provider_profile_avatar.html", locals())
 
 def url_providers(request):
     info = act_getinfo(request)

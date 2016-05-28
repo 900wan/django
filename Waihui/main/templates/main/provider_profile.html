@@ -8,8 +8,8 @@
     {{heading}}
 {% endblock title %}
 {% block content %}
-    {% if provider.avatar %}
-        <img src="{{provider.avatar.url}}" width="100px" alt="">
+        <a href="{% url 'main:provider_avatar' %}">
+            <img src="{{provider.avatar.url}}" width="100px" alt="">
     {% endif %}
     <p>
         Video:[{{provider.video}}]
