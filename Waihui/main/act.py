@@ -448,3 +448,7 @@ def act_upload_provider_avatar(provider, new_avatar):
     provider.avatar = new_avatar
     provider.save()
     return True
+
+def act_feedback_sku(questionnaire, comment, score):
+    '''提交对于sku的feedback'''
+    pass

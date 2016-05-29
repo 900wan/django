@@ -36,6 +36,7 @@ from main.act import act_buyer_ready_sku
 from main.act import act_expand_skus
 from main.act import act_edit_provider_profile
 from main.act import act_upload_provider_avatar
+from main.act import act_feedback_sku
 
 from main.ds import  ds_getanoti
 
@@ -63,6 +64,7 @@ from main.forms import CancelSkuForm
 from main.forms import RoomlinkForm
 from main.forms import ProviderProfileForm
 from main.forms import ProviderAvatarForm
+from main.forms import ProviderFeedbackSkuForm
 
 def url_homepage(request):
     language = act_getlanguage(request)
@@ -585,7 +587,7 @@ def url_provider_profile_avatar(request):
         uf = ProviderAvatarForm(request.POST, request.FILES)
         if uf.is_valid():
             uploadact = act_upload_provider_avatar(provider=provider,
-                                                new_avatar=request.FILES['avatar'])
+                                                   new_avatar=request.FILES['avatar'])
             if uploadact:
                 result = "Your new avatar uploaded!"
     else:
@@ -596,3 +598,31 @@ def url_providers(request):
     info = act_getinfo(request)
     providers = Provider.objects.all()
     return render(request, "main/providers.html", locals())
+
+def url_feedback_sku(request, sku_id):
+    info = act_getinfo(request)
+    sku = Sku.objects.get(id=sku_id)
+    result = "HI there, i can't tell the info"
+    if info.get('current_user').provider == sku.provider:
+        if request.method == 'POST':
+            uf = ProviderFeedbackSkuForm(request.POST)
+            if uf.is_valid():
+                questionnaire = uf.cleaned_data['questionnaire']
+                comment = uf.cleaned_data['comment']
+                score = uf.cleaned_data['score']
+                result = act_feedback_sku(questionnaire=questionnaire, comment=comment, score=score)
+        else:
+            uf = ProviderFeedbackSkuForm()
+            result = "You sure are the provider of this cousrs "
+    elif info.get('current_user').buyer in sku.buyer.all():
+        if request.method == 'POST':
+            uf = ProviderFeedbackSkuForm(request.POST)
+            if uf.is_valid():
+                questionnaire = uf.cleaned_data['questionnaire']
+                comment = uf.cleaned_data['comment']
+                score = uf.cleaned_data['score']
+                result = act_feedback_sku(questionnaire=questionnaire, comment=comment, score=score)
+        else:
+            uf = ProviderFeedbackSkuForm()
+            result = "you sure are the buyer of this coures"
+    return render(request, "main/feedback_sku.html", locals())

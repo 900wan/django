@@ -10,7 +10,7 @@
 {% block content %}
         <a href="{% url 'main:provider_avatar' %}">
             <img src="{{provider.avatar.url}}" width="100px" alt="">
-    {% endif %}
+        </a>
     <p>
         Video:[{{provider.video}}]
     </p>
@@ -59,7 +59,8 @@
                             NOW
                         {% elif sku.is_past%}
                             past
-                        {% endif %}
+                
+            </a>
                     </td>
                     <td>{{sku.id}}</td>
                     <td>{{sku.provider}}</td>
