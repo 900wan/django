@@ -8,7 +8,12 @@
     <p>===================</p>
     <p>{{result}}</p>
     <p>===================</p>
-    <h2>Say something about this course</h2>
+    <h2>{% if identity == "provider" %}
+        Hi, provider.
+        {% elif identity == "buyer" %}
+        Hi, Buyer.
+    {% endif %}
+    say something about this course</h2>
     <form enctype="multipart/form-data" method="post">
         {{uf.as_p}}
         {% csrf_token %}

@@ -449,6 +449,16 @@ def act_upload_provider_avatar(provider, new_avatar):
     provider.save()
     return True
 
-def act_feedback_sku(questionnaire, comment, score):
-    '''提交对于sku的feedback'''
-    pass
+def act_provider_feedback_sku(questionnaire, comment, sku, buyer):
+    '''提交provider对于sku向buyer的feedback'''
+    sku.ReviewToBuyer.questionnaire = questionnaire
+    sku.ReviewToBuyer.comment = comment
+    sku.ReviewToBuyer.save()
+    return sku.ReviewToBuyer.comment
+
+def act_buyer_feedback_sku(questionnaire, comment, sku, buyer):
+    '''提交buyer对于sku对provider的feedback'''
+    sku.ReviewToProvider.questionnaire = questionnaire
+    sku.ReviewToProvider.comment = comment
+    sku.ReviewToProvider.save()
+    return sku.ReviewToProvider.comment

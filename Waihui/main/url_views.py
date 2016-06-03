@@ -36,7 +36,8 @@ from main.act import act_buyer_ready_sku
 from main.act import act_expand_skus
 from main.act import act_edit_provider_profile
 from main.act import act_upload_provider_avatar
-from main.act import act_feedback_sku
+from main.act import act_buyer_feedback_sku
+from main.act import act_provider_feedback_sku
 
 from main.ds import  ds_getanoti
 
@@ -65,6 +66,7 @@ from main.forms import RoomlinkForm
 from main.forms import ProviderProfileForm
 from main.forms import ProviderAvatarForm
 from main.forms import ProviderFeedbackSkuForm
+from main.forms import BuyerFeedbackSkuForm
 
 def url_homepage(request):
     language = act_getlanguage(request)
@@ -604,24 +606,25 @@ def url_feedback_sku(request, sku_id):
     sku = Sku.objects.get(id=sku_id)
     result = "HI there, i can't tell the info"
     if info.get('current_user').provider == sku.provider:
+        identity = "provider"
         if request.method == 'POST':
             uf = ProviderFeedbackSkuForm(request.POST)
             if uf.is_valid():
                 questionnaire = uf.cleaned_data['questionnaire']
                 comment = uf.cleaned_data['comment']
-                score = uf.cleaned_data['score']
-                result = act_feedback_sku(questionnaire=questionnaire, comment=comment, score=score)
+                buyer = uf.cleaned_data['buyer']
+                result = act_provider_feedback_sku(questionnaire=questionnaire, comment=comment, sku=sku, buyer=buyer)
         else:
             uf = ProviderFeedbackSkuForm()
             result = "You sure are the provider of this cousrs "
     elif info.get('current_user').buyer in sku.buyer.all():
+        identity = "buyer"
         if request.method == 'POST':
-            uf = ProviderFeedbackSkuForm(request.POST)
+            uf = BuyerFeedbackSkuForm(request.POST)
             if uf.is_valid():
                 questionnaire = uf.cleaned_data['questionnaire']
                 comment = uf.cleaned_data['comment']
-                score = uf.cleaned_data['score']
-                result = act_feedback_sku(questionnaire=questionnaire, comment=comment, score=score)
+                result = act_buyer_feedback_sku(questionnaire=questionnaire, comment=comment, sku=sku, buyer=info.get('current_user'))
         else:
             uf = ProviderFeedbackSkuForm()
             result = "you sure are the buyer of this coures"

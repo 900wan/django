@@ -115,6 +115,9 @@
     {% endif %}
 
     <p>================================</p>
-    <p><a href="{% url 'main:feedback_sku' sku.id %}">Give a Feedback</a></p>
+    {% if sku.status == 8 %}
+        <p><a href="{% url 'main:feedback_sku' sku.id %}">Give a Feedback</a></p>
+    {% endif %}
+    
 
 {% endblock content %}

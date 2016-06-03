@@ -110,5 +110,9 @@ class ProviderFeedbackSkuForm(forms.Form):
     """Form for providers to feedback on a course"""
     questionnaire = forms.CharField(max_length=200)
     comment = forms.CharField(max_length=200)
-    score = forms.FloatField()
+    buyer = forms.ModelChoiceField(queryset=None)
     
+class BuyerFeedbackSkuForm(forms.Form):
+    """Form for buyers to feedback on a course"""
+    questionnaire = forms.CharField(max_length=200)
+    comment = forms.CharField(max_length=200)
