@@ -609,6 +609,7 @@ def url_feedback_sku(request, sku_id):
         identity = "provider"
         if request.method == 'POST':
             uf = ProviderFeedbackSkuForm(request.POST)
+            uf.fields('buyer').queryset = sku.ReviewToBuyer.buyer.all()
             if uf.is_valid():
                 questionnaire = uf.cleaned_data['questionnaire']
                 comment = uf.cleaned_data['comment']
