@@ -451,6 +451,8 @@ def act_upload_provider_avatar(provider, new_avatar):
 
 def act_provider_feedback_sku(questionnaire, comment, sku, buyer):
     '''提交provider对于sku向buyer的feedback'''
+    ReviewToBuyer.sku = sku
+    ReviewToBuyer.save()
     sku.ReviewToBuyer.questionnaire = questionnaire
     sku.ReviewToBuyer.comment = comment
     sku.ReviewToBuyer.save()
