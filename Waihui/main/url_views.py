@@ -609,14 +609,19 @@ def url_feedback_sku(request, sku_id):
         identity = "provider"
         if request.method == 'POST':
             uf = ProviderFeedbackSkuForm(request.POST)
-            uf.fields('buyer').queryset = Buyer.objects.all()
+            uf.fields.get('buyer').queryset = sku.buyer.all()
             if uf.is_valid():
                 questionnaire = uf.cleaned_data['questionnaire']
                 comment = uf.cleaned_data['comment']
                 buyer = uf.cleaned_data['buyer']
                 result = act_provider_feedback_sku(questionnaire=questionnaire, comment=comment, sku=sku, buyer=buyer)
         else:
-            uf = ProviderFeedbackSkuForm()
+            if sku.buyer.all().count ==1:
+                uf = ProviderFeedbackSkuForm(initial={'buyer':sku.buyer.all()[0]})
+                # uf.fields.get('buyer').queryset = sku.buyer.all()
+            else:
+                uf = ProviderFeedbackSkuForm()
+                uf.fields.get('buyer').queryset = sku.buyer.all()
             result = "You sure are the provider of this cousrs "
     elif info.get('current_user').buyer in sku.buyer.all():
         identity = "buyer"
@@ -625,7 +630,7 @@ def url_feedback_sku(request, sku_id):
             if uf.is_valid():
                 questionnaire = uf.cleaned_data['questionnaire']
                 comment = uf.cleaned_data['comment']
-                result = act_buyer_feedback_sku(questionnaire=questionnaire, comment=comment, sku=sku, buyer=info.get('current_user'))
+                result = act_buyer_feedback_sku(questionnaire=questionnaire, comment=comment, sku=sku, buyer=info.get('current_user').buyer)
         else:
             uf = ProviderFeedbackSkuForm()
             result = "you sure are the buyer of this coures"

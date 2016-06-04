@@ -7,6 +7,9 @@
 {% block content %}
     <p>===================</p>
     <p>{{result}}</p>
+    {% if sku.status = 8 %}
+        
+    
     <p>===================</p>
     <h2>{% if identity == "provider" %}
         Hi, provider.
@@ -19,5 +22,9 @@
         {% csrf_token %}
         <input type="submit" name="submit">
     </form>
-
+    
+    {% else %}
+        不能评价啦
+        <p>==================</p>
+    {% endif %}
 {% endblock content %}

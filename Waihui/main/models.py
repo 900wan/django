@@ -319,7 +319,7 @@ class ReviewToBuyer(models.Model):
         pass
     provider = models.ForeignKey(Provider)
     buyer = models.ForeignKey(Buyer)
-    sku = models.OneToOneField(Sku)
+    sku = models.ForeignKey(Sku)
     questionnaire = models.CharField(max_length=50, blank=True, null=True)
     comment = models.CharField(max_length=50, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
