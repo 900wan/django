@@ -291,11 +291,11 @@ class Wallet(models.Model):
 class ReviewToProvider(models.Model):
 
     class Meta:
-        verbose_name = "ReviewTovProvider"
-        verbose_name_plural = "ReviewTovProviders"
+        verbose_name = "ReviewToProvider"
+        verbose_name_plural = "ReviewToProviders"
 
     def __unicode__(self):
-        return u'%s' % self.score
+        return u'%s' % 'SkuID:[' + str(self.sku.id) + ']' + ' Score:[' + str(self.score) + '] ' +str(self.buyer.nickname) + ' reviews to ' + str(self.provider.name)
     provider = models.ForeignKey(Provider)
     buyer = models.ForeignKey(Buyer)
     sku = models.OneToOneField(Sku)
@@ -303,10 +303,7 @@ class ReviewToProvider(models.Model):
     comment = models.CharField(max_length=250, blank=True, null=True)
     score = models.FloatField()
     created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
-    def get_score(self):
-        # questionnaire =
-        pass 
+    modified = models.DateTimeField(auto_now=True) 
 
 # index 10
 class ReviewToBuyer(models.Model):
@@ -316,7 +313,7 @@ class ReviewToBuyer(models.Model):
         verbose_name_plural = "ReviewToBuyers"
 
     def __unicode__(self):
-        pass
+        return u'%s' % 'SkuID:[' + str(self.sku.id) + ']' + str(self.provider.name) + ' reviews to ' + str(self.buyer.nickname)
     provider = models.ForeignKey(Provider)
     buyer = models.ForeignKey(Buyer)
     sku = models.ForeignKey(Sku)

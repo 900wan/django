@@ -44,7 +44,7 @@ $(document).ready(function(){
     weekday[6]="六";
 
     var dateitem = new Date();
-    dateitem.setFullYear({{now_tz|date:"Y"}},({{now_tz|date:"m"}}-1),{{now_tz|date:"d"}});
+    dateitem.setFullYear({{now_tz|date:"Y"}},({{now_tz|date:"m"}}-1),{{now_tz|date:"d"}});//这特么月份是从0开始de
     var datenow = new Date(dateitem);
     dateitem.setHours(0,0,0,0);
     for (var j = 0; j < 3; j++) {

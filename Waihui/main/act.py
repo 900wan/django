@@ -459,8 +459,10 @@ def act_provider_feedback_sku(questionnaire, comment, sku, buyer):
 
 def act_buyer_feedback_sku(questionnaire, comment, sku, buyer):
     '''提交buyer对于sku对provider的feedback'''
-    provider=sku.provider
-    rtb = ReviewToProvider(sku=sku, questionnaire=questionnaire, comment=comment, buyer=buyer, provider=provider, score=100)
+    provider = sku.provider
+    raw_json = json.loads(questionnaire)
+    score = (raw_json.get('q1') + raw_json.get('q2') + raw_json.get('q3') + raw_json.get('q4')) * 2.5
+    rtb = ReviewToProvider(sku=sku, questionnaire=questionnaire, comment=comment, buyer=buyer, provider=provider, score=score)
     rtb.save()
     sku.status=9
     sku.save()
