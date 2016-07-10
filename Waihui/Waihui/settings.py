@@ -36,7 +36,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'main'
+    'DjangoUeditor',
+    'main',
+    'minutes'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -68,9 +70,9 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 
-LANGUAGE_CODE = 'en'
+LANGUAGE_CODE = 'zh-CN'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -93,4 +95,3 @@ MEDIA_URL = '/media/'
 #         'BACKEND': 'django.template.backends.django.DjangoTemplates',
 #     },
 # ]
-
