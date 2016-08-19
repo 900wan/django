@@ -430,12 +430,11 @@ def url_schedule(request):
         if request.method == 'POST':
             uf = ScheduleForm(request.POST)
             if uf.is_valid():
-                raw_schedule_json = uf.cleaned_data['schedule']
                 set_provider = uf.cleaned_data['provider']
-                raw_schedule=json.loads(raw_schedule_json)
-                schedule=[]
+                raw_schedule = json.loads(uf.cleaned_data['schedule'])
+                schedule = []
                 for raw_item in raw_schedule:
-                    item={}
+                    item = {}
                     try:
                         if raw_item.get('topic_id'):
                             item['topic']=Topic.objects.get(id=int(raw_item.get('topic_id')))
