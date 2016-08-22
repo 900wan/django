@@ -615,7 +615,7 @@ def url_feedback_sku(request, sku_id):
                 buyer = uf.cleaned_data['buyer']
                 result = act_provider_feedback_sku(questionnaire=questionnaire, comment=comment, sku=sku, buyer=buyer)
         else:
-            if sku.buyer.all().count ==1:
+            if sku.buyer.all().count == 1:
                 uf = ProviderFeedbackSkuForm(initial={'buyer':sku.buyer.all()[0]})
                 # uf.fields.get('buyer').queryset = sku.buyer.all()
             else:
