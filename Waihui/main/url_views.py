@@ -438,7 +438,7 @@ def url_schedule(request):
                     try:
                         if raw_item.get('topic_id'):
                             item['topic']=Topic.objects.get(id=int(raw_item.get('topic_id')))
-                        item['start_time']=tz.localize(datetime.datetime.strptime(raw_item['start_time'],"%Y-%m-%d %H:%M:%S"))
+                            item['start_time']=tz.localize(datetime.datetime.strptime(raw_item['start_time'],"%Y-%m-%d %H:%M:%S"))
                         if raw_item.get('end_time'):
                             item['end_time']=tz.localize(datetime.datetime.strptime(raw_item['end_time'],"%Y-%m-%d %H:%M:%S"))
                         else:

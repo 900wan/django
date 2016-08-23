@@ -24,6 +24,9 @@
                     <th>End time</th>
                     <th>Created</th>
                     <th>Modified</th>
+                    {% if is_provider == 1 %}
+                        <th>Score</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -36,6 +39,9 @@
                     <td>{{sku.end_time}}</td>
                     <td>{{sku.created}}</td>
                     <td>{{sku.modified}}</td>
+                    {% if is_provider == 1 %}
+                        <th>{{sku.reviewtoprovider.score}}</th>
+                    {% endif %
                 </tr>
             </tbody>
         </table>

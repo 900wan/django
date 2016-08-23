@@ -272,7 +272,7 @@ class Wallet(models.Model):
         return u'%s' % self.cny_balance
     user = models.OneToOneField(User)
     cny_balance = models.FloatField(default=0)
-    display_currency = models.CharField( default= "CNY" , max_length=50)
+    display_currency = models.CharField(default="CNY", max_length=50)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
@@ -291,11 +291,11 @@ class Wallet(models.Model):
 class ReviewToProvider(models.Model):
 
     class Meta:
-        verbose_name = "ReviewTovProvider"
-        verbose_name_plural = "ReviewTovProviders"
+        verbose_name = "ReviewToProvider"
+        verbose_name_plural = "ReviewToProviders"
 
     def __unicode__(self):
-        return u'%s' % self.score
+        return u'%s' % 'SkuID:[' + str(self.sku.id) + ']' +'Score:[' + 'str(self.score)' +']' +str(self.buyer.nickname) + 'reviews to' + str(self.provider.name)
     provider = models.ForeignKey(Provider)
     buyer = models.ForeignKey(Buyer)
     sku = models.OneToOneField(Sku)
@@ -304,9 +304,6 @@ class ReviewToProvider(models.Model):
     score = models.FloatField()
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
-    def get_score(self):
-        # questionnaire =
-        pass 
 
 # index 10
 class ReviewToBuyer(models.Model):
@@ -316,7 +313,7 @@ class ReviewToBuyer(models.Model):
         verbose_name_plural = "ReviewToBuyers"
 
     def __unicode__(self):
-        pass
+        return u'%s' % 'SkuID:[' + str(self.sku.id) + ']' + str(self.provider.name) + 'reviews to' + str(self.buyer.nickname)
     provider = models.ForeignKey(Provider)
     buyer = models.ForeignKey(Buyer)
     sku = models.ForeignKey(Sku)
@@ -342,6 +339,7 @@ class ReplyToSku(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
+# index 12
 class OrderType(models.Model):
 
     class Meta:
@@ -352,6 +350,7 @@ class OrderType(models.Model):
         return u'%s' % self.type
     type = models.CharField( max_length=50)
 
+# index 13
 class Order(models.Model):
 
     class Meta:
