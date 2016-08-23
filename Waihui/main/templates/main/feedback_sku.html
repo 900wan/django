@@ -6,17 +6,17 @@
 {% endblock title %}
 {% block content %}
     <p>===================</p>
-    <p>{{result}}</p>
-    {% if sku.status == 8 %}
-        
-    
+        <p>{{result}}</p>
+        {% if sku.status == 8 %}
     <p>===================</p>
-    <h2>{% if identity == "provider" %}
+    <h2>
+        {% if identity == "provider" %}
         Hi, provider.
         {% elif identity == "buyer" %}
         Hi, Buyer.
-    {% endif %}
-    say something about this course</h2>
+        {% endif %}
+        say something about this course
+    </h2>
     <form enctype="multipart/form-data" method="post">
         {{uf.as_p}}
         {% csrf_token %}

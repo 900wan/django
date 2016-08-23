@@ -31,7 +31,7 @@
                     <td>{{sku.topic}}</td>
                     <td>{{sku.status}}({{sku.get_status_display}})</td>
                     <td>{{sku.provider}}</td>
-                    <td>{{sku.buyer.all}}</td>
+                    <td>{{sku.buyer.all|safeseq|join:", "}}</td>
                     <td>{{sku.start_time}}</td>
                     <td>{{sku.end_time}}</td>
                     <td>{{sku.created}}</td>
