@@ -631,6 +631,6 @@ def url_feedback_sku(request, sku_id):
                 comment = uf.cleaned_data['comment']
                 result = act_buyer_feedback_sku(questionnaire=questionnaire, comment=comment, sku=sku, buyer=info.get('current_user').buyer)
         else:
-            uf = ProviderFeedbackSkuForm()
+            uf = BuyerFeedbackSkuForm()
             result = "you sure are the buyer of this coures"
     return render(request, "main/feedback_sku.html", locals())
