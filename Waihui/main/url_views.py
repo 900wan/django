@@ -68,6 +68,12 @@ from main.forms import ProviderAvatarForm
 from main.forms import ProviderFeedbackSkuForm
 from main.forms import BuyerFeedbackSkuForm
 
+from weibo import APIClient
+
+APP_KEY = '1234567' # app key
+APP_SECRET = 'abcdefghijklmn' # app secret
+CALLBACK_URL = 'http://www.example.com/callback' # callback url
+
 def url_homepage(request):
     language = act_getlanguage(request)
     # user_language = language
@@ -131,6 +137,12 @@ def url_login(request):
         #     return render(request, 'main.test_result.html',{'uf':uf})
     else:
         return render(request, "main/login.html", {'info':info, 'uf':uf, 'msg':msg, 'next':next})
+
+def url_loginWithWeibo(request):
+    client = APIClient(app_key=APP_KEY, app_secret=APP_SECRET, redirect_uri=CALLBACK_URL)
+    url = client.get_authorize_url()
+    return HttpResponseRedirect(url)
+# TODO: redirect to url
 
 # @login_required
 def url_logout(request):
@@ -616,7 +628,7 @@ def url_feedback_sku(request, sku_id):
                 buyer = uf.cleaned_data['buyer']
                 result = act_provider_feedback_sku(questionnaire=questionnaire, comment=comment, sku=sku, buyer=buyer)
         else:
-            if sku.buyer.all().count ==1:
+            if sku.buyer.all().count == 1:
                 uf = ProviderFeedbackSkuForm(initial={'buyer':sku.buyer.all()[0]})
                 # uf.fields.get('buyer').queryset = sku.buyer.all()
             else:
