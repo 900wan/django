@@ -1,16 +1,15 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from main import url_views
 from main import test_views
 
-test_patterns = [
-     url(r'$', test_views.url_test, ),
-     url(r'language/$', test_views.get_language, name='get_language')
-                ]
 
-urlpatterns =  patterns('',
+test_patterns = [
+                 url(r'$', test_views.url_test, ),
+                 url(r'language/$', test_views.get_language, name='get_language')]
+urlpatterns = [
     # Examples:
     # url(r'^$', 'Waihui.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
@@ -56,4 +55,4 @@ urlpatterns =  patterns('',
                         url(r'^mytest/$', url_views.url_test, name="mytest"),
                         url(r'^mytest/(\d+)/$', url_views.url_idtest, name="idtest"),
                         # url(r'^reviews/$', url_views.url_reviews, name='reviews'),
-                       ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+                       ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
