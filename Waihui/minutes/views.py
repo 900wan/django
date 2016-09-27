@@ -1,8 +1,12 @@
+ # -*- coding: utf-8 -*-
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse
-import qrcode
+from django.http import HttpResponse, HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from cStringIO import StringIO
 from minutes.models import *
+from minutes.forms import *
+from minutes.acts import *
+import qrcode
 
 
 def index(request):
@@ -24,6 +28,17 @@ def entry_detail(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
     return render(request, "entry_detail.html", locals())
 
-def attend(request, entry_id):
+def easy_signin(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
-    return render(request, "entry_detail.html", locals())
+    if request.method == 'POST':
+        uf = AttendForm(request.POST)
+        if uf.is_valid():
+            display_name = uf.cleaned_data['display_name']
+            department = uf.cleaned_data['department']
+            phonenumber = uf.cleaned_data['phonenumber']
+            result = act_signinmeeting(display_name=display_name, department=department, phonenumber=phonenumber)
+            return HttpResponseRedirect(reverse('entry_detail', args=[1]))
+    else:
+        uf = AttendForm()
+        result = "请将参会信息填写完整"
+    return render(request, "easy_signin.html", locals())
