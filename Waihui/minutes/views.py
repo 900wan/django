@@ -42,7 +42,7 @@ def easy_signin(request, entry_id):
             display_name = uf.cleaned_data['display_name']
             department = uf.cleaned_data['department']
             phonenumber = uf.cleaned_data['phonenumber']
-            result = act_signinmeeting(display_name=display_name, department=department, phonenumber=phonenumber)
+            result = act_signinmeeting(display_name=display_name, department=department, phonenumber=phonenumber, entry=entry)
             return HttpResponseRedirect(reverse('entry_detail', args=[entry_id]))
     else:
         uf = AttendForm()

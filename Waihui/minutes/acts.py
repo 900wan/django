@@ -6,11 +6,12 @@ from cStringIO import StringIO
 from minutes.models import *
 from minutes.forms import *
 
-def act_signinmeeting(display_name, department, phonenumber):
+def act_signinmeeting(display_name, department, phonenumber, entry):
 	profile = Profile(
 		display_name=display_name,
 		department=department,
 		phonenumber=phonenumber,
+        entry=entry
 		)
 	profile.save()
 	result = "OK, " + unicode(display_name) + _(u", 您已经成功签到，收藏该地址获取会议纪要")
