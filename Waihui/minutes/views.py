@@ -57,11 +57,11 @@ def wechat_signin(request, entry_id):
         code = request.GET['code']
         req = urllib2.urlopen("https://api.weixin.qq.com/sns/oauth2/access_token?appid=wxd78d86d0ebcc727b&secret=222b3622f6f6070eb408a244d9d142a7&code="+ str(code) +"&grant_type=authorization_code")
         json_data = json.loads(req.read())
-        return HttpResponse(json_data)
-        # if json_data.get('openid'):
-        #     return HttpResponse(json_data.get('openid'))
-        # else:
-        #     return HttpResponse('error, details' + str(json_data))
+        # return HttpResponse(json_data)
+        if json_data.get('openid'):
+            return HttpResponse(json_data.get('openid'))
+        else:
+            return HttpResponse(json_data)
 
 def baidu(request):
     returncode = HttpResponseRedirect("www.baidu.com")
