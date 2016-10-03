@@ -6,19 +6,6 @@ from django.contrib.auth.models import User
 from DjangoUeditor.models import UEditorField
 
 # Create your models here.
-
-
-class Profile(models.Model):
-    """用户基本信息"""
-    display_name = models.CharField(u'姓名', max_length=50, blank=True, null=True)
-    department = models.CharField(u'部门', max_length=100, blank=True, null=True)
-    phonenumber = models.CharField(u'手机', max_length=50, blank=True, null=True)
-    wx_id = models.CharField(u'微信', max_length=100, blank=True, null=True)
-    user = models.OneToOneField(User, blank=True, null=True)
-    entry = models.ForeignKey(Entry)
-    def __unicode__(self):
-        return u'%s' % self.display_name
-
 class Entry(models.Model):
     """会议记录条目"""
     title = models.CharField(u'会议标题', max_length=100)
@@ -48,3 +35,15 @@ class Entry(models.Model):
     content_A_save = models.TextField(u'议程（手动保存）', blank=True)
     content_B_save = models.TextField(u'纪要（手动保存）', blank=True)
     content_C_save = models.TextField(u'下一步工作安排（手动保存）', blank=True)
+
+
+class Profile(models.Model):
+    """用户基本信息"""
+    display_name = models.CharField(u'姓名', max_length=50, blank=True, null=True)
+    department = models.CharField(u'部门', max_length=100, blank=True, null=True)
+    phonenumber = models.CharField(u'手机', max_length=50, blank=True, null=True)
+    wx_id = models.CharField(u'微信', max_length=100, blank=True, null=True)
+    user = models.OneToOneField(User, blank=True, null=True)
+    entry = models.ForeignKey(Entry)
+    def __unicode__(self):
+        return u'%s' % self.display_name
