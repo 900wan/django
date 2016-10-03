@@ -28,12 +28,6 @@ def entry_detail(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
     return render(request, "entry_detail.html", locals())
 
-
-def qrcode_show(request, entry_id):
-    entry = get_object_or_404(Entry, id=entry_id)
-    return render(request, "qrcode_show.html", locals())
-
-
 def easy_signin(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
     if request.method == 'POST':
@@ -43,7 +37,7 @@ def easy_signin(request, entry_id):
             department = uf.cleaned_data['department']
             phonenumber = uf.cleaned_data['phonenumber']
             result = act_signinmeeting(display_name=display_name, department=department, phonenumber=phonenumber)
-            return HttpResponseRedirect(reverse('entry_detail', args=[entry_id]))
+            return HttpResponseRedirect(reverse('entry_detail', args=[1]))
     else:
         uf = AttendForm()
         result = "请将参会信息填写完整"
