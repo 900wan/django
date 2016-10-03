@@ -6,7 +6,7 @@ from minutes.models import *
 
 
 def index(request):
-    return HttpResponse("This is Javi Chen Minutes!")
+    return HttpResponse("This is Javy Chen Minutes!")
 
 
 def generate_qrcode(request, data):
@@ -21,5 +21,9 @@ def generate_qrcode(request, data):
 
 
 def entry_detail(request, entry_id):
+    entry = get_object_or_404(Entry, id=entry_id)
+    return render(request, "entry_detail.html", locals())
+
+def attend(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
     return render(request, "entry_detail.html", locals())
