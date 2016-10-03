@@ -461,6 +461,21 @@ class Notification(models.Model):
     modified = models.DateTimeField(auto_now=True)
     
 
+#For the function minutes:
+class mit_attendance(models.Model):
+
+    class Meta:
+        verbose_name = "mit_attendance"
+        verbose_name_plural = "mit_attendances"
+
+    def __unicode__(self):
+        return u'%s' % self.name 
+    name = models.CharField(, max_length=50)
+    department = models.CharField(, max_length=50)
+    email = models.EmailField()
+    phonenumber = models.PhoneNumberField(blank=True, null=True)
+
+
 #upload path methods:
 
 def provider_avatar_path(instance, filename):
