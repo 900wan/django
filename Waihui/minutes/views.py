@@ -16,7 +16,7 @@ def index(request):
 
 
 def generate_qrcode(request, data):
-    img = qrcode.make(data)
+    img = qrcode.make(data.replace("[q]","?"))
     buf = StringIO()
     img.save(buf)
     image_stream = buf.getvalue()
