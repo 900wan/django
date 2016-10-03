@@ -13,7 +13,7 @@
                 <h1>{{ entry.title }} <br/> <small>{{ entry.start_time }}</small></h1>
             </div>
             <p>fx
-                <img src="/qr/{{ request.build_absolute_uri }}" alt="扫一扫" width="100%"/>
+                <img src="https://open.weixin.qq.com/connect/oauth2/authorize[q]appid=wxd78d86d0ebcc727b&redirect_uri=http://hanyu.in/minutes/{{entry.id}}/wxsignin/&response_type=code&scope=snsapi_base#wechat_redirect" alt="扫一扫" width="100%"/>
             </p>
             <div class="well">
                 <h2>{{result}}</h2>
