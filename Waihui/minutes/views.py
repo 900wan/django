@@ -53,4 +53,5 @@ def wechat_signin(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
     if request.method == 'GET':
         code = request.GET['code']
-    return HttpResponseRedirect("https://api.weixin.qq.com/sns/oauth2/access_token?appid=wxd78d86d0ebcc727b&secret=222b3622f6f6070eb408a244d9d142a7&code="+ str(code) +"&grant_type=authorization_code ")
+    wechat_id = HttpResponseRedirect("https://api.weixin.qq.com/sns/oauth2/access_token?appid=wxd78d86d0ebcc727b&secret=222b3622f6f6070eb408a244d9d142a7&code="+ str(code) +"&grant_type=authorization_code ")
+    return HttpResponse(wechat_id)
