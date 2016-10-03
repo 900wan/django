@@ -49,7 +49,8 @@ def easy_signin(request, entry_id):
         result = "请将参会信息填写完整"
     return render(request, "easy_signin.html", locals())
 
-def wechat_signin(request):
+def wechat_signin(request, entry_id):
+    entry = get_object_or_404(Entry, id=entry_id)
     if request.method == 'GET':
         code = request.GET['CODE']
     return HttpResponseRedirect("https://api.weixin.qq.com/sns/oauth2/access_token?appid=wxd78d86d0ebcc727b&secret=222b3622f6f6070eb408a244d9d142a7&code="&code&"&grant_type=authorization_code ")
