@@ -66,7 +66,16 @@ def wechat_signin(request, entry_id):
         json_data = json.loads(req.read())
         # return HttpResponse(json_data)
         if json_data.get('openid'):
+            wx_id = json_data.get('openid')
+            if Profile.objects.filter(wx_id=str(wx_id)):
+                return HttpResponse("yes")
             return HttpResponse(json_data.get('openid'))
         else:
             return HttpResponse(json_data)
+
+def trys(request):
+    wx_id='onlpmwit78qut1273l9jdx5LJgac'
+    profile = Profile.objects.filter(wx_id=wx_id)
+    return HttpResponse(profile)
+
 
