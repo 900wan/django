@@ -1,6 +1,6 @@
  # -*- coding: utf-8 -*-
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
+from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from cStringIO import StringIO
 from minutes.models import *
@@ -39,7 +39,7 @@ def qrcode_show(request, entry_id):
     return render(request, "qrcode_show.html", locals())
 
 def qr_jumper(request, entry_id):
-    url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + APPID + "&redirect_uri="+HttpRequest.get_host()+"/minutes/"+ entry_id +"/wxsignin/&response_type=code&scope=snsapi_userinfo#wechat_redirect"
+    url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + APPID + "&redirect_uri=" + request.META['HTTP_HOST'] + "/minutes/"+ entry_id +"/wxsignin/&response_type=code&scope=snsapi_userinfo#wechat_redirect"
     return HttpResponseRedirect(url)
 
 
