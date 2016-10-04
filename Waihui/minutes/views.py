@@ -1,11 +1,12 @@
  # -*- coding: utf-8 -*-
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
 from django.core.urlresolvers import reverse
 from cStringIO import StringIO
 from minutes.models import *
 from minutes.forms import *
 from minutes.acts import *
+from minutes.statics import *
 import urllib2
 import json
 import qrcode
@@ -33,7 +34,13 @@ def entry_detail(request, entry_id):
 
 def qrcode_show(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
+    appid = APPID
+    qr = "/qr/"
     return render(request, "qrcode_show.html", locals())
+
+def qr_jumper(request, entry_id):
+    url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + APPID + "&redirect_uri="+HttpRequest.get_host()+"/minutes/"+ entry_id +"/wxsignin/&response_type=code&scope=snsapi_userinfo#wechat_redirect"
+    return HttpResponseRedirect(url)
 
 
 def easy_signin(request, entry_id):
@@ -63,6 +70,3 @@ def wechat_signin(request, entry_id):
         else:
             return HttpResponse(json_data)
 
-def baidu(request):
-    returncode = HttpResponseRedirect("www.baidu.com")
-    return HttpResponse(returncode)

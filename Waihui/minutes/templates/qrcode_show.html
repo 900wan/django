@@ -12,8 +12,7 @@
             <div class="page-header">
                 <h1>{{ entry.title }} <br/> <small>{{ entry.start_time }}</small></h1>
             </div>
-            <p>fx
-                <img src="/qr/https://open.weixin.qq.com/connect/oauth2/authorize[q]appid=wxd78d86d0ebcc727b&redirect_uri=http://hanyu.in/minutes/{{entry.id}}/wxsignin/&response_type=code&scope=snsapi_userinfo#wechat_redirect" alt="扫一扫" width="100%"/>
+            <p>fx:{{appid}},{{secret}}
             </p>
             <div class="well">
                 <h2>{{result}}</h2>
@@ -28,8 +27,9 @@
             <h2>下一步工作安排</h2>
                 {{entry.content_C|safe}}
         </div>
-        <!-- <div class="col-md-4">
-        </div> --> 
+        <div class="col-md-4">
+                <img src="{{qr}}http://{{request.META.HTTP_HOST}}{% url 'qr_jumper' entry_id%}"  alt="扫一扫" width="100%"/>
+        </div> 
     </div>
 </div>
 {% endblock content %}
