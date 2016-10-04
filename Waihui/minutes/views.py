@@ -62,7 +62,7 @@ def wechat_signin(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
     if request.method == 'GET':
         code = request.GET['code']
-        req = urllib2.urlopen("https://api.weixin.qq.com/sns/oauth2/access_token?appid=wxd78d86d0ebcc727b&secret=222b3622f6f6070eb408a244d9d142a7&code="+ str(code) +"&grant_type=authorization_code")
+        req = urllib2.urlopen("https://api.weixin.qq.com/sns/oauth2/access_token?appid="+APPID+"&secret="+SECRET+"&code="+ str(code) +"&grant_type=authorization_code")
         json_data = json.loads(req.read())
         # return HttpResponse(json_data)
         if json_data.get('openid'):
