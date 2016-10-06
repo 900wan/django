@@ -59,7 +59,9 @@ def easy_signin(request, entry_id):
     return render(request, "easy_signin.html", locals())
 
 def wechat_signin(request, entry_id):
-    entry = get_object_or_404(Entry, id=entry_id)
+    entry = Entry.objects.get(id=entry_id)
+    # entry = get_object_or_404(Entry, id=entry_id)
+
     if request.method == 'GET':
         code = request.GET['code']
         req = urllib2.urlopen("https://api.weixin.qq.com/sns/oauth2/access_token?appid="+APPID+"&secret="+SECRET+"&code="+ str(code) +"&grant_type=authorization_code")
