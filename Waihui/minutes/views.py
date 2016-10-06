@@ -69,6 +69,8 @@ def wechat_signin(request, entry_id):
             wx_id = json_data.get('openid')
             profile = Profile.objects.get(wx_id=str(wx_id))
             if profile:
+                if profile.entry.filter(entry=entry):
+                    return HttpResponse("already")
                 profile.entry.add(entry)
                 return HttpResponse("yes")
             else:
