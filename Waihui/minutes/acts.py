@@ -31,4 +31,4 @@ def act_wxqrget_wx_id(request):
             return wx_id
         else:
             return HttpResponse(json_data)
-    return (json_data)
+    return False
