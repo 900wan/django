@@ -63,8 +63,8 @@ def wechat_signin(request, entry_id):
     wx_id = act_wxqrget_wx_id(request)
     # wx_id = 'onlpmwit78qut1273l9jdx5LJgac'
     # profile = Profile.objects.get(wx_id=str(wx_id))
-    profile = get_object_or_404(Profile, wx_id=wx_id)
-    if profile:
+    if Profile.objects.filter(wx_id=wx_id):
+        profile = get_object_or_404(Profile, wx_id=wx_id)
         if profile.entry.filter(id=entry.id):
             return HttpResponse("already")
         profile.entry.add(entry)
