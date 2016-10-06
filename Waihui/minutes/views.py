@@ -43,7 +43,7 @@ def qr_jumper(request, entry_id):
     return HttpResponseRedirect(url)
 
 
-def easy_signin(request, entry_id):
+def easy_signin(request, entry_id, wx_id):
     entry = get_object_or_404(Entry, id=entry_id)
     if request.method == 'POST':
         uf = AttendForm(request.POST)
@@ -51,7 +51,7 @@ def easy_signin(request, entry_id):
             display_name = uf.cleaned_data['display_name']
             department = uf.cleaned_data['department']
             phonenumber = uf.cleaned_data['phonenumber']
-            result = act_signinmeeting(display_name=display_name, department=department, phonenumber=phonenumber, entry=entry)
+            result = act_signinmeeting(display_name=display_name, department=department, phonenumber=phonenumber, entry=entry, wx_id=wx_id)
             return HttpResponseRedirect(reverse('entry_detail', args=[entry_id]))
     else:
         uf = AttendForm()
@@ -60,8 +60,8 @@ def easy_signin(request, entry_id):
 
 def wechat_signin(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
-    wx_id = act_wxqrget_wx_id(request)
-    # wx_id = 'onlpmwit78qut1273l9jdx5LJgac'
+    # wx_id = act_wxqrget_wx_id(request)
+    wx_id = 'onlpmwit78qut1273l9jdx5LJgac'
     # profile = Profile.objects.get(wx_id=str(wx_id))
     if Profile.objects.filter(wx_id=wx_id):
         profile = get_object_or_404(Profile, wx_id=wx_id)
@@ -70,8 +70,18 @@ def wechat_signin(request, entry_id):
         profile.entry.add(entry)
         return HttpResponse("yes")
     else:
-        return HttpResponseRedirect(reverse('easy_signin'), args=[entry_id])
-    return HttpResponse("none")
+        if request.method == 'POST':
+            uf = AttendForm(request.POST)
+            if uf.is_valid():
+                display_name = uf.cleaned_data['display_name']
+                department = uf.cleaned_data['department']
+                phonenumber = uf.cleaned_data['phonenumber']
+                result = act_signinmeeting(display_name=display_name, department=department, phonenumber=phonenumber, entry=entry, wx_id=wx_id)
+                return HttpResponseRedirect(reverse('entry_detail', args=[entry_id]))
+        else:
+            uf = AttendForm()
+            result = "请将参会信息填写完整"
+    return render(request, "easy_signin.html", locals())
 
 def trys(request, entry_id):
     wx_id='onlpmwit78qut1273l9jdx5LJgac'

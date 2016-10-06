@@ -10,16 +10,16 @@ import urllib2
 import json
 import qrcode
 
-def act_signinmeeting(display_name, department, phonenumber, entry):
-	profile = Profile(
-		display_name=display_name,
-		department=department,
-		phonenumber=phonenumber,
-        entry=entry
-		)
-	profile.save()
-	result = "OK, " + unicode(display_name) + _(u", 您已经成功签到，收藏该地址获取会议纪要")
-	return result
+def act_signinmeeting(display_name, department, phonenumber, entry, wx_id):
+    profile = Profile(
+        display_name=display_name,
+        department=department,
+        phonenumber=phonenumber,
+        wx_id=wx_id)
+    profile.save()
+    profile.entry.add(entry)
+    result = "OK, " + unicode(display_name) + _(u", 您已经成功签到，收藏该地址获取会议纪要")
+    return result
 
 def act_wxqrget_wx_id(request):
     if request.method == 'GET':
