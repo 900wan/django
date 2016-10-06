@@ -5,6 +5,10 @@ from django.http import HttpResponse
 from cStringIO import StringIO
 from minutes.models import *
 from minutes.forms import *
+from minutes.statics import *
+import urllib2
+import json
+import qrcode
 
 def act_signinmeeting(display_name, department, phonenumber, entry):
 	profile = Profile(
@@ -16,3 +20,15 @@ def act_signinmeeting(display_name, department, phonenumber, entry):
 	profile.save()
 	result = "OK, " + unicode(display_name) + _(u", 您已经成功签到，收藏该地址获取会议纪要")
 	return result
+
+def act_wxqrget_wx_id(request):
+    if request.method == 'GET':
+        code = request.GET['code']
+        req = urllib2.urlopen("https://api.weixin.qq.com/sns/oauth2/access_token?appid="+APPID+"&secret="+SECRET+"&code="+ str(code) +"&grant_type=authorization_code")
+        json_data = json.loads(req.read())
+        if json_data.get('openid'):
+            wx_id = json_data.get('openid')
+            return wx_id
+        else:
+            return HttpResponse(json_data)
+    return False    

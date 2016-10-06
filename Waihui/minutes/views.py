@@ -60,24 +60,18 @@ def easy_signin(request, entry_id):
 
 def wechat_signin(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
-    if request.method == 'GET':
-        code = request.GET['code']
-        req = urllib2.urlopen("https://api.weixin.qq.com/sns/oauth2/access_token?appid="+APPID+"&secret="+SECRET+"&code="+ str(code) +"&grant_type=authorization_code")
-        json_data = json.loads(req.read())
-        # return HttpResponse(json_data)
-        if json_data.get('openid'):
-            wx_id = json_data.get('openid')
-            profile = Profile.objects.get(wx_id=str(wx_id))
-            if profile:
-                if profile.entry.filter(entry=entry):
-                    return HttpResponse("already")
-                profile.entry.add(entry)
-                return HttpResponse("yes")
-            else:
-                easy_signin(request, entry_id)
-            return HttpResponse(json_data.get('openid'))
-        else:
-            return HttpResponse(json_data)
+    wx_id = act_wxqrget_wx_id(request)
+    # wx_id = 'onlpmwit78qut1273l9jdx5LJgac'
+    # profile = Profile.objects.get(wx_id=str(wx_id))
+    profile = get_object_or_404(Profile, wx_id=wx_id)
+    if profile:
+        if profile.entry.filter(id=entry.id):
+            return HttpResponse("already")
+        profile.entry.add(entry)
+        return HttpResponse("yes")
+    else:
+        easy_signin(request, entry_id)
+    return HttpResponse(json_data)
 
 def trys(request, entry_id):
     wx_id='onlpmwit78qut1273l9jdx5LJgac'
