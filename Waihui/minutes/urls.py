@@ -9,5 +9,7 @@ urlpatterns = [
     url(r'^(?P<entry_id>[0-9]+)/signin/$', views.easy_signin, name='easy_signin'),
     url(r'^(?P<entry_id>[0-9]+)/wxsignin/$', views.wechat_signin, name='wechat_signin'),
     url(r'^(?P<entry_id>[0-9]+)/q/$', views.qr_jumper, name='qr_jumper'),
-    url(r'^(?P<entry_id>[0-9]+)/trys/$', views.trys, name='trys')
+    url(r'^(?P<entry_id>[0-9]+)/trys/$', views.trys, name='trys'),
+    url(r'^(?P<entry_id>[0-9]+)/trysqrshow/$', views.qrcode_show, name='trysqrcode_show'),
+    url(r'^(?P<entry_id>[0-9]+)/trysq/$', views.qr_jumper, name='trysqr_jumper'),
 ]
