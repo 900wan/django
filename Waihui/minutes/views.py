@@ -13,7 +13,8 @@ import qrcode
 
 
 def index(request):
-    return HttpResponse("This is Javy Chen Minutes!")
+    entrys=Entry.objects.all()
+    return render(request, "index.html", locals())
 
 
 def generate_qrcode(request, data):
