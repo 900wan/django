@@ -60,8 +60,8 @@ def easy_signin(request, entry_id, wx_id):
 
 def wechat_signin(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
-    # wx_id = act_wxqrget_wx_id(request)
-    wx_id = 'onlpmwit78qut1273l9jdx5LJgac'
+    wx_id = act_wxqrget_wx_id(request)
+    # wx_id = 'onlpmwit78qut1273l9jdx5LJgac'
     # profile = Profile.objects.get(wx_id=str(wx_id))
     if Profile.objects.filter(wx_id=wx_id):
         profile = get_object_or_404(Profile, wx_id=wx_id)
