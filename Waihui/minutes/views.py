@@ -71,7 +71,7 @@ def wechat_signin(request, entry_id):
         return HttpResponse("yes")
     else:
         easy_signin(request, entry_id)
-    return HttpResponse(json_data)
+    return
 
 def trys(request, entry_id):
     wx_id='onlpmwit78qut1273l9jdx5LJgac'
