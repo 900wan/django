@@ -40,7 +40,8 @@ def qrcode_show(request, entry_id):
 
 def qr_jumper(request, entry_id):
     url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + APPID + "&redirect_uri=http://" + request.META['HTTP_HOST'] + "/minutes/"+ entry_id +"/wxsignin/&response_type=code&scope=snsapi_userinfo#wechat_redirect"
-    return HttpResponseRedirect(url)
+    testurl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + APPID + "&redirect_uri=http://" + request.META['HTTP_HOST'] + "/minutes/"+ entry_id +"/trys/&response_type=code&scope=snsapi_userinfo#wechat_redirect"
+    return HttpResponseRedirect(testurl)
 
 
 def easy_signin(request, entry_id, wx_id):
@@ -62,7 +63,6 @@ def wechat_signin(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
     wx_id = act_wxqrget_wx_id(request)
     # wx_id = 'onlpmwit78qut1273l9jdx5LJgac'
-    # profile = Profile.objects.get(wx_id=str(wx_id))
     if Profile.objects.filter(wx_id=wx_id):
         profile = get_object_or_404(Profile, wx_id=wx_id)
         if profile.entry.filter(id=entry.id):
@@ -84,10 +84,10 @@ def wechat_signin(request, entry_id):
     return render(request, "easy_signin.html", locals())
 
 def trys(request, entry_id):
-    wx_id='onlpmwit78qut1273l9jdx5LJgac'
-    profile = Profile.objects.get(wx_id=wx_id)
-    entry = get_object_or_404(Entry, id=entry_id)
-    profile.entry.add(entry)
-    return HttpResponse(profile)
+    wx_id = act_wxqrget_wx_id(request)
+    # profile = Profile.objects.get(wx_id=wx_id)
+    # entry = get_object_or_404(Entry, id=entry_id)
+    # profile.entry.add(entry)
+    return HttpResponse(wx_id)
 
 
