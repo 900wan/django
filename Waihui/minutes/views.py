@@ -104,23 +104,23 @@ def trys(request, entry_id):
         if profile.entry.filter(id=entry.id):
             return HttpResponse("already")
         return HttpResponse("yes")
-    else:
-    # profile = Profile.objects.get(wx_id=wx_id)
-    # entry = get_object_or_404(Entry, id=entry_id)
-    # profile.entry.add(entry)
-        if request.method == 'POST':
-            uf = AttendForm(request.POST)
-            if uf.is_valid():
-                display_name = uf.cleaned_data['display_name']
-                department = uf.cleaned_data['department']
-                phonenumber = uf.cleaned_data['phonenumber']
-                result = act_signinmeeting(display_name=display_name, department=department, phonenumber=phonenumber, entry=entry, wx_id=wx_id)
-                # return HttpResponseRedirect(reverse('entry_detail', args=[entry_id]))
-        else:
-            uf = AttendForm()
-            result = "请将参会信息填写完整"
-    return render(request, "easy_signin.html", locals())
-    # return HttpResponse(wx_id+'post')
+    # else:
+    # # profile = Profile.objects.get(wx_id=wx_id)
+    # # entry = get_object_or_404(Entry, id=entry_id)
+    # # profile.entry.add(entry)
+    #     if request.method == 'POST':
+    #         uf = AttendForm(request.POST)
+    #         if uf.is_valid():
+    #             display_name = uf.cleaned_data['display_name']
+    #             department = uf.cleaned_data['department']
+    #             phonenumber = uf.cleaned_data['phonenumber']
+    #             result = act_signinmeeting(display_name=display_name, department=department, phonenumber=phonenumber, entry=entry, wx_id=wx_id)
+    #             # return HttpResponseRedirect(reverse('entry_detail', args=[entry_id]))
+    #     else:
+    #         uf = AttendForm()
+    #         result = "请将参会信息填写完整"
+    # return render(request, "easy_signin.html", locals())
+    # # return HttpResponse(wx_id+'post')
     return HttpResponse(wx_id)        
 
 
