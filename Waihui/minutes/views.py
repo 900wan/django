@@ -116,7 +116,6 @@ def trys(request, entry_id):
                 phonenumber = uf.cleaned_data['phonenumber']
                 result = act_signinmeeting(display_name=display_name, department=department, phonenumber=phonenumber, entry=entry, wx_id=wx_id)
                 # return HttpResponseRedirect(reverse('entry_detail', args=[entry_id]))
-                return 
         else:
             uf = AttendForm()
             result = "请将参会信息填写完整"
