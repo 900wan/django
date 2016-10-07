@@ -97,13 +97,13 @@ def trysqr_jumper(request, entry_id):
 
 def trys(request, entry_id):
     wx_id = act_wxqrget_wx_id(request)
-    # entry = get_object_or_404(Entry, id=entry_id)
-    # # wx_id = 'onlpmwit78qut1273l9jdx5LJgac'
-    # if Profile.objects.filter(wx_id=wx_id):
-    #     profile = get_object_or_404(Profile, wx_id=wx_id)
-    #     if profile.entry.filter(id=entry.id):
-    #         return HttpResponse("already")
-    #     return HttpResponse("yes")
+    entry = get_object_or_404(Entry, id=entry_id)
+    # wx_id = 'onlpmwit78qut1273l9jdx5LJgac'
+    if Profile.objects.filter(wx_id=wx_id):
+        profile = get_object_or_404(Profile, wx_id=wx_id)
+        if profile.entry.filter(id=entry.id):
+            return HttpResponse("already")
+        return HttpResponse("yes")
     # else:
     # # profile = Profile.objects.get(wx_id=wx_id)
     # # entry = get_object_or_404(Entry, id=entry_id)
