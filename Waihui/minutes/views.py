@@ -77,9 +77,9 @@ def wechat_signin(request, entry_id):
                 display_name = uf.cleaned_data['display_name']
                 department = uf.cleaned_data['department']
                 phonenumber = uf.cleaned_data['phonenumber']
-                return HttpResponse(locals())
-                # result = act_signinmeeting(display_name=display_name, department=department, phonenumber=phonenumber, entry=entry, wx_id=wx_id)
+                result = act_signinmeeting(display_name=display_name, department=department, phonenumber=phonenumber, entry=entry, wx_id=wx_id)
                 # return HttpResponseRedirect(reverse('entry_detail', args=[entry_id]))
+                return result
         else:
             uf = AttendForm()
             result = "请将参会信息填写完整"
