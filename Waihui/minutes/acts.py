@@ -18,7 +18,7 @@ def act_signinmeeting(display_name, department, phonenumber, entry, wx_id):
         wx_id=wx_id)
     profile.save()
     profile.entry.add(entry)
-    result = "OK, " + unicode(display_name) + _(u'wx_id') + _(u", 您已经成功签到，收藏该地址获取会议纪要")
+    result = "OK, " + unicode(display_name) + str(wx_id) + _(u", 您已经成功签到，收藏该地址获取会议纪要")
     return result
 
 def act_wxqrget_wx_id(request):
