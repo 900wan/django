@@ -122,6 +122,6 @@ def trys(request, entry_id):
             result = "请将参会信息填写完整"
     return render(request, "easy_signin.html", locals())
     # return HttpResponse(wx_id+'post')
-    return HttpResponse(wx_id)        
+    # return HttpResponse(wx_id)        
 
 
