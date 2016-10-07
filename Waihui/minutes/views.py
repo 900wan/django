@@ -91,7 +91,7 @@ def trysqrcode_show(request, entry_id):
     return render(request, "trysqrcode_show.html", locals())
 
 def trysqr_jumper(request, entry_id):
-    testurl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + APPID + "&redirect_uri=http://" + request.META['HTTP_HOST'] + entry_id +"/trys/&response_type=code&scope=snsapi_userinfo#wechat_redirect"
+    testurl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + APPID + "&redirect_uri=http://" + request.META['HTTP_HOST'] + "/minutes/"+ entry_id +"/trys/&response_type=code&scope=snsapi_userinfo#wechat_redirect"
     return HttpResponseRedirect(testurl)
 
 def trys(request, entry_id):
