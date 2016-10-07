@@ -28,7 +28,9 @@ def act_wxqrget_wx_id(request):
         json_data = json.loads(req.read())
         if json_data.get('openid'):
             wx_id = json_data.get('openid')
+            request.session['wx_id'] = wx_id
             return wx_id
         else:
             return HttpResponse(json_data)
-    return False
+    else:
+        return False
