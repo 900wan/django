@@ -40,35 +40,20 @@ def qrcode_show(request, entry_id):
     return render(request, "qrcode_show.html", locals())
 
 def qr_jumper(request, entry_id):
-    url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + APPID + "&redirect_uri=http://" + request.META['HTTP_HOST'] + "/minutes/"+ entry_id +"/wxsignin/&response_type=code&scope=snsapi_userinfo#wechat_redirect"
-    # testurl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + APPID + "&redirect_uri=http://" + request.META['HTTP_HOST'] + "/minutes/"+ entry_id +"/trys/&response_type=code&scope=snsapi_userinfo#wechat_redirect"
+    url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + APPID + "&redirect_uri=http://" + request.META['HTTP_HOST'] + "/minutes/"+ entry_id +"/wxsignin/&response_type=code&scope=snsapi_base#wechat_redirect"
     return HttpResponseRedirect(url)
 
-
-def easy_signin(request, entry_id, wx_id):
-    entry = get_object_or_404(Entry, id=entry_id)
-    if request.method == 'POST':
-        uf = AttendForm(request.POST)
-        if uf.is_valid():
-            display_name = uf.cleaned_data['display_name']
-            department = uf.cleaned_data['department']
-            phonenumber = uf.cleaned_data['phonenumber']
-            result = act_signinmeeting(display_name=display_name, department=department, phonenumber=phonenumber, entry=entry, wx_id=wx_id)
-            return HttpResponseRedirect(reverse('entry_detail', args=[entry_id]))
-    else:
-        uf = AttendForm()
-        result = "请将参会信息填写完整"
-    return render(request, "easy_signin.html", locals())
-
 def wechat_signin(request, entry_id):
-    entry = get_object_or_404(Entry, id=entry_id)
     wx_id = act_wxqrget_wx_id(request)
+    if wx_id == False:
+        wx_id = request.session['wx_id']
+    entry = get_object_or_404(Entry, id=entry_id)
     if Profile.objects.filter(wx_id=wx_id):
         profile = get_object_or_404(Profile, wx_id=wx_id)
         if profile.entry.filter(id=entry.id):
-            return HttpResponse("already")
-        profile.entry.add(entry)
-        return HttpResponse("yes")
+            return HttpResponse("already, "+profile.display_name)
+        else:
+            return HttpResponse("yes, "+profile.display_name)
     else:
         if request.method == 'POST':
             uf = AttendForm(request.POST)
@@ -78,11 +63,12 @@ def wechat_signin(request, entry_id):
                 phonenumber = uf.cleaned_data['phonenumber']
                 result = act_signinmeeting(display_name=display_name, department=department, phonenumber=phonenumber, entry=entry, wx_id=wx_id)
                 # return HttpResponseRedirect(reverse('entry_detail', args=[entry_id]))
-                return result
+                return HttpResponse(result) 
+            return HttpResponse('非法操作')    
         else:
             uf = AttendForm()
             result = "请将参会信息填写完整"
-    return render(request, "easy_signin.html", locals())
+            return render(request, "easy_signin.html", locals())
 
 def trysqrcode_show(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
