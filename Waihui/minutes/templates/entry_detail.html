@@ -13,7 +13,7 @@
                 <h1>{{ entry.title }} <br/> <small>{{ entry.start_time }}</small></h1>
             </div>
             <div class="well">
-                <h2>{{result}}</h2>
+                <h2>{{request.session['result']}}</h2>
                 <p>会议时间：{{ entry.start_time }} - {{ entry.end_time }}</p>
                 <p>与会人员：{{ entry.attendees.all }}<p>
                 <p>纪要编制：{{ entry.creator}} </p>

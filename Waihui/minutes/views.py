@@ -51,7 +51,10 @@ def wechat_signin(request, entry_id):
     if Profile.objects.filter(wx_id=wx_id):
         profile = get_object_or_404(Profile, wx_id=wx_id)
         if profile.entry.filter(id=entry.id):
-            return HttpResponse("already, "+profile.display_name)
+            result = "该会议您已成功签到"
+            request.session['result']=str(result)
+            return HttpResponseRedirect(reverse('entry_detail', args=[entry_id]))
+            # return HttpResponse("already, "+profile.display_name)
         else:
             return HttpResponse("yes, "+profile.display_name)
     else:
