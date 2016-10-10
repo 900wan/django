@@ -56,7 +56,7 @@ def wechat_signin(request, entry_id):
             profile.entry.add(entry)
             if profile.entry.filter(id=entry.id):
                 result = _(u"您已成功签到")            
-        request.session['result'] = str(result)
+        request.session['result'] = result
         return HttpResponseRedirect(reverse('entry_detail', args=[entry_id]))
     else:
         if request.method == 'POST':
