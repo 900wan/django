@@ -29,6 +29,7 @@ def generate_qrcode(request, data):
 
 
 def entry_detail(request, entry_id):
+    result = request.session['result']
     entry = get_object_or_404(Entry, id=entry_id)
     return render(request, "entry_detail.html", locals())
 
@@ -52,7 +53,7 @@ def wechat_signin(request, entry_id):
         profile = get_object_or_404(Profile, wx_id=wx_id)
         if profile.entry.filter(id=entry.id):
             result = "该会议您已成功签到"
-            request.session['result']=str(result)
+            request.session['result'] = str(result)
             return HttpResponseRedirect(reverse('entry_detail', args=[entry_id]))
             # return HttpResponse("already, "+profile.display_name)
         else:
