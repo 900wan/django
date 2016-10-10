@@ -1,4 +1,5 @@
  # -*- coding: utf-8 -*-
+from django.utils.translation import ugettext as _
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -7,9 +8,7 @@ from minutes.models import *
 from minutes.forms import *
 from minutes.acts import *
 from minutes.statics import *
-import urllib2
-import json
-import qrcode
+import urllib2, json, qrcode
 
 
 def index(request):
