@@ -52,12 +52,13 @@ def wechat_signin(request, entry_id):
     if Profile.objects.filter(wx_id=wx_id):
         profile = get_object_or_404(Profile, wx_id=wx_id)
         if profile.entry.filter(id=entry.id):
-            result = "该会议您已成功签到"
-            request.session['result'] = str(result)
-            return HttpResponseRedirect(reverse('entry_detail', args=[entry_id]))
-            # return HttpResponse("already, "+profile.display_name)
+            result = _(u"之前已经签到过了")
         else:
-            return HttpResponse("yes, "+profile.display_name)
+            profile.entry.add(entry)
+            if profile.entry.filter(id=entry.id):
+                result = _(u"您已成功签到")            
+        request.session['result'] = str(result)
+        return HttpResponseRedirect(reverse('entry_detail', args=[entry_id]))
     else:
         if request.method == 'POST':
             uf = AttendForm(request.POST)
@@ -67,7 +68,7 @@ def wechat_signin(request, entry_id):
                 phonenumber = uf.cleaned_data['phonenumber']
                 result = act_signinmeeting(display_name=display_name, department=department, phonenumber=phonenumber, entry=entry, wx_id=wx_id)
                 # return HttpResponseRedirect(reverse('entry_detail', args=[entry_id]))
-                return HttpResponse(result) 
+                return HttpResponseRedirect(reverse('entry_detail', args=[entry_id])) 
             return HttpResponse('非法操作')    
         else:
             uf = AttendForm()
