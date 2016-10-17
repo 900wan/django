@@ -8,6 +8,13 @@ from DjangoUeditor.models import UEditorField
 # Create your models here.
 class Entry(models.Model):
     """会议记录条目"""
+    class Meta:
+        verbose_name = "Entry"
+        verbose_name_plural = "Entries"
+
+    def __unicode__(self):
+        return u'%s' %self.title
+
     title = models.CharField(u'会议标题', max_length=100)
     start_time = models.DateTimeField(blank=True)
     end_time = models.DateTimeField(blank=True)
