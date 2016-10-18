@@ -10,5 +10,6 @@ urlpatterns = [
     url(r'^(?P<entry_id>[0-9]+)/wxsignin/$', views.wechat_signin, name='wechat_signin'),
     url(r'^(?P<entry_id>[0-9]+)/trysqrshow/$', views.trysqrcode_show, name='trysqrcode_show'),
     url(r'^(?P<entry_id>[0-9]+)/trysq/$', views.trysqr_jumper, name='trysqr_jumper'),
-    url(r'^(?P<entry_id>[0-9]+)/trys/$', views.trys, name='trys'),
+    url(r'^(?P<entry_id>[0-9]+)/tryswxsignin/$', views.tryswx_signin, name='trys'),
+    url(r'^(?P<entry_id>[0-9]+)/trys/$', views.trysfield, name='trys'),
 ]

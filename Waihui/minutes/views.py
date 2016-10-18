@@ -28,9 +28,11 @@ def generate_qrcode(request, data):
 
 
 def entry_detail(request, entry_id):
-    result = request.session['result']
+    # if request.session['result']:
+        # result = request.session['result']
     entry = get_object_or_404(Entry, id=entry_id)
-    # attendees = entry.profile.attended_entries.all()
+
+    # atten = entry.profile_set.all()
     return render(request, "entry_detail.html", locals())
 
 
@@ -50,6 +52,7 @@ def wechat_signin(request, entry_id):
         wx_id = request.session['wx_id']
     entry = get_object_or_404(Entry, id=entry_id)
     if Profile.objects.filter(wx_id=wx_id):
+
         profile = get_object_or_404(Profile, wx_id=wx_id)
         if profile.attended_entries.filter(id=entry.id):
             result = _(u"之前已经签到过了")
@@ -85,7 +88,7 @@ def trysqr_jumper(request, entry_id):
     testurl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + APPID + "&redirect_uri=http://" + request.META['HTTP_HOST'] + "/minutes/"+ entry_id +"/trys/&response_type=code&scope=snsapi_userinfo#wechat_redirect"
     return HttpResponseRedirect(testurl)
 
-def trys(request, entry_id):
+def tryswx_signin(request, entry_id):
     # wx_id = 'onlpmwit78qut1273l9jdx5LJgac'
     wx_id = act_wxqrget_wx_id(request)
     if wx_id == False:
@@ -116,5 +119,10 @@ def trys(request, entry_id):
             result = "请将参会信息填写完整"
             return render(request, "easy_signin.html", locals())
    
-
+def trysfield(request, entry_id):
+    entry = get_object_or_404(Entry, id=entry_id)
+    attended_entrie = entry.attended_entrie.all()
+    test_field = entry.test_field.all()
+    profile_set = entry.profile_set.all()
+    return render(request, "trys.html", locals())
 

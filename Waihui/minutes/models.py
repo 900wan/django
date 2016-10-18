@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
+from django.utils.translation import ugettext as _
 from django.db import models
 from django.contrib.auth.models import User
 from DjangoUeditor.models import UEditorField
@@ -51,6 +51,9 @@ class Profile(models.Model):
     phonenumber = models.CharField(u'手机', max_length=50, blank=True, null=True)
     wx_id = models.CharField(u'微信', max_length=100, blank=True, null=True)
     user = models.OneToOneField(User, blank=True, null=True)
-    attended_entries = models.ManyToManyField(Entry, verbose_name ="出席的会议", related_name="attendee")
+    attended_entrie = models.ManyToManyField(Entry, verbose_name =_(u"出席的会议"))
+    test_field = models.ManyToManyField(Entry, related_name='test_field')
     def __unicode__(self):
         return u'%s' % self.display_name
+
+        # , verbose_name ="出席的会议", related_name="attendee"
