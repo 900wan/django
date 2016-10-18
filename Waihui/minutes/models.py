@@ -35,7 +35,7 @@ class Entry(models.Model):
                              )
     creator = models.ForeignKey(User, on_delete=models.CASCADE,
                                 verbose_name="会议纪要创建人", related_name='created_entries')
-    attendees = models.ManyToManyField(User, verbose_name="参会人", related_name='attended_entries')
+    attendees_user = models.ManyToManyField(User, verbose_name="参会人", related_name='attended_entries')
     created = models.DateTimeField(u'创建时间', auto_now_add=True)
     modified = models.DateTimeField(u'最后修改时间', auto_now=True)
     modified_save = models.DateTimeField(u'最后手动保存时间', blank=True, null=True)
@@ -51,8 +51,7 @@ class Profile(models.Model):
     phonenumber = models.CharField(u'手机', max_length=50, blank=True, null=True)
     wx_id = models.CharField(u'微信', max_length=100, blank=True, null=True)
     user = models.OneToOneField(User, blank=True, null=True)
-    attended_entrie = models.ManyToManyField(Entry, verbose_name =_(u"出席的会议"))
-    test_field = models.ManyToManyField(Entry, related_name='test_field')
+    entry = models.ManyToManyField(Entry, verbose_name =_(u"出席的会议"), related_name='attendees')
     def __unicode__(self):
         return u'%s' % self.display_name
 
