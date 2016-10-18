@@ -36,7 +36,7 @@ def entry_detail(request, entry_id):
 def qrcode_show(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
     appid = APPID
-    qr = "/qr/"
+    qr = "/qr/http://"
     return render(request, "qrcode_show.html", locals())
 
 def qr_jumper(request, entry_id):

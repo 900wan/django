@@ -30,7 +30,7 @@
                 {{entry.content_C|safe}}
         </div>
         <div class="col-md-4">
-                <img src="{{qr}}http://{{request.META.HTTP_HOST}}{% url 'qr_jumper' entry_id%}"  alt="扫一扫" width="100%"/>
+                <img src="{{qr}}{{request.META.HTTP_HOST}}{% url 'qr_jumper' entry_id%}"  alt="扫一扫" width="100%"/>
         </div> 
     </div>
 </div>
