@@ -15,9 +15,8 @@
             <div class="well">
                 <h2>{{result}}</h2>
                 <p>会议时间：{{ entry.start_time }} - {{ entry.end_time }}</p>
-                <p>与会人员：
-                {% for attendee in entry.attendees.all %}
-                    {{attendee.display_name}};
+                <p>与会人员：{% for attendee in entry.attendees.all %}
+                    {{attendee.username}};
                 {% endfor %}
                 </p>
                 <p>纪要编制：{{ entry.creator}} </p>
@@ -31,6 +30,7 @@
         </div>
         <div>
             <h2>已签到成员</h2>
+            {{entry.profile.all}}
         </div>
     </div>
 </div>
