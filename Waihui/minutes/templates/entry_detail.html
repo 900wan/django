@@ -27,7 +27,10 @@
             <h2>下一步工作安排</h2>
                 {{entry.content_C|safe}}
             <h2>已签到成员</h2>
-                {{entry.profile_set.all}}
+                <p>profile:{{entry.profile.all}}</p>
+                <p>profile_set:{{entry.profile_set.all}}</p>
+                <p>display_name:{{entry.display_name.all}}</p>
+
         </div>
     </div>
 </div>
