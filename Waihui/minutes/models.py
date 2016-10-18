@@ -51,6 +51,6 @@ class Profile(models.Model):
     phonenumber = models.CharField(u'手机', max_length=50, blank=True, null=True)
     wx_id = models.CharField(u'微信', max_length=100, blank=True, null=True)
     user = models.OneToOneField(User, blank=True, null=True)
-    entry = models.ManyToManyField(Entry)
+    attended_entries = models.ManyToManyField(Entry, verbose_name ="出席的会议", related_name="attendee")
     def __unicode__(self):
         return u'%s' % self.display_name
