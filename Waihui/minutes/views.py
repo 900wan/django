@@ -30,7 +30,7 @@ def generate_qrcode(request, data):
 def entry_detail(request, entry_id):
     result = request.session['result']
     entry = get_object_or_404(Entry, id=entry_id)
-    attendees = entry.attended_entries.all()
+    # attendees = entry.profile.attended_entries.all()
     return render(request, "entry_detail.html", locals())
 
 
