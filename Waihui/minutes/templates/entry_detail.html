@@ -26,8 +26,8 @@
                 {{entry.content_B|safe}}
             <h2>下一步工作安排</h2>
                 {{entry.content_C|safe}}
-            <h2>已签到成员</h2>
             {% if entry.attendees.count != 0 %}
+            <h2>已签到成员</h2>
                 {% for attendee in entry.attendees.all %}
                     <table>
                         <thead>
@@ -38,7 +38,7 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>{{attendee.displayname}}</td>
+                                <td>{{attendee.display_name}}</td>
                                 <td>{{attendee.department}}</td>
                             </tr>
                         </tbody>
