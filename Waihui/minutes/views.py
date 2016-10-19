@@ -31,8 +31,6 @@ def entry_detail(request, entry_id):
     # if request.session['result']:
         # result = request.session['result']
     entry = get_object_or_404(Entry, id=entry_id)
-
-    # atten = entry.profile_set.all()
     return render(request, "entry_detail.html", locals())
 
 
