@@ -54,11 +54,11 @@ def wechat_signin(request, entry_id):
     if Profile.objects.filter(wx_id=wx_id):
 
         profile = get_object_or_404(Profile, wx_id=wx_id)
-        if profile.attended_entries.filter(id=entry.id):
+        if profile.entries.filter(id=entry.id):
             result = _(u"之前已经签到过了")
         else:
-            profile.attended_entries.add(entry)
-            if profile.attended_entries.filter(id=entry.id):
+            profile.entries.add(entry)
+            if profile.entries.filter(id=entry.id):
                 result = _(u"您已成功签到")            
         request.session['result'] = result
         return HttpResponseRedirect(reverse('entry_detail', args=[entry_id]))
@@ -96,7 +96,7 @@ def tryswx_signin(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
     if Profile.objects.filter(wx_id=wx_id):
         profile = get_object_or_404(Profile, wx_id=wx_id)
-        if profile.entry.filter(id=entry.id):
+        if profile.entries.filter(id=entry.id):
             return HttpResponse("already, "+profile.display_name)
         else:
             return HttpResponse("yes, "+profile.display_name)

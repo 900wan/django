@@ -27,7 +27,9 @@
             <h2>下一步工作安排</h2>
                 {{entry.content_C|safe}}
             <h2>已签到成员</h2>
+            {% if entry.attendees.count != 0 %}
                 <p>attended_entries:{{entry.attendees.all}}</p>
+            {% endif %}
         </div>
     </div>
 </div>
