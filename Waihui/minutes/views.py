@@ -121,6 +121,6 @@ def trysfield(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
     # attended_entrie = entry.attended_entrie.all()
     # test_field = entry.test_field.all()
-    profile_set = entry.profile_set.all()
+    profile_set = entry.attendees.all()
     return render(request, "trys.html", locals())
 
