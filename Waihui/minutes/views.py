@@ -28,7 +28,7 @@ def generate_qrcode(request, data):
 
 
 def entry_detail(request, entry_id):
-    if 'reslut' in request.session:
+    if 'result' in request.session:
         result = request.session['result']
     entry = get_object_or_404(Entry, id=entry_id)
     return render(request, "entry_detail.html", locals())
