@@ -4,6 +4,14 @@
 {% endblock title %}
 
 {% block content %}
+        <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+            message: 'Hello Vue!'
+                    }
+            })
+        </script>
 <div class="container">
     <div class="row">
     </div>
@@ -46,6 +54,14 @@
                 {% endfor %}
             {% endif %}
         </div>
+        
+        <div id="app">
+            {{ message }}
+        </div>
+
+
     </div>
 </div>
+
+
 {% endblock content %}
