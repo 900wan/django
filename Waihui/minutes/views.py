@@ -123,4 +123,3 @@ def trysfield(request, entry_id):
     # test_field = entry.test_field.all()
     profile_set = entry.attendees.all()
     return render(request, "trys.html", locals())
-
