@@ -2,6 +2,7 @@
 from django.utils.translation import ugettext as _
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
+from django.core import serializers
 from django.core.urlresolvers import reverse
 from cStringIO import StringIO
 from minutes.models import *
@@ -9,6 +10,7 @@ from minutes.forms import *
 from minutes.acts import *
 from minutes.statics import *
 import urllib2, json, qrcode
+
 
 
 def index(request):
@@ -122,4 +124,15 @@ def trysfield(request, entry_id):
     # attended_entrie = entry.attended_entrie.all()
     # test_field = entry.test_field.all()
     profile_set = entry.attendees.all()
+    # 没写relate_name就是_set写了就是其自身
     return render(request, "trys.html", locals())
+
+def get_attendees(request, entry_id):
+    entry = get_object_or_404(Entry, id=entry_id)
+    profile = entry.attendees.all()
+    rjson = serializers.serialize("json", profile)
+    response = HttpResponse()
+    response['Content-Type'] = "text/javascript"
+    response.write(rjson)
+    return response
+    
