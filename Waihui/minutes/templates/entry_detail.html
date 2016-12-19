@@ -67,6 +67,13 @@
 
 {% block myjs %}
     <script type="text/javascript" language="javascript">
+    function update(id) {
+            $.getJSON("/minutes/" + id + "/getattendees/",function(data) {
+                $.each(data, function(){
+                    $("#content").html('<p>' + this.fields.display_name + ' is a ' + this.pk + ' teacher.</p>');
+                });
+            });
+        }
     $(document).ready(function(){
         $("#btn1").click(function(){
             $("#test1").text("Hello world!");
@@ -77,12 +84,13 @@
         $("#btn3").click(function(){
             $("#test3").val("Dolly Duck");
         });
+        update({{ entry.id }});
     }); 
     var app = new Vue({
         el: '#app',
         data: {
         message: 'Hello Vue!'
                 }
-        })
+        });
     </script>
 {% endblock myjs %}
