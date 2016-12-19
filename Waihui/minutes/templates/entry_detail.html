@@ -48,7 +48,8 @@
             {% endif %}
         </div>
         
-        <div id="content">p</div>
+        <div id="content">已签到</div>
+        <div id="content1">p</div>
         <p id="test1">这是段落。</p>
         <p id="test2">这是另一个段落。</p>
         <p>Input field: <input type="text" id="test3" value="Mickey Mouse"></p>
@@ -70,7 +71,7 @@
     function update(id) {
             $.getJSON("/minutes/" + id + "/getattendees/",function(data) {
                 $.each(data, function(){
-                    $("#content").html('<p>' + this.fields.display_name + ' is a ' + this.pk + ' teacher.</p>');
+                    $("#content").append('<p>姓名：' + this.fields.display_name + ' 部门：' + this.fields.department + ' </p>');
                 });
             });
         }
@@ -85,6 +86,7 @@
             $("#test3").val("Dolly Duck");
         });
         update({{ entry.id }});
+        $("#content1").html("<p>123</p>");
     }); 
     var app = new Vue({
         el: '#app',
