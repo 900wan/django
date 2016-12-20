@@ -36,12 +36,6 @@
                     <th>姓名</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td id="add_disparment"></td>       
-                    <td id="add_name"></td>
-                </tr>
-            </tbody>
         </table>
         <p id="test1">这是段落。</p>
         <p id="test2">这是另一个段落。</p>
@@ -51,6 +45,8 @@
         <button id="btn3">设置值</button>
         <div id="app">
             {% verbatim %} {{ message }} {% endverbatim %}
+            {% verbatim %} {{ message2 }} {% endverbatim %}
+            {% verbatim %} <p id="add_disparment"></p> <p id="add_name"></p> {% endverbatim %}
         </div>
 
     </div>
@@ -61,16 +57,16 @@
 
 {% block myjs %}
     <script type="text/javascript" language="javascript">
-    function update(id) {
-        $("#add_disparment").empty();
-        $("#add_name").empty();
-        $.getJSON("/minutes/" + id + "/getattendees/",function(data) {
-            $.each(data, function(){
-                $("#add_name").append('<p>' + this.fields.display_name + '</p>');
-                $("#add_disparment").append('<p>' + this.fields.department + '</p>');
-            });
-        });
-    }
+    // function update(id) {
+    //     $("#add_disparment").empty();
+    //     $("#add_name").empty();
+    //     $.getJSON("/minutes/" + id + "/getattendees/",function(data) {
+    //         $.each(data, function(){
+    //             $("#add_name").append('<p>' + this.fields.display_name + '</p>');
+    //             $("#add_disparment").append('<p>' + this.fields.department + '</p>');
+    //         });
+    //     });
+    // }
 
     function timeDown(seconds){
         seconds--;
@@ -97,7 +93,14 @@
     var app = new Vue({
         el: '#app',
         data: {
-        message: 'Hello Vue!'
+        message: 'Hello Vue!',
+        message2: 'fairy tale',
+        message3: $.getJSON("/minutes/" + 1 + "/getattendees/",function(data) {
+            $.each(data, function(){
+                $("#add_name").append('<p>' + this.fields.display_name + '</p>');
+                $("#add_disparment").append('<p>' + this.fields.department + '</p>');
+            });
+        })
                 }
         });
     </script>
