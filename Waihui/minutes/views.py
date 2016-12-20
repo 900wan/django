@@ -2,7 +2,6 @@
 from django.utils.translation import ugettext as _
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
-from django.core import serializers
 from django.core.urlresolvers import reverse
 from cStringIO import StringIO
 from minutes.models import *
@@ -33,6 +32,7 @@ def entry_detail(request, entry_id):
     if 'result' in request.session:
         result = request.session['result']
     entry = get_object_or_404(Entry, id=entry_id)
+    rjson = act_get_attendees(entry_id)
     return render(request, "entry_detail.html", locals())
 
 
@@ -125,7 +125,7 @@ def trysfield(request, entry_id):
     # test_field = entry.test_field.all()
     profile_set = entry.attendees.all()
     # 没写relate_name就是_set写了就是其自身
-    return render(request, "trys.html", locals())
+    return render(request, "trys.html", locals())    
 
 def get_attendees(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
@@ -135,4 +135,3 @@ def get_attendees(request, entry_id):
     response['Content-Type'] = "text/javascript"
     response.write(rjson)
     return response
-    

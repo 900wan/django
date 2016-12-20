@@ -44,11 +44,13 @@
         <button id="btn2">设置 HTML</button>
         <button id="btn3">设置值</button>
         <div id="app">
-            {% verbatim %} {{ message }} {% endverbatim %}
-            {% verbatim %} {{ message2 }} {% endverbatim %}
+            <p>{% verbatim %} {{ message }} {% endverbatim %}</p>
+            
             {% verbatim %} <p id="add_disparment"></p> <p id="add_name"></p> {% endverbatim %}
+        <h2>MESSAGES</h2>
+            {% verbatim %} {{ message1 }} {% endverbatim %}
+            {% verbatim %} <p id="add_disparment1"></p> <p id="add_name1"></p> {% endverbatim %}
         </div>
-
     </div>
 </div>
 
@@ -67,6 +69,13 @@
     //         });
     //     });
     // }
+        function update(id) {
+            $.each({{rjson|safe}}, function(){
+                $("#add_name").html('<p>' + this.fields.display_name + '</p>');
+                $("#add_disparment").html('<p>' + this.fields.department + '</p>');
+            });
+        };
+
 
     function timeDown(seconds){
         seconds--;
@@ -93,15 +102,13 @@
     var app = new Vue({
         el: '#app',
         data: {
-        message: 'Hello Vue!',
-        message2: 'fairy tale',
-        message3: $.getJSON("/minutes/" + 1 + "/getattendees/",function(data) {
-            $.each(data, function(){
-                $("#add_name").append('<p>' + this.fields.display_name + '</p>');
-                $("#add_disparment").append('<p>' + this.fields.department + '</p>');
-            });
-        })
-                }
-        });
+            message: 'Hello Vue!',
+            message1: 
+            $.each({{rjson|safe}}, function(){
+                $("#add_name1").append('<p>' + this.fields.display_name + '</p>');
+                $("#add_disparment1").append('<p>' + this.fields.department + '</p>');
+            })
+            }
+    });
     </script>
 {% endblock myjs %}

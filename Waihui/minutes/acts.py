@@ -1,5 +1,6 @@
  # -*- coding: utf-8 -*-
 from django.utils.translation import ugettext as _
+from django.core import serializers
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from cStringIO import StringIO
@@ -34,3 +35,12 @@ def act_wxqrget_wx_id(request):
             return HttpResponse(json_data)
     else:
         return False
+
+def act_get_attendees(entry_id):
+    entry = get_object_or_404(Entry, id=entry_id)
+    profile = entry.attendees.all()
+    rjson = serializers.serialize("json", profile)
+    # response = HttpResponse()
+    # response['Content-Type'] = "text/javascript"
+    # response.write(rjson)
+    return rjson
