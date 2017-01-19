@@ -48,8 +48,7 @@
             
             {% verbatim %} <p id="add_disparment"></p> <p id="add_name"></p> {% endverbatim %}
         <h2>MESSAGES</h2>
-            {% verbatim %} {{ message1 }} {% endverbatim %}
-            {% verbatim %} {{ message2 }} {% endverbatim %}
+            {% verbatim %} {{ messa2 }} {% endverbatim %}
             {% verbatim %} <p id="add_disparment1"></p> <p id="add_name1"></p> {% endverbatim %}
             {% verbatim %} <p id="add_disparment2"></p> <p id="add_name2"></p> {% endverbatim %}
         </div>
@@ -105,21 +104,21 @@
         el: '#app',
         data: {
             message: 'Hello Vue!',
-            message1: 
+            apiUrl:'http://127.0.0.1:8000/minutes/1/getattendees',
+            messa2:'messa2'
+        },
+        mounted: function(){
+            this.getAttendees(),
             $.each({{rjson|safe}}, function() {
                 $("#add_name1").append('<p>' + this.fields.display_name + '</p>');
                 $("#add_disparment1").append('<p>' + this.fields.department + '</p>');
-            }),
-            apiUrl:'/minutes/' + {{entry_id}} + 'getattendees'
-        },
-        ready: function(){
-            this.getAttendees()
+            })
         },
         methods: {
             getAttendees: function() {
-                this.$http.get(this.apiUrl)
-                    .then((response)=>{
-                        message2: response
+                this.$http.jsonp(this.apiUrl)
+                    .then(function(response){
+                        this.$set('messa2',response.data)
                     })
                     .catch(function(response) {
                         console.log(response)

@@ -356,7 +356,7 @@ class Order(models.Model):
         verbose_name_plural = "Orders"
 
     def __unicode__(self):
-        return u'%s' % '['+str(self.id)+'] '+"Order of "+ str(self.buyer)
+        return u'%s' % '['+str(self.id)+'] '+"Order of "+ str(self.buyer) + " contains "+ str(len(self.skus.all())) + " skus, cost " + str(self.cny_price) + " Yuan"
 
     buyer = models.ForeignKey(Buyer)
     provider = models.ForeignKey(Provider, null=True)
@@ -365,6 +365,11 @@ class Order(models.Model):
     pay_method = models.CharField(blank=True, null=True, max_length=50)
     skus = models.ManyToManyField(Sku, blank=True)
     type = models.ForeignKey(OrderType)
+    created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    paidtime = models.DateTimeField(null=True, blank=True)
+    paidbacktime = models.DateTimeField(null=True, blank=True)
+    modified = models.DateTimeField(auto_now=True, null=True, blank=True)   
+
 # 不可支付、未支付、已支付、已完成、申请退款、已退款……
 
     STATUS_OF_ORDER_TYPE = (
@@ -383,6 +388,9 @@ class Order(models.Model):
         """对order状态进行升级"""
         self.status = theset
         self.save()
+
+    def time_to_pay(self):
+        return timezone.now() - self.created + datetime.timedelta(hours=24)
 
 class Log(models.Model):
     '''Model Log is for record of the journal of a User daily action.

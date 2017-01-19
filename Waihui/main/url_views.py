@@ -34,6 +34,7 @@ from main.act import act_provider_repick
 from main.act import act_provider_ready_sku
 from main.act import act_buyer_ready_sku
 from main.act import act_expand_skus
+from main.act import act_expand_orders
 from main.act import act_edit_provider_profile
 from main.act import act_upload_provider_avatar
 from main.act import act_buyer_feedback_sku
@@ -169,8 +170,15 @@ def url_holdsku(request):
     # topics = Topic.objects.all()
     # 
     # return render(request, "main/addsku.html", {'teacher_list':teachers, 'topic_list':topics,})
+def url_orderlist(request):
+    info = act_getinfo(request)
+    current_user = info['current_user']
+    orders = Order.objects.filter(buyer=current_user.buyer)
+    orders = act_expand_orders(orders)
+    return render(request, "main/orderlist.html", locals())
 
-def url_order(request, offset_id):
+
+def url_showorder(request, offset_id):
     id = int(offset_id)
     act = act_showindividual(id, 'order')
     return HttpResponse(act)
@@ -289,12 +297,12 @@ def url_skulist(request):
     msg = str(request)
     return render(request, "main/skulist.html", {'info':info, 'heading':"There is a Sku list", 'msg':msg, 'skus':skus})
 
-def url_order_add(request, skus):
-    info = act_getinfo(request)
-    current_user = info['current_user']
-    for i in skus:
-        thesku = Sku.objects.filter(id=i)
-        thesku.status = 2
+# def url_order_add(request, skus):
+#     info = act_getinfo(request)
+#     current_user = info['current_user']
+#     for i in skus:
+#         thesku = Sku.objects.filter(id=i)
+#         thesku.status = 2
 
 
 def url_test(request):
@@ -386,6 +394,7 @@ def url_picktopic(request):
     topics = Topic.objects.all()
     skus = Sku.objects.all()
     no_topics = Sku.objects.filter(topic=None)
+    heading = _(u'Pick a topic')
     return render(request, 'main/picktopic.html', locals())
 
 def url_skuintopic(request, topic_id):
@@ -394,20 +403,22 @@ def url_skuintopic(request, topic_id):
     skus_without_topics = Sku.objects.filter(topic=None, buyer=None)
     skus = skus_with_topics|skus_without_topics
     topic = Topic.objects.get(id=topic_id)
+    heading = _(u'Pick a time and meet a teacher')
     return render(request, 'main/skuintopic.html', locals())
 
 @login_required
-def url_booksku(request, sku_id, topic_id):
+def url_booksku(request, topic_id, sku_id,):
     info = act_getinfo(request)
     uf = BookSkuForm(request.POST)
+    topic = Topic.objects.get(id=topic_id)
     if request.method == 'POST':
         if uf.is_valid():
-            topic = Topic.objects.get(id=topic_id)
             buyer = info['current_user'].buyer
             result = act_booksku(sku_id=sku_id, topic=topic, buyer=buyer)
             msg = result
             return render(request, 'main/result.html', locals())   
-    msg = str(request.POST) 
+    msg = str(request.POST)
+    heading = _(u'Conform you course information')
     return render(request, 'main/booksku.html', locals())
 
 @login_required

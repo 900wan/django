@@ -36,6 +36,10 @@ MIN_CANCEL_TIME = datetime.timedelta(hours=8)
 OK_CANCEL_TIME = datetime.timedelta(hours=12)
 START_SOON_TIME = datetime.timedelta(minutes=15)
 
+ORDER_MIN_CANCEL_TIME = datetime.timedelta(hours=8)
+ORDER_OK_CANCEL_TIME = datetime.timedelta(hours=12)
+ORDER_PAY_SOON_TIME = datetime.timedelta(minutes=15)
+
 def act_getlanguage(request):
     language = request.LANGUAGE_CODE
     # language = request.META.get('HTTP_ACCEPT_LANGUAGE')
@@ -331,7 +335,6 @@ def act_booksku(sku_id, topic, buyer):
     sku.buyer.add(buyer)
     ds_noti_toprovider_skubooked(sku)
     result = "OK," + str(sku.topic) +" booked"
-
     return result
 
 def act_generate_skus(provider, schedule):
@@ -418,6 +421,16 @@ def act_expand_skus(skus):
         setattr(sku, 'is_past', (timezone.now() > sku.end_time)) # 该结束了
         skus_result.append(sku)
     return skus_result
+
+def act_expand_orders(orders):
+    '''用于扩展orders，增加不存在于 models 里的属性。'''
+    orders_result = []
+    for order in orders:
+        setattr(order, 'should_pay_later', (timezone.now() - order.created > ORDER_PAY_SOON_TIME)) # 这节课是不是距离开始还早着呢
+        setattr(order, 'should_pay_soon', (datetime.timedelta() < timezone.now() - order.created < ORDER_PAY_SOON_TIME)) # 这节课是不是马上就要开始啦？目前是15分钟内
+        setattr(order, 'is_paid', (order.cny_price < order.cny_paid)) # 该结束了
+        orders_result.append(order)
+    return orders_result
 
 def act_provider_ready_sku(sku, roomlink):
     '''设定sku中status为6（教师ready），传入最新的roomlink'''

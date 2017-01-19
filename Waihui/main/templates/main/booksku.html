@@ -13,8 +13,9 @@
     {% if uf %}
         <form method="post" enctype="multipart/form-data">
         <ul>
-            <li>{{sku_id}}</li>
-            <li>{{topic.name}}</li>
+            <li>sku_id: {{sku_id}}</li>
+            <li>name of the topic: {{topic.name}}</li>
+            <li>topic id: {{topic.id}}</li>
         </ul>
         {% csrf_token %}
         <input type="submit" name="submit">

@@ -54,5 +54,7 @@ urlpatterns = [
                         url(r'^notification/(\d+)/$', url_views.url_notification_go, name="notification_go"),
                         url(r'^mytest/$', url_views.url_test, name="mytest"),
                         url(r'^mytest/(\d+)/$', url_views.url_idtest, name="idtest"),
+                        url(r'^order/$', url_views.url_orderlist, name='orderlist'),
+                        url(r'^order/(\d+)/$', url_views.url_showorder, name='showorder'),
                         # url(r'^reviews/$', url_views.url_reviews, name='reviews'),
                        ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
