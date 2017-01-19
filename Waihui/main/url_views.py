@@ -178,10 +178,12 @@ def url_orderlist(request):
     return render(request, "main/orderlist.html", locals())
 
 
-def url_showorder(request, offset_id):
-    id = int(offset_id)
-    act = act_showindividual(id, 'order')
-    return HttpResponse(act)
+def url_showorder(request, order_id):
+    info = act_getinfo(request)
+    current_user = info['current_user']
+    order = Order.objects.get(id=order_id)
+    heading = _(u'Order Summary')
+    return render(request, 'main/showorder.html', locals())
 
 def url_lesson_prepare(request, offset_id):
     id = int(offset_id)

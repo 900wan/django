@@ -429,7 +429,10 @@ def act_expand_orders(orders):
         setattr(order, 'should_pay_later', (timezone.now() - order.created > ORDER_PAY_SOON_TIME)) # 这节课是不是距离开始还早着呢
         setattr(order, 'should_pay_soon', (datetime.timedelta() < timezone.now() - order.created < ORDER_PAY_SOON_TIME)) # 这节课是不是马上就要开始啦？目前是15分钟内
         setattr(order, 'is_paid', (order.cny_price < order.cny_paid)) # 该结束了
+        for sku in order.skus.all():
+            setattr(order, 'sku_is_past', (timezone.now() - sku.start_time > datetime.timedelta()))
         orders_result.append(order)
+
     return orders_result
 
 def act_provider_ready_sku(sku, roomlink):

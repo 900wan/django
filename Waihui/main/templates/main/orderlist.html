@@ -39,9 +39,8 @@
                     <th>ID</th>
                     <th>Provider</th>
                     <th>status</th>
-                    <th>Start time</th>
-                    <th>Paid time</th>
                     <th>Created</th>
+                    <th>Paid time</th>
                     <th>Modified</th>
                     <th>OP</th>
                 </tr>
@@ -62,10 +61,16 @@
                     <td>{{order.id}}</td>
                     <td>{{order.provider}}</td>
                     <td>{{order.status}}({{order.get_status_display}})</td>
-                    <td>{{order.start_time|date:"Y-m-d H:i (e)"}}</td>
-                    <td>{{order.paid_time|date:"Y-m-d H:i (e)"}}</td>
                     <td>{{order.created|date:"Y-m-d H:i (e)"}}</td>
+                    <td>{{order.paid_time|date:"Y-m-d H:i (e)"}}</td>
                     <td>{{order.modified|date:"Y-m-d H:i (e)"}}</td>
+                    <td>{% if not order.sku_is_past %}
+                            {% if order.status == 1 %}
+                                <strong><a href="{% url 'main:showorder' order.id %}">[Pay!]</a></strong>
+                            {% endif %}
+                        {% else %}
+                            <strong>[sku_missed]</strong>
+                    {% endif %}</td>
                 </tr>
                 {% endfor%}
             </tbody>

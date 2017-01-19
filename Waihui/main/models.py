@@ -272,7 +272,7 @@ class Wallet(models.Model):
         return u'%s' % self.cny_balance
     user = models.OneToOneField(User)
     cny_balance = models.FloatField(default=0)
-    display_currency = models.CharField( default= "CNY" , max_length=50)
+    display_currency = models.CharField(default="CNY", max_length=50)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
