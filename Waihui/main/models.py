@@ -366,9 +366,9 @@ class Order(models.Model):
     skus = models.ManyToManyField(Sku, blank=True)
     type = models.ForeignKey(OrderType)
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    paidtime = models.DateTimeField(null=True, blank=True)
-    paidbacktime = models.DateTimeField(null=True, blank=True)
-    modified = models.DateTimeField(auto_now=True, null=True, blank=True)   
+    paidtime = models.DateTimeField(null=True, blank=True) #付款日期
+    paidbacktime = models.DateTimeField(null=True, blank=True) #退款日期
+    modified = models.DateTimeField(auto_now=True, null=True, blank=True)
 
 # 不可支付、未支付、已支付、已完成、申请退款、已退款……
 
@@ -378,7 +378,9 @@ class Order(models.Model):
         (2, '已支付'),
         (3, '已完成'),
         (4, '申请退款'),
-        (5, '已退款'))
+        (5, '已退款'),
+        (6, '已取消'),#页面显示为cancel
+    )
 
     status = models.IntegerField(
         choices=STATUS_OF_ORDER_TYPE,
@@ -390,6 +392,7 @@ class Order(models.Model):
         self.save()
 
     def time_to_pay(self):
+        '''剩余余款时间 时限设置为24小时'''
         return timezone.now() - self.created + datetime.timedelta(hours=24)
 
 class Log(models.Model):

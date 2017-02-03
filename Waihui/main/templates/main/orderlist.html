@@ -30,7 +30,7 @@
                 <li>tutoring: {{info.current_user.provider.sku_set.all|length}} courses</li>
             </ul>
         </ul>
-        <h2>* As a student, you have {{info.current_user.buyer.order_set.all|length}} orders.</h2>
+        <h2>* As a student, you have {{info.current_user.buyer.order_set.all|length}} orders, and {{orders_to_pay_list|length}} orders is waiting to pay.</h2>
         <table>
             <thead>
                 <tr>

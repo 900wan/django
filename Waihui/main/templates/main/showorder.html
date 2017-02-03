@@ -46,6 +46,6 @@
         <p>* {% trans "Your balance: " %}{{current_user.wallet.cny_balance}}</p>
     </strong>
 
-    <h1><a href="">Pay!</a> <a href="">Cancel</a></h1>
+    <h1><a href="">Pay!</a> <a href="{% url 'main:ordercancel' order.id %}">Cancel</a></h1>
 
 {% endblock content %}

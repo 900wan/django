@@ -229,10 +229,38 @@ def act_showbuyer(id):
     buyer = Buyer.objects.get(id=id)
     return buyer
 
+def act_addorder(skus, buyer):
+    '''it will add a Order'''
+    cny_price = ds_get_order_cny_price(skus)
+    order = Order(cny_price=cny_price, buyer=buyer, type=OrderType.objects.get(id=1))
+    order.save()
+    order.skus = skus
+    result = "Order added, need to pay: CNY¥"+ str(cny_price) +", this order includes: "+str(skus)
+    return result
+
 def act_showorder(id):
     '''it will show Order information'''
     order = Sku.objects.get(id=id)
     return order
+
+def act_expand_orders(orders):
+    '''用于扩展orders，增加不存在于 models 里的属性。'''
+    orders_result = []
+    for order in orders:
+        setattr(order, 'should_pay_later', (timezone.now() - order.created > ORDER_PAY_SOON_TIME)) # 这节课是不是距离开始还早着呢
+        setattr(order, 'should_pay_soon', (datetime.timedelta() < timezone.now() - order.created < ORDER_PAY_SOON_TIME)) # 这节课是不是马上就要开始啦？目前是15分钟内
+        setattr(order, 'is_paid', (order.cny_price < order.cny_paid)) # 该结束了
+        for sku in order.skus.all():
+            setattr(order, 'sku_is_past', (timezone.now() - sku.start_time > datetime.timedelta()))
+        orders_result.append(order)
+    return orders_result
+
+def act_buyer_cancel_order(order):
+    '''买家主动取消订单'''
+    order.status = '6'
+    order.save()
+    result = "Order cancelec"
+    return result
 
 def act_showtopic(id):
     """this will show a topic"""
@@ -318,14 +346,6 @@ def act_getanotis(notis):
         anotis.append(anoti)
     return anotis
 
-def act_addorder(skus, buyer):
-    '''it will add a Order'''
-    cny_price = ds_get_order_cny_price(skus)
-    order = Order(cny_price=cny_price, buyer=buyer, type=OrderType.objects.get(id=1))
-    order.save()
-    order.skus = skus
-    result = "Order added, need to pay: CNY¥"+ str(cny_price) +", this order includes: "+str(skus)
-    return result
 
 def act_booksku(sku_id, topic, buyer):
     sku = Sku.objects.get(id=sku_id)
@@ -422,18 +442,6 @@ def act_expand_skus(skus):
         skus_result.append(sku)
     return skus_result
 
-def act_expand_orders(orders):
-    '''用于扩展orders，增加不存在于 models 里的属性。'''
-    orders_result = []
-    for order in orders:
-        setattr(order, 'should_pay_later', (timezone.now() - order.created > ORDER_PAY_SOON_TIME)) # 这节课是不是距离开始还早着呢
-        setattr(order, 'should_pay_soon', (datetime.timedelta() < timezone.now() - order.created < ORDER_PAY_SOON_TIME)) # 这节课是不是马上就要开始啦？目前是15分钟内
-        setattr(order, 'is_paid', (order.cny_price < order.cny_paid)) # 该结束了
-        for sku in order.skus.all():
-            setattr(order, 'sku_is_past', (timezone.now() - sku.start_time > datetime.timedelta()))
-        orders_result.append(order)
-
-    return orders_result
 
 def act_provider_ready_sku(sku, roomlink):
     '''设定sku中status为6（教师ready），传入最新的roomlink'''

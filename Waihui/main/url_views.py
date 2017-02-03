@@ -39,6 +39,7 @@ from main.act import act_edit_provider_profile
 from main.act import act_upload_provider_avatar
 from main.act import act_buyer_feedback_sku
 from main.act import act_provider_feedback_sku
+from main.act import act_buyer_cancel_order
 
 from main.ds import  ds_getanoti
 
@@ -173,8 +174,12 @@ def url_holdsku(request):
 def url_orderlist(request):
     info = act_getinfo(request)
     current_user = info['current_user']
-    orders = Order.objects.filter(buyer=current_user.buyer)
+    orders = current_user.buyer.order_set.all()
     orders = act_expand_orders(orders)
+    orders_to_pay_list = []
+    for order in orders:
+        if not hasattr(order, 'sku_is_past') and order.status == 1:
+                orders_to_pay_list.append(order)
     return render(request, "main/orderlist.html", locals())
 
 
@@ -184,6 +189,18 @@ def url_showorder(request, order_id):
     order = Order.objects.get(id=order_id)
     heading = _(u'Order Summary')
     return render(request, 'main/showorder.html', locals())
+
+def url_buyer_cancel_order(request, order_id):
+    info = act_getinfo(request)
+    current_user = info['current_user']
+    order = Order.objects.get(id=order_id)
+    if current_user.buyer == order.buyer:
+        act_buyer_cancel_order(order)
+        heading = _(u'Order canceled')
+        msg = str(order) + _(u'已经被取消') 
+    else:
+        return HttpResponse(_(u'Not the order''s buyer'))
+    return render(request, 'main/ordercanceled.html', locals())
 
 def url_lesson_prepare(request, offset_id):
     id = int(offset_id)
