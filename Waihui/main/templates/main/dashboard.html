@@ -31,7 +31,7 @@
             </ul>
         </ul>
         <h2>* {% trans "Learning courses" %} <a href="{% url 'main:addsku' %}"><i><small>book a new course</small></i></a></h2>
-        <strong>As a student</strong>, you have {{info.current_user.buyer.sku_set.all|length}} courses.
+        <strong>As a student</strong>, you have {{info.current_user.buyer.sku_set.all|length}} courses and {{info.current_user.buyer.order_set.all|length}} <a href="{% url 'main:orderlist' %}">orders</a>
         <table>
             <thead>
                 <tr>

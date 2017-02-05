@@ -295,7 +295,7 @@ class ReviewToProvider(models.Model):
         verbose_name_plural = "ReviewToProviders"
 
     def __unicode__(self):
-        return u'%s' % 'SkuID:[' + str(self.sku.id) + ']' +'Score:[' + 'str(self.score)' +']' +str(self.buyer.nickname) + 'reviews to' + str(self.provider.name)
+        return u'%s' % 'SkuID:[' + str(self.sku.id) + ']' + ' Score:[' + str(self.score) + '] ' +str(self.buyer.nickname) + ' reviews to ' + str(self.provider.name)
     provider = models.ForeignKey(Provider)
     buyer = models.ForeignKey(Buyer)
     sku = models.OneToOneField(Sku)
@@ -313,7 +313,7 @@ class ReviewToBuyer(models.Model):
         verbose_name_plural = "ReviewToBuyers"
 
     def __unicode__(self):
-        return u'%s' % 'SkuID:[' + str(self.sku.id) + ']' + str(self.provider.name) + 'reviews to' + str(self.buyer.nickname)
+        return u'%s' % 'SkuID:[' + str(self.sku.id) + ']' + str(self.provider.name) + ' reviews to ' + str(self.buyer.nickname)
     provider = models.ForeignKey(Provider)
     buyer = models.ForeignKey(Buyer)
     sku = models.ForeignKey(Sku)
@@ -358,7 +358,7 @@ class Order(models.Model):
         verbose_name_plural = "Orders"
 
     def __unicode__(self):
-        return u'%s' % '['+str(self.id)+'] '+"Order of "+ str(self.buyer)
+        return u'%s' % '['+str(self.id)+'] '+"Order of "+ str(self.buyer) + " contains "+ str(len(self.skus.all())) + " skus, cost " + str(self.cny_price) + " Yuan"
 
     buyer = models.ForeignKey(Buyer)
     provider = models.ForeignKey(Provider, null=True)
@@ -367,6 +367,11 @@ class Order(models.Model):
     pay_method = models.CharField(blank=True, null=True, max_length=50)
     skus = models.ManyToManyField(Sku, blank=True)
     type = models.ForeignKey(OrderType)
+    created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    paidtime = models.DateTimeField(null=True, blank=True) #付款日期
+    paidbacktime = models.DateTimeField(null=True, blank=True) #退款日期
+    modified = models.DateTimeField(auto_now=True, null=True, blank=True)
+
 # 不可支付、未支付、已支付、已完成、申请退款、已退款……
 
     STATUS_OF_ORDER_TYPE = (
@@ -375,7 +380,9 @@ class Order(models.Model):
         (2, '已支付'),
         (3, '已完成'),
         (4, '申请退款'),
-        (5, '已退款'))
+        (5, '已退款'),
+        (6, '已取消'),#页面显示为cancel
+    )
 
     status = models.IntegerField(
         choices=STATUS_OF_ORDER_TYPE,
@@ -385,6 +392,14 @@ class Order(models.Model):
         """对order状态进行升级"""
         self.status = theset
         self.save()
+
+    def time_to_pay_24hours(self):
+        '''剩余余款时间 时限设置为24小时'''
+        return self.created - timezone.now() + datetime.timedelta(hours=24)
+
+    def time_to_pay(self, timedelta):
+        '''剩余余款时间 时限设置为24小时'''
+        return self.created - timezone.now() + datetime.timedelta(timedelta)
 
 class Log(models.Model):
     '''Model Log is for record of the journal of a User daily action.
@@ -462,7 +477,6 @@ class Notification(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     
-
 
 #upload path methods:
 
