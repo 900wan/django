@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.utils import translation, timezone
+from django.utils import translation, timezone, html
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
 from main.models import User
@@ -29,7 +29,7 @@ def ds_showtopic(id=0, bywhat=0):
     return topic
 
 def ds_addlog(source, type, user, character):
-    user=User.objects.get(id=user)
+    user = User.objects.get(id=user)
     log = Log(source=source,
         type=type,
         user=user,
@@ -39,10 +39,10 @@ def ds_addlog(source, type, user, character):
 
 def ds_getanoti(noti):
     if noti.noti == 0:
-        content = u"Your tutor <strong>%s</strong> left a comment:<br/> <i>%s</i><br>-- from <i>Topic: %s</i>" % (noti.reply.user.provider.name, noti.reply.content, noti.sku.topic.name)
+        content = u"Your tutor <strong>%s</strong> left a comment:<br/> %s<br>-- from <i>Topic: %s</i>" % (noti.reply.user.provider.name, noti.reply.content, noti.sku.topic.name)
         link = reverse('main:showsku', args=[noti.sku.id])
     elif noti.noti == 10:
-        content = u"Your student <strong>%s</strong> left a comment:<br/> <i>%s</i><br>-- from <i>Topic: %s</i>" % (noti.reply.user.buyer.nickname, noti.reply.content, noti.sku.topic.name)
+        content = u"Your student <strong>%s</strong> left a comment:<br/> %s<br>-- from <i>Topic: %s</i>" % (noti.reply.user.buyer.nickname, noti.reply.content, noti.sku.topic.name)
         link = reverse('main:showsku', args=[noti.sku.id])
     elif noti.noti == 3:
         content = u"the <strong>%s</strong>'s \" <strong>%s</strong> \" class will begin in 30 mins" % (noti.sku.provider.name, noti.sku.topic.name)
@@ -51,19 +51,22 @@ def ds_getanoti(noti):
         content = u"Your teacher <strong>%s</strong> canceled your course:<br/>-- <i>Topic: %s</i>" % (noti.sku.provider.name, noti.sku.topic.name)
         link = reverse('main:showsku', args=[noti.sku.id])
     elif noti.noti == 9:
-        content = u"Your student canceled your course:<br/>"  
+        content = u"Your student %s canceled your course: <br/>-- <i>Topic: %s Time: %s</i>"  % (html.escape(list(noti.sku.buyer.all())), noti.sku.topic, noti.sku.start_time)
         link = reverse('main:showsku', args=[noti.sku.id])
     elif noti.noti == 5:
         content = u"Your course's teacher has changed to : <strong>%s</strong><br/>-- <i>Topic: %s</i>" % (noti.sku.provider.name, noti.sku.topic.name)
         link = reverse('main:showsku', args=[noti.sku.id])
-    anoti={
-    'id': noti.id,
-    'read' : noti.read,
-    'content' : content,
-    'open_time': noti.open_time,
-    'close_time': noti.close_time,
-    'link' : link,
-    }
+    elif noti.noti == 8:
+        content = u"A student %s booked your course! please confirm and prepare:<br/>-- <i>Topic: %s Time: %s</i>" % (noti.sku.buyer.all().last(), noti.sku.topic.name, noti.sku.start_time)
+        link = reverse('main:showsku', args=[noti.sku.id])
+
+    anoti = {'id': noti.id,
+             'read' : noti.read,
+             'content' : content,
+             'open_time': noti.open_time,
+             'close_time': noti.close_time,
+             'link' : link,
+            }
     return anoti
 
 def ds_noti_newreply(reply, user, type):
@@ -84,7 +87,10 @@ def ds_noti_newreply(reply, user, type):
 
 def ds_get_order_cny_price(skus):
     SKU_CNY_PRICE = 90.00
-    cny_price = len(skus) * SKU_CNY_PRICE
+    if isinstance(skus, Sku):
+        cny_price = SKU_CNY_PRICE
+    else:
+        cny_price = len(skus) * SKU_CNY_PRICE
     return cny_price
 
 def ds_noti_tobuyer_noprovider(sku):
@@ -97,13 +103,15 @@ def ds_noti_tobuyer_noprovider(sku):
     return True
 
 def ds_noti_toprovider_lostbuyer(sku):
+    """给sku的教师发消息，减少了某学生"""
     notification = Notification(user=sku.provider.user, sku=sku, noti=9,
                                 open_time=timezone.now(),
-                                close_time=timezone.now() + datetime.timedelta(weeks=100))
+                                close_time=sku.end_time)
     notification.save()
     return True
 
 def ds_change_provider(sku, new_provider):
+    """变更教师，传入sku及provider"""
     sku.provider = new_provider
     sku.save()
     ds_noti_tobuyer_changeprovider(sku)
@@ -117,4 +125,11 @@ def ds_noti_tobuyer_changeprovider(sku):
                                     noti=5, open_time=timezone.now(),
                                     close_time=sku.start_time + datetime.timedelta(hours=1))
         notification.save()
+    return True
+
+def ds_noti_toprovider_skubooked(sku):
+    """跟教师发通知说sku已被预订"""
+    notification = Notification(user=sku.provider.user, sku=sku, noti=8, open_time=timezone.now(),
+                                close_time=sku.end_time)
+    notification.save()
     return True

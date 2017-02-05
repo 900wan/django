@@ -7,6 +7,7 @@ from django.utils.translation import ugettext as _
 import datetime
 # from main.act import act_upgrade_hp
 # 无法导入acts
+BEFORE_COURSE_TIME = datetime.timedelta(minutes=15)
 
 def upgrade_hp(self,theset):
     """upgrade the hp by input a int """
@@ -52,6 +53,7 @@ class Provider(models.Model):
     class Meta:
         verbose_name = "Provider"
         verbose_name_plural = "Providers"
+        db_tablespace = "ImageStore"
 
     def __unicode__(self):
         return u'%s' % self.name
@@ -71,6 +73,12 @@ class Provider(models.Model):
     weekday_pattern = models.CommaSeparatedIntegerField(max_length=200, blank=True, null=True)
     fee_rate = models.FloatField(default=1)
     hp = models.FloatField(default=100)
+    teaching_language = models.ManyToManyField(Language, blank=True)
+    bio = models.TextField(blank=True)
+    video = models.TextField(blank=True, null=True)
+    avatar = models.ImageField(upload_to="provider_avatars/%Y/%m/%d/", default='/media/none/a.png', blank=True, null=True)
+    assigned_location = models.TextField(blank=True, null=True)
+    assigned_nationality = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
@@ -125,6 +133,8 @@ class Buyer(models.Model):
     time_zone = models.CharField(max_length=50)
     hp = models.IntegerField(default=100)
     provider = models.ForeignKey(Provider, blank=True, null=True)
+    location = models.TextField(blank=True, null=True)
+    nationality = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     def set_provider(self, provider):
@@ -179,17 +189,17 @@ class Sku(models.Model):
     buyer = models.ManyToManyField(Buyer, blank=True)
 
     STATUS_OF_SKU_CHOICES = (
-        (0, _(u'可预约')),
-        (1, '已预约'),
-        (2, '被拒绝扔池子的'),
-        (3, '彻底没人教'),
-        (4, '已定'),
+        (0, _(u'可约')), #定教师没学生,教师生成sku，等待学生预约
+        (1, '已约'), #学生完成预约，等待教师确认
+        (2, '待抢'), #教师取消，等待新教师接单
+        (3, '没有教师了'), #来不及换老师了。。。
+        (4, '已定'), #教师确认学生的预约
         (5, '已备课'),
         (6, '老师ready'),
         (7, '学生ready'),
         (8, '已结束待评价'),
-        (9, '已彻底结束 '),
-        (10, '买家申请取消等待处理'),
+        (9, '已结束 '),
+        (10, '学生取消'),
     )
     
     status = models.IntegerField(
@@ -219,6 +229,8 @@ class Sku(models.Model):
         return has_plan
     def time_to_start(self):
         return self.start_time - timezone.now()
+    def ready(self):
+        pass
         
 # index 7
 class Plan(models.Model):
@@ -260,7 +272,7 @@ class Wallet(models.Model):
         return u'%s' % self.cny_balance
     user = models.OneToOneField(User)
     cny_balance = models.FloatField(default=0)
-    display_currency = models.CharField( default= "CNY" , max_length=50)
+    display_currency = models.CharField(default="CNY", max_length=50)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
@@ -279,11 +291,11 @@ class Wallet(models.Model):
 class ReviewToProvider(models.Model):
 
     class Meta:
-        verbose_name = "ReviewTovProvider"
-        verbose_name_plural = "ReviewTovProviders"
+        verbose_name = "ReviewToProvider"
+        verbose_name_plural = "ReviewToProviders"
 
     def __unicode__(self):
-        return u'%s' % self.score
+        return u'%s' % 'SkuID:[' + str(self.sku.id) + ']' + ' Score:[' + str(self.score) + '] ' +str(self.buyer.nickname) + ' reviews to ' + str(self.provider.name)
     provider = models.ForeignKey(Provider)
     buyer = models.ForeignKey(Buyer)
     sku = models.OneToOneField(Sku)
@@ -291,10 +303,7 @@ class ReviewToProvider(models.Model):
     comment = models.CharField(max_length=250, blank=True, null=True)
     score = models.FloatField()
     created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
-    def get_score(self):
-        # questionnaire =
-        pass 
+    modified = models.DateTimeField(auto_now=True) 
 
 # index 10
 class ReviewToBuyer(models.Model):
@@ -304,10 +313,10 @@ class ReviewToBuyer(models.Model):
         verbose_name_plural = "ReviewToBuyers"
 
     def __unicode__(self):
-        pass
+        return u'%s' % 'SkuID:[' + str(self.sku.id) + ']' + str(self.provider.name) + ' reviews to ' + str(self.buyer.nickname)
     provider = models.ForeignKey(Provider)
     buyer = models.ForeignKey(Buyer)
-    sku = models.OneToOneField(Sku)
+    sku = models.ForeignKey(Sku)
     questionnaire = models.CharField(max_length=50, blank=True, null=True)
     comment = models.CharField(max_length=50, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -347,7 +356,7 @@ class Order(models.Model):
         verbose_name_plural = "Orders"
 
     def __unicode__(self):
-        return u'%s' % '['+str(self.id)+'] '+"Order of "+ str(self.buyer)
+        return u'%s' % '['+str(self.id)+'] '+"Order of "+ str(self.buyer) + " contains "+ str(len(self.skus.all())) + " skus, cost " + str(self.cny_price) + " Yuan"
 
     buyer = models.ForeignKey(Buyer)
     provider = models.ForeignKey(Provider, null=True)
@@ -356,6 +365,11 @@ class Order(models.Model):
     pay_method = models.CharField(blank=True, null=True, max_length=50)
     skus = models.ManyToManyField(Sku, blank=True)
     type = models.ForeignKey(OrderType)
+    created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    paidtime = models.DateTimeField(null=True, blank=True) #付款日期
+    paidbacktime = models.DateTimeField(null=True, blank=True) #退款日期
+    modified = models.DateTimeField(auto_now=True, null=True, blank=True)
+
 # 不可支付、未支付、已支付、已完成、申请退款、已退款……
 
     STATUS_OF_ORDER_TYPE = (
@@ -364,7 +378,9 @@ class Order(models.Model):
         (2, '已支付'),
         (3, '已完成'),
         (4, '申请退款'),
-        (5, '已退款'))
+        (5, '已退款'),
+        (6, '已取消'),#页面显示为cancel
+    )
 
     status = models.IntegerField(
         choices=STATUS_OF_ORDER_TYPE,
@@ -374,6 +390,14 @@ class Order(models.Model):
         """对order状态进行升级"""
         self.status = theset
         self.save()
+
+    def time_to_pay_24hours(self):
+        '''剩余余款时间 时限设置为24小时'''
+        return self.created - timezone.now() + datetime.timedelta(hours=24)
+
+    def time_to_pay(self, timedelta):
+        '''剩余余款时间 时限设置为24小时'''
+        return self.created - timezone.now() + datetime.timedelta(timedelta)
 
 class Log(models.Model):
     '''Model Log is for record of the journal of a User daily action.
@@ -452,6 +476,12 @@ class Notification(models.Model):
     modified = models.DateTimeField(auto_now=True)
     
 
+#upload path methods:
+
+def provider_avatar_path(instance, filename):
+    # TODO 暂未启用
+    # file will be uploaded to MEDIA_ROOT/provider_avatars/user_<id>/
+    return 'provider_avatars/user_{0}/{1}'.format(instance.user.id, filename)
 
 # TODO 有空时咱们一起进行：
 # 默认值、是否必填等有些还需要再调整

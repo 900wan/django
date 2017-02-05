@@ -28,11 +28,17 @@ from main.ds import ds_get_order_cny_price
 from main.ds import ds_noti_tobuyer_noprovider
 from main.ds import ds_noti_toprovider_lostbuyer
 from main.ds import ds_change_provider
+from main.ds import ds_noti_toprovider_skubooked
 
 from django.utils.translation import ugettext as _
 
 MIN_CANCEL_TIME = datetime.timedelta(hours=8)
 OK_CANCEL_TIME = datetime.timedelta(hours=12)
+START_SOON_TIME = datetime.timedelta(minutes=15)
+
+ORDER_MIN_CANCEL_TIME = datetime.timedelta(hours=8)
+ORDER_OK_CANCEL_TIME = datetime.timedelta(hours=12)
+ORDER_PAY_SOON_TIME = datetime.timedelta(minutes=15)
 
 def act_getlanguage(request):
     language = request.LANGUAGE_CODE
@@ -115,7 +121,7 @@ def act_addsku(provider, start_time, end_time, topic=None, buyer=None, status=0)
     if start_time>=end_time:
         result = 'Opps, end_time must be later than start_time!'
     elif Sku.objects.filter(
-        Q(provider=provider), 
+        Q(provider=provider) & ~Q(status = 10), 
         Q(start_time__lte=start_time, end_time__gt=start_time) 
         | Q(start_time__lt=end_time, end_time__gte=end_time) 
         | Q(start_time__gt=start_time, end_time__lt=end_time)
@@ -223,10 +229,53 @@ def act_showbuyer(id):
     buyer = Buyer.objects.get(id=id)
     return buyer
 
+def act_addorder(skus, buyer):
+    '''it will add a Order'''
+    cny_price = ds_get_order_cny_price(skus)
+    order = Order(cny_price=cny_price, buyer=buyer, type=OrderType.objects.get(id=1))
+    order.save()
+    if isinstance(skus, Sku):
+        order.skus.add(skus)
+    else:
+        order.skus = skus
+    order.save()
+    result = _(u'Order added, need to pay: CNY¥'+ str(cny_price) +', this order includes: '+str(skus))
+    result = {'info':result, 'order':order}
+    return result
+
 def act_showorder(id):
     '''it will show Order information'''
     order = Sku.objects.get(id=id)
     return order
+
+def act_expand_orders(orders):
+    '''用于扩展orders，增加不存在于 models 里的属性。'''
+    orders_result = []
+    for order in orders:
+        setattr(order, 'payment_timeflag', '')
+        if order.status == 1:
+            if order.created > timezone.now():
+                order.payment_timeflag = 'order is in mind'
+            else:
+                if datetime.timedelta(minutes=15) > (timezone.now() - order.created):
+                    order.payment_timeflag = 'should_pay_soon'
+                else:
+                    order.payment_timeflag = 'over 15mins'
+        # setattr(order, 'timedelta', timezone.now() - order.created)
+        # setattr(order, 'should_pay_later', (timezone.now() - order.created > ORDER_PAY_SOON_TIME)) # 这节课是不是距离开始还早着呢
+        setattr(order, 'should_pay_soon', (datetime.timedelta() < timezone.now() - order.created < ORDER_PAY_SOON_TIME)) # 这节课是不是马上就要开始啦？目前是15分钟内
+        setattr(order, 'is_paid', (order.cny_price < order.cny_paid)) # 该结束了
+        for sku in order.skus.all():
+            setattr(order, 'sku_is_past', (timezone.now() - sku.start_time > datetime.timedelta()))
+        orders_result.append(order)
+    return orders_result
+
+def act_buyer_cancel_order(order):
+    '''买家主动取消订单'''
+    order.status = '6'
+    order.save()
+    result = "Order cancelec"
+    return result
 
 def act_showtopic(id):
     """this will show a topic"""
@@ -291,6 +340,8 @@ def act_getinfo(request):
         'is_login': True,
         'current_user': request.user
         }
+        timezone.activate(pytz.timezone("Asia/Shanghai"))
+        info['now_tz'] = timezone.now()
         info['anotis'] =        act_getanotis(Notification.objects.filter(user=request.user, open_time__lte=timezone.now(), close_time__gte=timezone.now()).order_by('-open_time'))
         info['unread_anotis'] = act_getanotis(Notification.objects.filter(user=request.user, open_time__lte=timezone.now(), close_time__gte=timezone.now(), read=0).order_by('-open_time'))
         if request.user.provider.status == 0:
@@ -310,52 +361,45 @@ def act_getanotis(notis):
         anotis.append(anoti)
     return anotis
 
-def act_addorder(skus, buyer):
-    '''it will add a Order'''
-    cny_price = ds_get_order_cny_price(skus)
-    order = Order(cny_price=cny_price, buyer=buyer, type=OrderType.objects.get(id=1))
-    order.save()
-    order.skus = skus
-    result = "Order added, need to pay: CNY¥"+ str(cny_price) +", this order includes: "+str(skus)
-    return result
-
-def act_booksku(sku_id, topic, buyer):
+def act_sku_assign(sku_id, topic, buyer):
+    '''此为下单并正式付款前选择sku并添加相关信息的函数, 其中原则上为付款之后将sku状态定为booked'''
     sku = Sku.objects.get(id=sku_id)
     sku.topic = topic
-    sku.status = '1'
+    # sku.status = 1
     sku.save()
     sku.buyer.add(buyer)
-    result = "OK," + str(sku.topic) +" booked"
+    # ds_noti_toprovider_skubooked(sku)
+    return sku
 
+def act_booksku(sku_id, topic, buyer):
+    '''原则上为付款之后将sku状态定为booked'''
+    sku = Sku.objects.get(id=sku_id)
+    sku.topic = topic
+    # sku.status = 1
+    sku.save()
+    sku.buyer.add(buyer)
+    # ds_noti_toprovider_skubooked(sku)
+    result = _(u'OK, +' + str(sku.topic) + ' booked')
     return result
 
 def act_generate_skus(provider, schedule):
     '''生成sku，schedule 是一个list，其中每一个item都是dict，包含 topic, start_time, end_time'''
-    result=[]
+    result = []
     for item in schedule:
-        result_item=''
+        result_item = ''
         if item.get('topic') and item['start_time'] and item['end_time']:
-            result_item=act_addsku(
+            result_item = act_addsku(
                 provider=provider,
                 start_time=item['start_time'],
                 end_time=item['end_time'],
                 topic=item.get('topic'))
             result.append(result_item)
         elif item['start_time'] and item['end_time']:
-            result_item=act_addsku(
+            result_item = act_addsku(
                 provider=provider,
                 start_time=item['start_time'],
                 end_time=item['end_time'])
             result.append(result_item)
-    return result
-
-def act_cancelsku(sku_id, user):
-    sku = Sku.objects.get(id=sku_id)
-    sku.status = '8'
-    sku.save()
-    result = "OK," + str(sku.topic) +" is canceled, quite easy!"
-    type = 1 if sku.provider.user == user else 0
-    ds_noti_newcancel(sku=sku, user=user, type=type) 
     return result
 
 def act_provider_cancel_sku(sku, user):
@@ -381,30 +425,94 @@ def act_provider_cancel_sku(sku, user):
 
 def act_buyer_cancel_sku(sku, user):
     if sku.status != (1 or 4):
-            msg = _(u"Sorry, class status forbit you to cancel")
+        msg = _(u"Sorry, class status forbit you to cancel")
     else:
-        if sku.buyer.count() != 1 and 0:
+        if sku.buyer.count() > 1:
             # '''不知道remove对不对啊，好像是删掉这个buyer本身的意思'''
-            sku.buyer.remove(user)
+            sku.buyer.remove(user.buyer)
             msg = _(u"好了，这节课只有你不用来了，钱以后会打给你")
         elif sku.buyer.count() == 1:
-            if sku.has_plan(): sku.plan.clear()
-            sku.topic = None
-            sku.buyer.clear()
-            sku.status = 0
+            # 改成保留这个sku，保留证据！
+            sku.status = 10
             sku.save()
             msg = _(u"好了，这节课没人会来了，钱以后会打给你")
+            # 下面给这个老师再创建一个新的可约sku
+            msg = msg + act_addsku(
+                provider=sku.provider,
+                start_time=sku.start_time,
+                end_time=sku.end_time)
         ds_noti_toprovider_lostbuyer(sku=sku)
     return msg
 
 def act_provider_repick(sku, new_provider):
     if sku.status == 2:
-        msg=ds_change_provider(sku, new_provider)
+        msg = ds_change_provider(sku, new_provider)
         if sku.has_plan():
             sku.status = 5
         else:
             sku.status = 4
         sku.save()
     else:
-        msg=_(u'这不是一节待抢课程。')
+        msg = _(u'这不是一节待抢课程。')
     return msg
+
+def act_expand_skus(skus):
+    '''用来扩展 skus，增加不存在于 models 里的属性。'''
+    skus_result = []
+    for sku in skus:
+        setattr(sku, 'is_start_later', (sku.time_to_start() > START_SOON_TIME)) # 这节课是不是距离开始还早着呢
+        setattr(sku, 'is_start_soon', (datetime.timedelta() < sku.time_to_start() < START_SOON_TIME)) # 这节课是不是马上就要开始啦？目前是15分钟内
+        setattr(sku, 'is_should_in_progress', (sku.start_time < timezone.now() < sku.end_time)) # 这节课是不是应该在进行中
+        setattr(sku, 'is_past', (timezone.now() > sku.end_time)) # 该结束了
+        skus_result.append(sku)
+    return skus_result
+
+
+def act_provider_ready_sku(sku, roomlink):
+    '''设定sku中status为6（教师ready），传入最新的roomlink'''
+    if sku.status == 5 or sku.status == 6:
+        sku.status = 6
+        sku.save()
+        sku.plan.roomlink = roomlink
+        sku.plan.save()
+    return True
+
+def act_buyer_ready_sku(sku):
+    '''设定sku中status为7（学生ready）'''
+    if sku.status == 6:
+        sku.status = 7
+        sku.save()
+    return True
+
+def act_edit_provider_profile(provider, name, video, teaching_language):
+    '''对Provider的profile其中的属性进行加工'''
+    # provider.avatar = avatar
+    provider.name = name
+    provider.video = video
+    provider.teaching_language = teaching_language
+    provider.save()
+    return True
+
+def act_upload_provider_avatar(provider, new_avatar):
+    provider.avatar = new_avatar
+    provider.save()
+    return True
+
+def act_provider_feedback_sku(questionnaire, comment, sku, buyer):
+    '''提交provider对于sku向buyer的feedback'''
+    rtp = ReviewToBuyer(sku=sku, questionnaire=questionnaire, comment=comment, buyer=buyer, provider=sku.provider)
+    rtp.save()
+    sku.status=9
+    sku.save()
+    return True
+
+def act_buyer_feedback_sku(questionnaire, comment, sku, buyer):
+    '''提交buyer对于sku对provider的feedback'''
+    provider = sku.provider
+    raw_json = json.loads(questionnaire)
+    score = (raw_json.get('q1') + raw_json.get('q2') + raw_json.get('q3') + raw_json.get('q4')) * 2.5
+    rtb = ReviewToProvider(sku=sku, questionnaire=questionnaire, comment=comment, buyer=buyer, provider=provider, score=score)
+    rtb.save()
+    sku.status=9
+    sku.save()
+    return True
