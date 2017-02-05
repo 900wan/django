@@ -52,13 +52,10 @@
                 <tr>
                     <td><a href="{% url 'main:showorder' order.id %}">{{order}}</a></td>
                     <td>
-                        {{order.payment_timeflag}}
-                        {% if order.should_pay_later %}
-                            waiting...
-                        {% elif order.should_pay_soon %}
+                        {% if order.payment_timeflag == 'should_pay_soon' %}
                             <strong>SOON-countdown: <br/ >{{order.time_to_pay_24hours}}</strong>
-                        {% elif order.is_past%}
-                            past
+                        {% else %}
+                            {{order.payment_timeflag}}
                         {% endif %}
                     </td>
                     {# <td>{{order.timedelta}}</td> #}
