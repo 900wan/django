@@ -29,6 +29,7 @@
                 <li>tutoring status: {{info.current_user.provider.get_status_display}}</li>
                 <li>tutoring: {{info.current_user.provider.sku_set.all|length}} courses</li>
             </ul>
+            <li>DateTime: {{timezone_now}}</li>
         </ul>
         <h2>* As a student, you have {{info.current_user.buyer.order_set.all|length}} orders, and {{orders_to_pay_list|length}} orders is waiting to pay.</h2>
         <table>
@@ -36,6 +37,7 @@
                 <tr>
                     <th>Order</th>
                     <th>Timeflag</th>
+                    {# <th>TimeDelta</th> #}
                     <th>ID</th>
                     <th>Provider</th>
                     <th>status</th>
@@ -50,14 +52,16 @@
                 <tr>
                     <td><a href="{% url 'main:showorder' order.id %}">{{order}}</a></td>
                     <td>
+                        {{order.payment_timeflag}}
                         {% if order.should_pay_later %}
                             waiting...
                         {% elif order.should_pay_soon %}
-                            <strong>SOON-countdown: <br/ >{{order.time_to_pay}}</strong>
+                            <strong>SOON-countdown: <br/ >{{order.time_to_pay_24hours}}</strong>
                         {% elif order.is_past%}
                             past
                         {% endif %}
                     </td>
+                    {# <td>{{order.timedelta}}</td> #}
                     <td>{{order.id}}</td>
                     <td>{{order.provider}}</td>
                     <td>{{order.status}}({{order.get_status_display}})</td>

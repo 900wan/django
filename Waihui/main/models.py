@@ -391,9 +391,13 @@ class Order(models.Model):
         self.status = theset
         self.save()
 
-    def time_to_pay(self):
+    def time_to_pay_24hours(self):
         '''剩余余款时间 时限设置为24小时'''
-        return timezone.now() - self.created + datetime.timedelta(hours=24)
+        return self.created - timezone.now() + datetime.timedelta(hours=24)
+
+    def time_to_pay(self, timedelta):
+        '''剩余余款时间 时限设置为24小时'''
+        return self.created - timezone.now() + datetime.timedelta(timedelta)
 
 class Log(models.Model):
     '''Model Log is for record of the journal of a User daily action.

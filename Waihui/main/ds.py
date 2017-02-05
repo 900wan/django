@@ -87,7 +87,10 @@ def ds_noti_newreply(reply, user, type):
 
 def ds_get_order_cny_price(skus):
     SKU_CNY_PRICE = 90.00
-    cny_price = len(skus) * SKU_CNY_PRICE
+    if isinstance(skus, Sku):
+        cny_price = SKU_CNY_PRICE
+    else:
+        cny_price = len(skus) * SKU_CNY_PRICE
     return cny_price
 
 def ds_noti_tobuyer_noprovider(sku):
@@ -117,7 +120,7 @@ def ds_change_provider(sku, new_provider):
 
 def ds_noti_tobuyer_changeprovider(sku):
     """给学生发一个 noti 说课换老师了"""
-    for buyer   in sku.buyer.all():
+    for buyer in sku.buyer.all():
         notification = Notification(user=buyer.user, sku=sku,
                                     noti=5, open_time=timezone.now(),
                                     close_time=sku.start_time + datetime.timedelta(hours=1))

@@ -83,6 +83,19 @@ class BookSkuForm(forms.Form):
     buyer = forms.ModelChoiceField(queryset=None, required=False)
     topic = forms.ModelChoiceField(queryset=None, required=False)
 
+class PlaceSkuForm(forms.Form):
+    '''用于由sku（course）直接下单（order）的web页面使用'''
+    sku = forms.ModelChoiceField(queryset=None, required=False)
+    provider = forms.ModelChoiceField(queryset=None, required=False)
+    buyer = forms.ModelChoiceField(queryset=None, required=False)
+    topic = forms.ModelChoiceField(queryset=None, required=False)
+
+    # sku = forms.ChoiceField(queryset=None)
+    # provider = forms.ModelChoiceField(queryset=None)
+    # buyer = forms.ModelChoiceField(queryset=None)
+    # topic = forms.ModelChoiceField(queryset=None)
+
+
 class CancelSkuForm(forms.Form):
     sku = forms.ModelChoiceField(queryset=None, required=False)
     provider = forms.ModelChoiceField(queryset=None, required=False)

@@ -26,6 +26,7 @@ from main.act import act_getinfo
 from main.act import act_getanotis
 from main.act import act_addorder
 from main.act import act_booksku
+from main.act import act_sku_assign
 from main.act import act_generate_skus
 # from main.act import act_cancelsku
 from main.act import act_provider_cancel_sku
@@ -69,6 +70,7 @@ from main.forms import ProviderProfileForm
 from main.forms import ProviderAvatarForm
 from main.forms import ProviderFeedbackSkuForm
 from main.forms import BuyerFeedbackSkuForm
+from main.forms import PlaceSkuForm
 
 def url_homepage(request):
     language = act_getlanguage(request)
@@ -148,34 +150,14 @@ def url_tutor(request, offset_id):
     act = act_showindividual(id, 'provider')
     return HttpResponse(act.status)
 
-@login_required
-def url_holdsku(request):
-    '''make a sku for order, One order can have many skus'''
-    info = act_getinfo(request)
-    current_user = info['current_user'] 
-    skus = Sku.objects.all()
-    msg = request.method+", user: ["+str(current_user.username)+"], user's buyer: ["+str(current_user.buyer)+"]"
-    if request.method == 'POST':
-        uf = HoldSkuForm(request.POST)
-        if uf.is_valid():
-            provider = uf.cleaned_data['provider']
-            topic = uf.cleaned_data['topic']
-            start_time = uf.cleaned_data['start_time']
-            end_time = uf.cleaned_data['end_time']
-            result = act_addsku(provider=provider, topic=topic, start_time=start_time, end_time=end_time, buyer=current_user.buyer)
-            msg = result
-    else:
-        uf = HoldSkuForm()    
-    return render(request, "main/addsku.html", {'info':info, 'uf':uf, 'msg':msg, 'heading':"add sku", 'skus':skus})
-    # teachers = Provider.objects.all()
-    # topics = Topic.objects.all()
-    # 
-    # return render(request, "main/addsku.html", {'teacher_list':teachers, 'topic_list':topics,})
 def url_orderlist(request):
     info = act_getinfo(request)
     current_user = info['current_user']
+    timezone_now = timezone.now()
     orders = current_user.buyer.order_set.all()
+    msg1 = str(orders)
     orders = act_expand_orders(orders)
+    msg2 = str(orders)
     orders_to_pay_list = []
     for order in orders:
         if not hasattr(order, 'sku_is_past') and order.status == 1:
@@ -184,10 +166,15 @@ def url_orderlist(request):
 
 
 def url_showorder(request, order_id):
+    '''展示order页面，兼容需付款order的情况，文字描述通过session传输'''
     info = act_getinfo(request)
     current_user = info['current_user']
     order = Order.objects.get(id=order_id)
     heading = _(u'Order Summary')
+    if 'heading' in request.session:
+        heading = request.session['heading']
+    if 'msg' in request.session:
+        msg = request.session['msg']
     return render(request, 'main/showorder.html', locals())
 
 def url_buyer_cancel_order(request, order_id):
@@ -379,8 +366,8 @@ def url_addorder(request):
     if request.method == 'POST':
         if uf.is_valid():
             skus = uf.cleaned_data['skus']
-            # msg=skus
-            msg = act_addorder(skus,buyer)
+            # msg = str(isinstance(skus,Sku))
+            msg = act_addorder(skus, buyer)
     # result = act_addorder(skus, buyer)
     # uf = OrderForm(request.POST)
     # uf.fields['skus'].queryset = Sku.objects.filter(buyer=info['current_user'].buyer)
@@ -426,7 +413,54 @@ def url_skuintopic(request, topic_id):
     return render(request, 'main/skuintopic.html', locals())
 
 @login_required
+def url_holdsku(request, topic_id, sku_id):
+    '''用于选择单个sku（course）后直接下单'''
+    info = act_getinfo(request)
+    uf = PlaceSkuForm(request.POST)
+    topic = get_object_or_404(Topic, id=topic_id)
+    sku = get_object_or_404(Sku, id=sku_id)
+    if request.method == 'POST':
+        if uf.is_valid():
+            buyer = info['current_user'].buyer
+            sku = act_sku_assign(sku_id=sku_id, topic=topic, buyer=buyer)
+            # msg = str(isinstance(sku, Sku))
+            result = act_addorder(sku, buyer)
+            order = result['order']
+            request.session['heading'] = _(u'Please pay the order')
+            request.session['msg'] = result['info']
+            return HttpResponseRedirect(reverse('main:showorder', args=[order.id]))
+            # return render(request, 'main/result.html', locals())
+    msg = str(request.POST)
+    heading = _(u'Confirm your course information')
+    return render(request, 'main/holdsku.html', {'info':info, 'heading':heading, 'sku_id':sku.id, 'topic':topic, 'uf':uf, 'msg':msg})
+
+# @login_required
+# def url_holdsku(request):
+#     '''make a sku for order, One order can have many skus'''
+#     info = act_getinfo(request)
+#     current_user = info['current_user'] 
+#     skus = Sku.objects.all()
+#     msg = request.method+", user: ["+str(current_user.username)+"], user's buyer: ["+str(current_user.buyer)+"]"
+#     if request.method == 'POST':
+#         uf = HoldSkuForm(request.POST)
+#         if uf.is_valid():
+#             provider = uf.cleaned_data['provider']
+#             topic = uf.cleaned_data['topic']
+#             start_time = uf.cleaned_data['start_time']
+#             end_time = uf.cleaned_data['end_time']
+#             result = act_addsku(provider=provider, topic=topic, start_time=start_time, end_time=end_time, buyer=current_user.buyer)
+#             msg = result
+#     else:
+#         uf = HoldSkuForm()    
+#     return render(request, "main/addsku.html", {'info':info, 'uf':uf, 'msg':msg, 'heading':"add sku", 'skus':skus})
+#     # teachers = Provider.objects.all()
+#     # topics = Topic.objects.all()
+#     # 
+#     # return render(request, "main/addsku.html", {'teacher_list':teachers, 'topic_list':topics,})
+
+@login_required
 def url_booksku(request, topic_id, sku_id,):
+    '''url name:booksku'''
     info = act_getinfo(request)
     uf = BookSkuForm(request.POST)
     topic = Topic.objects.get(id=topic_id)
