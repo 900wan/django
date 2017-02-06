@@ -229,7 +229,7 @@ def act_showbuyer(id):
     buyer = Buyer.objects.get(id=id)
     return buyer
 
-def act_addorder(skus, buyer):
+def act_addorder(user, skus, buyer):
     '''it will add a Order'''
     cny_price = ds_get_order_cny_price(skus)
     order = Order(cny_price=cny_price, buyer=buyer, type=OrderType.objects.get(id=1))
@@ -239,6 +239,7 @@ def act_addorder(skus, buyer):
     else:
         order.skus = skus
     order.save()
+    ds_addlog(client=0, action=2, user=user, order=order)
     result = _(u'Order added, need to pay: CNY¥'+ str(cny_price) +', this order includes: '+str(skus))
     result = {'info':result, 'order':order}
     return result
@@ -316,19 +317,12 @@ def act_showindividual(id, c):
     return r
 
 def act_htmllogin(user):
-    user = User.objects.get(id=user)
-    log = ds_addlog(source=0, type=0, user=user, character=0)
-    log.save()
-    return "OK!" + "from " + "html " + log.user + " logged in"
+    log = ds_addlog(client=0, action=0, user=user)
+    return
 
-def act_addlog(source, type, user, character):
-    user = User.objects.get(id=user)
-    log = Log(source=source,
-        type=type,
-        user=user,
-        character=character)
-    log.save()
-    return "OK!" + "from " + log.source + log.user + " logged in"
+def act_htmllogout(user):
+    log = ds_addlog(client=0, action=1, user=user)
+    return
 
 def act_showsku(id):
     sku = Sku.objects.get(id=id)

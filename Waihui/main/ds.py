@@ -28,14 +28,29 @@ def ds_showtopic(id=0, bywhat=0):
         topic = "error"
     return topic
 
-def ds_addlog(source, type, user, character):
-    user = User.objects.get(id=user)
-    log = Log(source=source,
-        type=type,
-        user=user,
-        character=character)
+def ds_addlog(client, action, user, order=None, character=None):
+    '''增加日志记录
+    TYPE_OF_CLIENT = (
+        (0, '网页端'),
+        (1, '移动网页端'),
+        (2, 'IOS客户端'),
+        (3, '安卓客户端')
+    )
+    TYPE_OF_ACTION = (
+        (0, '登陆'),
+        (1, '登出'),
+        (2, '下单'),
+        (3, '修改'),
+        (4, '取消')
+    )'''
+    log = Log(client=client,
+              action=action,
+              user=user,
+              order=order,
+              character=character,
+             )
     log.save()
-    return "OK!" + "from " + log.source + "log.user" + " logged in"
+    return log
 
 def ds_getanoti(noti):
     if noti.noti == 0:

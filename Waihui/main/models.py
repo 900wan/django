@@ -403,20 +403,22 @@ class Order(models.Model):
 
 class Log(models.Model):
     '''Model Log is for record of the journal of a User daily action.
-    To record this info, your should insert log attribution in Front'''
+    To record this info, you should insert log attribution in Front'''
     class Meta:
         verbose_name = "Log"
         verbose_name_plural = "Logs"
 
-    def __str__(self):
-        pass
+    def __unicode__(self):
+        return u'%s' % '['+str(self.user.username)+'] '+ self.get_action_display() + ' on ' + self.get_client_display() + ' as ' + str(self.get_character_display())
+
 
     TYPE_OF_CLIENT = (
         (0, '网页端'),
         (1, '移动网页端'),
         (2, 'IOS客户端'),
-        (3, '安卓客户端'))
-    source = models.IntegerField(
+        (3, '安卓客户端')
+    )
+    client = models.IntegerField(
         choices=TYPE_OF_CLIENT,
         default=0)
 
@@ -425,17 +427,18 @@ class Log(models.Model):
         (1, '登出'),
         (2, '下单'),
         (3, '修改'),
-        (4, '取消'))
-    type = models.IntegerField(choices=TYPE_OF_ACTION)
-    user = models.OneToOneField(User)
-
+        (4, '取消')
+    )
+    action = models.IntegerField(choices=TYPE_OF_ACTION)
+    user = models.ForeignKey(User)
+    order = models.ForeignKey(Order, null=True, blank=True)
     BUYER = 0
     PROVIDER = 1
     TYPE_OF_CHARACTER = (
         (BUYER, 'buyer'),
         (PROVIDER, 'provider'))
-    character = models.IntegerField(choices=TYPE_OF_CHARACTER)
-    Dtime = models.DateTimeField(auto_now_add=True)
+    character = models.IntegerField(choices=TYPE_OF_CHARACTER, null=True, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
 
 
 class Notification(models.Model):
@@ -459,7 +462,8 @@ class Notification(models.Model):
         (8, '学生预订你的课啦！该备课了请确认'),
         (9, '学生取消了课'),
         (10, '学生发表了回复'),
-        (11, '超级通知'),)
+        (11, '超级通知'),
+    )
 
     user = models.ForeignKey(User)
     noti = models.IntegerField(choices=STATUS_OF_NOTI)

@@ -41,6 +41,7 @@ from main.act import act_upload_provider_avatar
 from main.act import act_buyer_feedback_sku
 from main.act import act_provider_feedback_sku
 from main.act import act_buyer_cancel_order
+from main.act import act_htmllogout
 
 from main.ds import  ds_getanoti
 
@@ -117,6 +118,7 @@ def url_login(request):
                 if user.is_active:
                     login(request, user)
                     info = act_getinfo(request)
+                    act_htmllogin(user)
                     if next == '':
                         return render(request, "main/right.html", {'info':info, 'username':username})
                     else:
@@ -138,7 +140,9 @@ def url_login(request):
 
 # @login_required
 def url_logout(request):
+    info = act_getinfo(request)
     logout(request)
+    act_htmllogout(info['current_user'])
     return HttpResponseRedirect(reverse('main:home'))
 
 def url_tc(request, offset_id):
@@ -367,7 +371,7 @@ def url_addorder(request):
         if uf.is_valid():
             skus = uf.cleaned_data['skus']
             # msg = str(isinstance(skus,Sku))
-            msg = act_addorder(skus, buyer)
+            msg = act_addorder(info['current_user'], skus, buyer)
     # result = act_addorder(skus, buyer)
     # uf = OrderForm(request.POST)
     # uf.fields['skus'].queryset = Sku.objects.filter(buyer=info['current_user'].buyer)
@@ -424,7 +428,7 @@ def url_holdsku(request, topic_id, sku_id):
             buyer = info['current_user'].buyer
             sku = act_sku_assign(sku_id=sku_id, topic=topic, buyer=buyer)
             # msg = str(isinstance(sku, Sku))
-            result = act_addorder(sku, buyer)
+            result = act_addorder(info['current_user'],sku, buyer)
             order = result['order']
             request.session['heading'] = _(u'Please pay the order')
             request.session['msg'] = result['info']
