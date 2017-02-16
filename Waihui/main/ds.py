@@ -148,3 +148,18 @@ def ds_noti_toprovider_skubooked(sku):
                                 close_time=sku.end_time)
     notification.save()
     return True
+
+def ds_skucheck(skus, status):
+    '''检查sku的状态是否为可约（0 or 10），能否下单'''
+    try:
+        if iter(skus):
+            for sku in skus:
+                if sku.status in status:
+                    return True
+                else:
+                    return False
+    except:
+        if skus.status in status:
+            return True
+        else:
+            return False

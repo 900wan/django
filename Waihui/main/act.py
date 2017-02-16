@@ -29,6 +29,7 @@ from main.ds import ds_noti_tobuyer_noprovider
 from main.ds import ds_noti_toprovider_lostbuyer
 from main.ds import ds_change_provider
 from main.ds import ds_noti_toprovider_skubooked
+from main.ds import ds_skucheck
 
 from django.utils.translation import ugettext as _
 
@@ -229,10 +230,12 @@ def act_showbuyer(id):
     buyer = Buyer.objects.get(id=id)
     return buyer
 
-def act_addorder(user, skus, buyer):
+def act_addorder(user, skus, buyer, skus_topic=None):
     '''it will add a Order'''
+    if not ds_skucheck(skus, [0, 10]):
+        return False
     cny_price = ds_get_order_cny_price(skus)
-    order = Order(cny_price=cny_price, buyer=buyer, type=OrderType.objects.get(id=1))
+    order = Order(cny_price=cny_price, buyer=buyer, type=OrderType.objects.get(id=1), skus_topic=skus_topic)
     order.save()
     if isinstance(skus, Sku):
         order.skus.add(skus)
@@ -271,10 +274,11 @@ def act_expand_orders(orders):
         orders_result.append(order)
     return orders_result
 
-def act_buyer_cancel_order(order):
+def act_buyer_cancel_order(user, order, client='0'):
     '''买家主动取消订单'''
     order.status = '6'
     order.save()
+    ds_addlog(client=client, action=4, user=user, order=order, character=0)
     result = "Order cancelec"
     return result
 
@@ -355,15 +359,17 @@ def act_getanotis(notis):
         anotis.append(anoti)
     return anotis
 
-def act_sku_assign(sku_id, topic, buyer):
-    '''此为下单并正式付款前选择sku并添加相关信息的函数, 其中原则上为付款之后将sku状态定为booked'''
-    sku = Sku.objects.get(id=sku_id)
-    sku.topic = topic
-    # sku.status = 1
-    sku.save()
-    sku.buyer.add(buyer)
+def act_assignid_sku_topic(sku_id, topic_id):
+    '''此为下单生成order中sku_topic_buyer field列表信息的功能，目前只能实现单个sku进行绑定'''
+    skus_topic = []
+    # for sku_id in sku_ids:
+    sku_topic = {'sku_id':sku_id, 'topic_id':topic_id}
+    skus_topic.append(sku_topic)
+
     # ds_noti_toprovider_skubooked(sku)
-    return sku
+    skus_topic = json.dumps(skus_topic)
+    # skus_topic = str(skus_topic)
+    return skus_topic
 
 def act_booksku(sku_id, topic, buyer):
     '''原则上为付款之后将sku状态定为booked'''

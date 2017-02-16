@@ -26,7 +26,7 @@ from main.act import act_getinfo
 from main.act import act_getanotis
 from main.act import act_addorder
 from main.act import act_booksku
-from main.act import act_sku_assign
+from main.act import act_assignid_sku_topic
 from main.act import act_generate_skus
 # from main.act import act_cancelsku
 from main.act import act_provider_cancel_sku
@@ -173,20 +173,26 @@ def url_showorder(request, order_id):
     '''展示order页面，兼容需付款order的情况，文字描述通过session传输'''
     info = act_getinfo(request)
     current_user = info['current_user']
-    order = Order.objects.get(id=order_id)
+    order = get_object_or_404(Order, id=order_id)
+    skus_topic = json.loads(order.skus_topic)
+    for sku in order.skus.all():
+        sku_id = sku.id
+        topic_id = (item for item in skus_topic if item["sku_id"] == sku_id).next()['topic_id']
+        topic = Topic.objects.get(id=topic_id)
+    result = str(type(skus_topic)) + str(skus_topic)
     heading = _(u'Order Summary')
     if 'heading' in request.session:
         heading = request.session['heading']
     if 'msg' in request.session:
         msg = request.session['msg']
+    # msg = order.object.all()
     return render(request, 'main/showorder.html', locals())
 
 def url_buyer_cancel_order(request, order_id):
     info = act_getinfo(request)
-    current_user = info['current_user']
     order = Order.objects.get(id=order_id)
-    if current_user.buyer == order.buyer:
-        act_buyer_cancel_order(order)
+    if info['current_user'].buyer == order.buyer:
+        result = act_buyer_cancel_order(info['current_user'], order)
         heading = _(u'Order canceled')
         msg = str(order) + _(u'已经被取消') 
     else:
@@ -409,8 +415,8 @@ def url_picktopic(request):
 
 def url_skuintopic(request, topic_id):
     info = act_getinfo(request)
-    skus_with_topics = Sku.objects.filter(topic_id=topic_id, buyer=None)
-    skus_without_topics = Sku.objects.filter(topic=None, buyer=None)
+    skus_with_topics = Sku.objects.filter(topic_id=topic_id, status=0, buyer=None)
+    skus_without_topics = Sku.objects.filter(topic=None, status=0, buyer=None)
     skus = skus_with_topics|skus_without_topics
     topic = Topic.objects.get(id=topic_id)
     heading = _(u'Pick a time and meet a teacher')
@@ -420,23 +426,30 @@ def url_skuintopic(request, topic_id):
 def url_holdsku(request, topic_id, sku_id):
     '''用于选择单个sku（course）后直接下单'''
     info = act_getinfo(request)
-    uf = PlaceSkuForm(request.POST)
     topic = get_object_or_404(Topic, id=topic_id)
     sku = get_object_or_404(Sku, id=sku_id)
+    if sku.status != 0:
+        msg = _(u'抱歉，该课程目前不可约了')
+        return render(request, 'main/holdsku.html', locals())
+    uf = PlaceSkuForm(request.POST)
     if request.method == 'POST':
         if uf.is_valid():
             buyer = info['current_user'].buyer
-            sku = act_sku_assign(sku_id=sku_id, topic=topic, buyer=buyer)
+            typeskuid = str(type(sku.id)) + str(type(sku_id)) #int & unicode
+            sku_topic = act_assignid_sku_topic(sku_id=sku.id, topic_id=topic.id)
             # msg = str(isinstance(sku, Sku))
-            result = act_addorder(info['current_user'],sku, buyer)
+            result = act_addorder(buyer.user, sku, buyer, sku_topic)
+            if not result:
+                msg = _(u'result is false')
+                return render(request, 'main/holdsku.html', locals())
             order = result['order']
             request.session['heading'] = _(u'Please pay the order')
-            request.session['msg'] = result['info']
+            request.session['msg'] = result['info'] + typeskuid
             return HttpResponseRedirect(reverse('main:showorder', args=[order.id]))
             # return render(request, 'main/result.html', locals())
     msg = str(request.POST)
     heading = _(u'Confirm your course information')
-    return render(request, 'main/holdsku.html', {'info':info, 'heading':heading, 'sku_id':sku.id, 'topic':topic, 'uf':uf, 'msg':msg})
+    return render(request, 'main/holdsku.html', {'info':info, 'heading':heading, 'sku':sku, 'topic':topic, 'uf':uf, 'msg':msg})
 
 # @login_required
 # def url_holdsku(request):
@@ -471,7 +484,7 @@ def url_booksku(request, topic_id, sku_id,):
     if request.method == 'POST':
         if uf.is_valid():
             buyer = info['current_user'].buyer
-            result = act_booksku(sku_id=sku_id, topic=topic, buyer=buyer)
+            result = act_booksku(sku_id=sku_id, topic=topic)
             msg = result
             return render(request, 'main/result.html', locals())   
     msg = str(request.POST)

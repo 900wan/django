@@ -9,6 +9,11 @@
     <h1>{{heading}}</h1>
     <p>================================</p>
     <p>{{msg}}</p>
+    <p>===</p>
+    <p>result:{{result|safe}}</p>
+    <p>{{skus_topic|safe}}</p>
+    <p>{{topic_id}}</p>
+    <p>{{sku_id}}</p>
     <p>================================</p>
     <h2><strong>This order has {{order.skus.all|length}} sku</strong></h2>
         <table>
@@ -27,7 +32,7 @@
             <tbody>
     {% for sku in order.skus.all %}
                 <tr>
-                    <td>{{sku.topic}}</td>
+                    <td>{{topic}}</td>
                     <td>{{sku.status}}({{sku.get_status_display}})</td>
                     <td>{{sku.provider}}</td>
                     <td>{{sku.buyer.all}}</td>
@@ -47,5 +52,8 @@
     </strong>
 
     <h1><a href="">Pay!</a> <a href="{% url 'main:ordercancel' order.id %}">Cancel</a></h1>
+    <script type="text/javascript">
+    var List = {{skus_topic|safe}};
+    </script>
 
 {% endblock content %}

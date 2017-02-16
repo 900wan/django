@@ -366,6 +366,7 @@ class Order(models.Model):
     cny_paid = models.FloatField(default=0)
     pay_method = models.CharField(blank=True, null=True, max_length=50)
     skus = models.ManyToManyField(Sku, blank=True)
+    skus_topic = models.CharField(blank=True, null=True, max_length=300)
     type = models.ForeignKey(OrderType)
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     paidtime = models.DateTimeField(null=True, blank=True) #付款日期
@@ -432,11 +433,9 @@ class Log(models.Model):
     action = models.IntegerField(choices=TYPE_OF_ACTION)
     user = models.ForeignKey(User)
     order = models.ForeignKey(Order, null=True, blank=True)
-    BUYER = 0
-    PROVIDER = 1
     TYPE_OF_CHARACTER = (
-        (BUYER, 'buyer'),
-        (PROVIDER, 'provider'))
+        (0, 'buyer'),
+        (1, 'provider'))
     character = models.IntegerField(choices=TYPE_OF_CHARACTER, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
 
