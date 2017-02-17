@@ -407,9 +407,9 @@ def url_addsku(request):
 def url_picktopic(request):
     info = act_getinfo(request)
     topics = Topic.objects.all()
-    topics_timeok = topics.filter(sku__start_time__gte=timezone.now())
     skus = Sku.objects.all()
-    no_topics = Sku.objects.filter(topic=None)
+    skus_timeok = skus.filter(topic=None)
+    # no_topics = Sku.objects.filter(topic=None)
     heading = _(u'Pick a topic')
     return render(request, 'main/picktopic.html', locals())
 
@@ -522,12 +522,12 @@ def url_schedule(request):
                     item = {}
                     try:
                         if raw_item.get('topic_id'):
-                            item['topic']=Topic.objects.get(id=int(raw_item.get('topic_id')))
-                            item['start_time']=tz.localize(datetime.datetime.strptime(raw_item['start_time'],"%Y-%m-%d %H:%M:%S"))
+                            item['topic'] = Topic.objects.get(id=int(raw_item.get('topic_id')))
+                        item['start_time'] = tz.localize(datetime.datetime.strptime(raw_item['start_time'], "%Y-%m-%d %H:%M:%S"))
                         if raw_item.get('end_time'):
-                            item['end_time']=tz.localize(datetime.datetime.strptime(raw_item['end_time'],"%Y-%m-%d %H:%M:%S"))
+                            item['end_time'] = tz.localize(datetime.datetime.strptime(raw_item['end_time'], "%Y-%m-%d %H:%M:%S"))
                         else:
-                            item['end_time']=tz.localize(datetime.datetime.strptime(raw_item['start_time'],"%Y-%m-%d %H:%M:%S")+datetime.timedelta(minutes=30))
+                            item['end_time'] = tz.localize(datetime.datetime.strptime(raw_item['start_time'], "%Y-%m-%d %H:%M:%S") + datetime.timedelta(minutes=30))
                         if item['start_time'] and (item['start_time']>now_tz):
                             schedule.append(item)
                     except Exception, e:
