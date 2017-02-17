@@ -407,6 +407,7 @@ def url_addsku(request):
 def url_picktopic(request):
     info = act_getinfo(request)
     topics = Topic.objects.all()
+    topics_timeok = topics.filter(sku__start_time__gte=timezone.now())
     skus = Sku.objects.all()
     no_topics = Sku.objects.filter(topic=None)
     heading = _(u'Pick a topic')
@@ -416,9 +417,13 @@ def url_skuintopic(request, topic_id):
     info = act_getinfo(request)
     skus_with_topics = Sku.objects.filter(topic_id=topic_id, status=0, buyer=None)
     skus_without_topics = Sku.objects.filter(topic=None, status=0, buyer=None)
-    skus = skus_with_topics|skus_without_topics
+    skus = (skus_with_topics|skus_without_topics).filter(start_time__gte=timezone.now())
+    # skus = skus.filter(start_time__gte=timezone.now())
     topic = Topic.objects.get(id=topic_id)
     heading = _(u'Pick a time and meet a teacher')
+    if skus.count() == 0:
+        heading = _(u'Sorry, No sku in this topic right now')
+        return render(request, 'main/skuintopic_none.html', locals())
     return render(request, 'main/skuintopic.html', locals())
 
 @login_required

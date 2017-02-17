@@ -17,8 +17,13 @@
         <tbody>
                 {% for topic in topics %}
             <tr>
-                    <td><a href="{% url 'main:skuintopic' topic.id %}">{{topic.name}}&lt;{{topic.sku_set.all|length}}&gt;</a> </td>
+                {% if topics_timeok.sku_set.all|length == 0 %}
+                    <td>{{topic.name}}&lt;{{topics_timeok.sku_set.all|length}}&gt;</td>
                     <td>{{topic.category}}</td>
+                {% else %}
+                    <td><a href="{% url 'main:skuintopic' topic.id %}">{{topic.name}}&lt;{{topics_timeok.sku_set.all|length}}&gt;</a> </td>
+                    <td>{{topic.category}}</td>
+                {% endif %}    
             </tr>
                 {% endfor %}
         </tbody>

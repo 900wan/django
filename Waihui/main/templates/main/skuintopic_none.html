@@ -1,0 +1,18 @@
+{% extends "main/base.html" %}
+{% load i18n %} 
+{% load tz %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_timezone as TIME_ZONE %}
+{% localtime on %}
+
+{% block title %}
+    {{heading}}
+{% endblock title %}
+
+{% block content %}
+    <h1>{{heading}}</h1>
+    <a href="{% url 'main:picktopic' %}">{% trans "Back to repick a topic" %}</a>
+<p></p>
+<a href="{% url 'main:home' %}">{% trans "Get back to home" %}</a>
+{% endblock content %}
+{% endlocaltime %}

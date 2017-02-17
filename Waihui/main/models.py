@@ -229,8 +229,9 @@ class Sku(models.Model):
         return has_plan
     def time_to_start(self):
         return self.start_time - timezone.now()
-    def ready(self):
-        pass
+    def further(self):
+        if self.start_time > timezone.now():
+            return self
         
 # index 7
 class Plan(models.Model):
