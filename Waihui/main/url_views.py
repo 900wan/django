@@ -42,6 +42,7 @@ from main.act import act_buyer_feedback_sku
 from main.act import act_provider_feedback_sku
 from main.act import act_buyer_cancel_order
 from main.act import act_htmllogout
+from main.act import act_orderpaid
 
 from main.ds import  ds_getanoti
 
@@ -172,19 +173,17 @@ def url_orderlist(request):
 def url_showorder(request, order_id):
     '''展示order页面，兼容需付款order的情况，文字描述通过session传输'''
     info = act_getinfo(request)
-    current_user = info['current_user']
+    current_user = act_getinfo(request).get('current_user')
     order = get_object_or_404(Order, id=order_id)
     skus_topic = json.loads(order.skus_topic)
     for sku in order.skus.all():
-        sku_id = sku.id
-        topic_id = (item for item in skus_topic if item["sku_id"] == sku_id).next()['topic_id']
-        topic = Topic.objects.get(id=topic_id)
-    result = str(type(skus_topic)) + str(skus_topic)
+        topic_id = (item for item in skus_topic if item["sku_id"] == sku.id).next()['topic_id']
+        topic = get_object_or_404(Topic, id=topic_id)
     heading = _(u'Order Summary')
     if 'heading' in request.session:
         heading = request.session['heading']
     if 'msg' in request.session:
-        msg = request.session['msg']
+        msg = request.session['msg'] + str(type(skus_topic)) + str(skus_topic)
     # msg = order.object.all()
     return render(request, 'main/showorder.html', locals())
 
@@ -291,8 +290,8 @@ def url_addplan(request, sku_id):
 
 @login_required
 def url_showsku(request, sku_id): 
-    info = act_getinfo(request)    
-    current_user = info['current_user']
+    info = act_getinfo(request)
+    current_user = act_getinfo(request).get('current_user')
     sku = act_showsku(int(sku_id))
     is_involved = (current_user.provider == sku.provider) or (sku.buyer.filter(id=current_user.buyer.id).exists())
     try:
@@ -370,7 +369,7 @@ def url_notification_go(request, noti_id):
 def url_addorder(request):
     '''add a order '''
     info = act_getinfo(request)
-    buyer = info['current_user'].buyer
+    buyer = act_getinfo(request).get('current_user').buyer
     uf = OrderForm(request.POST)
     uf.fields['skus'].queryset = Sku.objects.filter(buyer=buyer)
     if request.method == 'POST':
@@ -435,7 +434,7 @@ def url_holdsku(request, topic_id, sku_id):
     if request.method == 'POST':
         if uf.is_valid():
             buyer = info['current_user'].buyer
-            typeskuid = str(type(sku.id)) + str(type(sku_id)) #int & unicode
+            # typeskuid = str(type(sku.id)) + str(type(sku_id)) #int & unicode
             sku_topic = act_assignid_sku_topic(sku_id=sku.id, topic_id=topic.id)
             # msg = str(isinstance(sku, Sku))
             result = act_addorder(buyer.user, sku, buyer, sku_topic)
@@ -444,7 +443,7 @@ def url_holdsku(request, topic_id, sku_id):
                 return render(request, 'main/holdsku.html', locals())
             order = result['order']
             request.session['heading'] = _(u'Please pay the order')
-            request.session['msg'] = result['info'] + typeskuid
+            request.session['msg'] = result['info']
             return HttpResponseRedirect(reverse('main:showorder', args=[order.id]))
             # return render(request, 'main/result.html', locals())
     msg = str(request.POST)
@@ -683,7 +682,7 @@ def url_providers(request):
 
 def url_feedback_sku(request, sku_id):
     info = act_getinfo(request)
-    sku = Sku.objects.get(id=sku_id)
+    sku = get_object_or_404(Sku, id=sku_id)
     result = "HI there, i can't tell the info"
     if info.get('current_user').provider == sku.provider:
         identity = "provider"
@@ -715,3 +714,13 @@ def url_feedback_sku(request, sku_id):
             uf = BuyerFeedbackSkuForm()
             result = "you sure are the buyer of this coures"
     return render(request, "main/feedback_sku.html", locals())
+
+def url_orderpaid(request, order_id):
+    '''pay the order, args: order.id'''
+    info = act_getinfo(request)
+    buyer = info.get('current_user').buyer
+    order = get_object_or_404(Order, id=order_id)
+    act_orderpaid(order, buyer)
+    heading = _(u'Order Paid')
+    return render(request, "main/orderpaid.html", locals())
+

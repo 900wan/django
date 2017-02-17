@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import pytz, json, datetime
 from django.utils import translation, timezone
+from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from main.models import User
@@ -515,4 +516,16 @@ def act_buyer_feedback_sku(questionnaire, comment, sku, buyer):
     rtb.save()
     sku.status = 9
     sku.save()
+    return True
+
+def act_orderpaid(order, buyer):
+    '''当order支付后对order相关信息进行增补'''
+    for sku in order.skus.all():
+        sku.buyer.add(buyer)
+        skus_topic = json.loads(order.skus_topic)
+        topic_id = (item for item in skus_topic if item["sku_id"] == sku.id).next()['topic_id']
+        sku.topic = get_object_or_404(Topic, id=topic_id)
+        sku.save()
+    order.status = 2
+    order.save()
     return True

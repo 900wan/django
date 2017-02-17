@@ -9,11 +9,6 @@
     <h1>{{heading}}</h1>
     <p>================================</p>
     <p>{{msg}}</p>
-    <p>===</p>
-    <p>result:{{result|safe}}</p>
-    <p>{{skus_topic|safe}}</p>
-    <p>{{topic_id}}</p>
-    <p>{{sku_id}}</p>
     <p>================================</p>
     <h2><strong>This order has {{order.skus.all|length}} sku</strong></h2>
         <table>
@@ -51,9 +46,16 @@
         <p>* {% trans "Your balance: " %}{{current_user.wallet.cny_balance}}</p>
     </strong>
 
-    <h1><a href="">Pay!</a> <a href="{% url 'main:ordercancel' order.id %}">Cancel</a></h1>
+    {% if order.status == 1 %}
+        <h1>
+            <a href="{% url 'main:orderpaid' order.id %}">Pay!</a> 
+            {# <a href="">Pay!</a> #}
+            <a href="{% url 'main:ordercancel' order.id %}">Cancel</a>
+        </h1>
+    {% endif %}
+
     <script type="text/javascript">
-    var List = {{skus_topic|safe}};
+        var List = {{skus_topic|safe}};
     </script>
 
 {% endblock content %}
