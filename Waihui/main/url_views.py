@@ -407,8 +407,7 @@ def url_addsku(request):
 def url_picktopic(request):
     info = act_getinfo(request)
     topics = Topic.objects.all()
-    skus = Sku.objects.all()
-    skus_timeok = skus.filter(topic=None)
+    skus_timeok = Sku.objects.filter(Q(start_time__gte=timezone.now())&Q(status=0))
     # no_topics = Sku.objects.filter(topic=None)
     heading = _(u'Pick a topic')
     return render(request, 'main/picktopic.html', locals())

@@ -525,6 +525,7 @@ def act_orderpaid(order, buyer):
         skus_topic = json.loads(order.skus_topic)
         topic_id = (item for item in skus_topic if item["sku_id"] == sku.id).next()['topic_id']
         sku.topic = get_object_or_404(Topic, id=topic_id)
+        sku.status = 1
         sku.save()
     order.status = 2
     order.save()
