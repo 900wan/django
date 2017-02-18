@@ -149,7 +149,7 @@ def ds_noti_toprovider_skubooked(sku):
     notification.save()
     return True
 
-def ds_skucheck(skus, status):
+def ds_sku_status_check(skus, status):
     '''检查sku的状态是否为可约（0 or 10），能否下单'''
     try:
         if iter(skus):
@@ -163,3 +163,17 @@ def ds_skucheck(skus, status):
             return True
         else:
             return False
+
+def ds_sku_provider_check(skus, buyer):
+    try:
+        if iter(skus):
+            for sku in skus:
+                if sku.provider.user == buyer.user:
+                    return False
+                else:
+                    return True
+    except:
+        if skus.provider.user == buyer.user:
+            return False
+        else:
+            return True

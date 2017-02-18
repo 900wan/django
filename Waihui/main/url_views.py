@@ -21,7 +21,6 @@ from main.act import act_getlanguage
 from main.act import act_addsku
 from main.act import act_addrts
 from main.act import act_addplan
-from main.act import act_showsku
 from main.act import act_getinfo
 from main.act import act_getanotis
 from main.act import act_addorder
@@ -292,18 +291,13 @@ def url_addplan(request, sku_id):
 def url_showsku(request, sku_id): 
     info = act_getinfo(request)
     current_user = act_getinfo(request).get('current_user')
-    sku = act_showsku(int(sku_id))
+    sku = get_object_or_404(Sku, id=sku_id)
     is_involved = (current_user.provider == sku.provider) or (sku.buyer.filter(id=current_user.buyer.id).exists())
-    try:
-        plan = sku.plan
-        has_plan = True
-    except Plan.DoesNotExist:
-        plan = ""
-        has_plan = False
     rtss = ReplyToSku.objects.filter(sku=sku)
     is_provider = True if current_user == sku.provider.user else False
     msg = str(request)
-    return render(request, "main/showsku.html", {'info':info, 'heading':"SKU #"+str(sku.id), 'msg':msg, 'is_provider':is_provider, 'is_involved':is_involved, 'sku':sku, 'has_plan':has_plan,'plan':plan, 'rtss':rtss})
+    heading = _(u'SKU #') + str(sku.id)
+    return render(request, "main/showsku.html", locals())
 
 def url_skulist(request):
     # timezone.activate(pytz.timezone("Asia/Shanghai"))
@@ -406,18 +400,19 @@ def url_addsku(request):
 
 def url_picktopic(request):
     info = act_getinfo(request)
+    current_user = info.get('current_user')
     topics = Topic.objects.all()
-    skus_timeok = Sku.objects.filter(Q(start_time__gte=timezone.now())&Q(status=0))
+    skus_timeok = Sku.objects.filter(Q(start_time__gte=timezone.now())&Q(status=0)).exclude(provider=current_user.provider)
     # no_topics = Sku.objects.filter(topic=None)
     heading = _(u'Pick a topic')
     return render(request, 'main/picktopic.html', locals())
 
 def url_skuintopic(request, topic_id):
     info = act_getinfo(request)
+    current_user = info.get('current_user')
     skus_with_topics = Sku.objects.filter(topic_id=topic_id, status=0, buyer=None)
     skus_without_topics = Sku.objects.filter(topic=None, status=0, buyer=None)
-    skus = (skus_with_topics|skus_without_topics).filter(start_time__gte=timezone.now())
-    # skus = skus.filter(start_time__gte=timezone.now())
+    skus = (skus_with_topics|skus_without_topics).filter(start_time__gte=timezone.now()).exclude(provider=current_user.provider)
     topic = Topic.objects.get(id=topic_id)
     heading = _(u'Pick a time and meet a teacher')
     if skus.count() == 0:
@@ -431,8 +426,12 @@ def url_holdsku(request, topic_id, sku_id):
     info = act_getinfo(request)
     topic = get_object_or_404(Topic, id=topic_id)
     sku = get_object_or_404(Sku, id=sku_id)
+    msg = None
     if sku.status != 0:
         msg = _(u'抱歉，该课程目前不可约了')
+    if sku.provider == info.get('current_user').provider:
+        msg = _(u'抱歉，不能给自己授课')
+    if msg:
         return render(request, 'main/holdsku.html', locals())
     uf = PlaceSkuForm(request.POST)
     if request.method == 'POST':

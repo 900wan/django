@@ -30,7 +30,8 @@ from main.ds import ds_noti_tobuyer_noprovider
 from main.ds import ds_noti_toprovider_lostbuyer
 from main.ds import ds_change_provider
 from main.ds import ds_noti_toprovider_skubooked
-from main.ds import ds_skucheck
+from main.ds import ds_sku_status_check
+from main.ds import ds_sku_provider_check
 
 from django.utils.translation import ugettext as _
 
@@ -233,8 +234,10 @@ def act_showbuyer(id):
 
 def act_addorder(user, skus, buyer, skus_topic=None):
     '''it will add a Order'''
-    if not ds_skucheck(skus, [0, 10]):
+    if not ds_sku_status_check(skus, [0, 10]):
         return False
+    if not ds_sku_provider_check(skus, buyer):
+        pass
     cny_price = ds_get_order_cny_price(skus)
     order = Order(cny_price=cny_price, buyer=buyer, type=OrderType.objects.get(id=1), skus_topic=skus_topic)
     order.save()
@@ -329,9 +332,6 @@ def act_htmllogout(user):
     log = ds_addlog(client=0, action=1, user=user)
     return
 
-def act_showsku(id):
-    sku = Sku.objects.get(id=id)
-    return sku
 
 def act_getinfo(request):
     if request.user.is_authenticated():
