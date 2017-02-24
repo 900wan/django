@@ -74,6 +74,13 @@ def ds_getanoti(noti):
     elif noti.noti == 8:
         content = u"A student %s booked your course! please confirm and prepare:<br/>-- <i>Topic: %s Time: %s</i>" % (noti.sku.buyer.all().last(), noti.sku.topic.name, noti.sku.start_time)
         link = reverse('main:showsku', args=[noti.sku.id])
+    elif noti.noti == 2:
+        content = u"Your course's plan is ready! please be prepared<br/>-- <i>Topic: %s Time: %s</i>" % (noti.sku.topic.name, noti.sku.start_time)
+        link = reverse('main:showsku', args=[noti.sku.id])
+    elif noti.noti == 7:
+        content = u"Your course's plan has been modified! please checkout<br/>-- <i>Topic: %s Time: %s</i>" % (noti.sku.topic.name, noti.sku.start_time)
+        link = reverse('main:showsku', args=[noti.sku.id])
+
 
     anoti = {'id': noti.id,
              'read' : noti.read,
@@ -165,6 +172,7 @@ def ds_sku_status_check(skus, status):
             return False
 
 def ds_sku_provider_check(skus, buyer):
+    '''检查sku的买家和卖家是否为一个'''
     try:
         if iter(skus):
             for sku in skus:
@@ -177,3 +185,29 @@ def ds_sku_provider_check(skus, buyer):
             return False
         else:
             return True
+
+def ds_noti_tobuyer_newplan(plan):
+    '''通知学生，这节课，老师已经备课完成'''
+    for buyer in plan.sku.buyer.all():
+        notification = Notification(
+            user=buyer.user,
+            noti=2,
+            sku=plan.sku,
+            open_time=timezone.now(),
+            close_time=plan.sku.end_time,
+            )
+        notification.save()
+    return True
+
+def ds_noti_tobuyer_planmodified(plan):
+    '''通知学生，这节课，老师已经备课完成'''
+    for buyer in plan.sku.buyer.all():
+        notification = Notification(
+            user=buyer.user,
+            noti=7,
+            sku=plan.sku,
+            open_time=timezone.now(),
+            close_time=plan.sku.end_time,
+            )
+        notification.save()
+    return True

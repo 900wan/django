@@ -15,7 +15,7 @@
     </ul>
     <p>================================</p>
     {% if msg != 'no' %}
-    <form method="post" enctype="multipart/form-data" action="{% url 'main:addplan' sku.id %}">
+    <form method="post" enctype="multipart/form-data" action="">
         {{uf.as_p}}
         {% csrf_token %}
         <input type="submit" name="submit">

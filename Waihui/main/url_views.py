@@ -258,7 +258,7 @@ def url_addplan(request, sku_id):
     info = act_getinfo(request)
     current_user = request.user
     uf = AddPlanForm(request.POST)
-    sku = Sku.objects.get(id=sku_id)
+    sku = get_object_or_404(Sku, id=sku_id)
     if current_user != sku.provider.user:
         msg = "no"
     else:
@@ -280,12 +280,56 @@ def url_addplan(request, sku_id):
                                      assignment=assignment, slides=slides, roomlink=roomlink,
                                      materialhtml=materialhtml, materiallinks=materiallinks, voc=voc,
                                      copy_from=copy_from, sumy=sumy)
-                sku.status = 5
                 msg = result
         else:
             if sku.status != 5: sku.status = 4
         sku.save()
     return render(request, "main/addplan.html", {'info':info, 'uf':uf, 'msg':msg, 'heading':"Add a plan on SKU", 'sku':sku})
+
+@login_required
+def url_modifyplan(request, plan_id):
+    info = act_getinfo(request)
+    current_user = info['current_user']
+    plan = get_object_or_404(Plan, id=plan_id)
+    result = None
+    if plan.sku.provider != current_user.provider:
+        heading = _(u'教案也是有版权的，只有老师能改，别人不行哟')
+        msg = str(plan.sku.provider) + ' & ' + str(current_user.provider) + _(u'不是一个用户')
+        return render(request, "main/error.html", locals())   
+    else:
+        if request.method == 'POST':
+            uf = AddPlanForm(request.POST)
+            if uf.is_valid():
+                status = uf.cleaned_data['status']
+                content = uf.cleaned_data['content']
+                assignment = uf.cleaned_data['assignment']
+                slides = uf.cleaned_data['slides']
+                roomlink = uf.cleaned_data['roomlink']
+                materiallinks = uf.cleaned_data['materiallinks']
+                materialhtml = uf.cleaned_data['materialhtml']
+                voc = uf.cleaned_data['voc']
+                copy_from = uf.cleaned_data['copy_from']
+                sumy = uf.cleaned_data['sumy']
+                result = act_addplan(sku=plan.sku, topic=plan.sku.topic, status=status, content=content,
+                                     assignment=assignment, slides=slides, roomlink=roomlink,
+                                     materialhtml=materialhtml, materiallinks=materiallinks, voc=voc,
+                                     copy_from=copy_from, sumy=sumy, plan=plan)
+                msg = result
+        else:
+            uf = AddPlanForm(initial={
+                'status':plan.status,
+                'content':plan.content,
+                'assignment':plan.assignment,
+                'slides':plan.slides,
+                'roomlink':plan.roomlink,
+                'materialhtml':plan.materialhtml,
+                'materiallinks':plan.materiallinks,
+                'voc':plan.voc,
+                'copy_from':plan.copy_from,
+                'sumy':plan.sumy})
+            msg = result
+        sku = plan.sku
+    return render(request, "main/addplan.html", locals())
 
 @login_required
 def url_showsku(request, sku_id): 
@@ -402,7 +446,9 @@ def url_picktopic(request):
     info = act_getinfo(request)
     current_user = info.get('current_user')
     topics = Topic.objects.all()
-    skus_timeok = Sku.objects.filter(Q(start_time__gte=timezone.now())&Q(status=0)).exclude(provider=current_user.provider)
+    skus_timeok = Sku.objects.filter(Q(start_time__gte=timezone.now())&Q(status=0))
+    if info['is_login']:
+        skus_timeok = skus_timeok.exclude(provider=current_user.provider)
     # no_topics = Sku.objects.filter(topic=None)
     heading = _(u'Pick a topic')
     return render(request, 'main/picktopic.html', locals())
@@ -417,7 +463,7 @@ def url_skuintopic(request, topic_id):
     heading = _(u'Pick a time and meet a teacher')
     if skus.count() == 0:
         heading = _(u'Sorry, No sku in this topic right now')
-        return render(request, 'main/skuintopic_none.html', locals())
+        return render(request, 'main/result.html', locals())
     return render(request, 'main/skuintopic.html', locals())
 
 @login_required
@@ -718,6 +764,7 @@ def url_feedback_sku(request, sku_id):
             result = "you sure are the buyer of this coures"
     return render(request, "main/feedback_sku.html", locals())
 
+@login_required
 def url_orderpaid(request, order_id):
     '''pay the order, args: order.id'''
     info = act_getinfo(request)

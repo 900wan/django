@@ -47,7 +47,7 @@
         </table>
     <p>================================</p>
     <p>Plans on this SKU</p>
-    {% if has_plan %}
+    {% if sku.has_plan %}
         <table>
             <thead>
                 <tr>
@@ -68,22 +68,23 @@
             <tbody>
                 {# {% for plan in plans %} #}
                 <tr>
-                    <td>{{plan.topic}}</td>
-                    <td>{{plan.content}}</td>
-                    <td>{{plan.assignment}}</td>
-                    <td>{{plan.slides}}</td>
-                    <td>{{plan.materiallinks}}</td>
-                    <td>{{plan.materialhtml}}</td>
-                    <td>{{plan.voc}}</td>
-                    <td>{{plan.copy_from}}</td>
-                    <td>{{plan.sumy}}</td>
-                    <td>{{plan.roomlink}}</td>
-                    <td>{{plan.created}}</td>
-                    <td>{{plan.modified}}</td>
+                    <td>{{sku.plan.topic}}</td>
+                    <td>{{sku.plan.content}}</td>
+                    <td>{{sku.plan.assignment}}</td>
+                    <td>{{sku.plan.slides}}</td>
+                    <td>{{sku.plan.materiallinks}}</td>
+                    <td>{{sku.plan.materialhtml}}</td>
+                    <td>{{sku.plan.voc}}</td>
+                    <td>{{sku.plan.copy_from}}</td>
+                    <td>{{sku.plan.sumy}}</td>
+                    <td>{{sku.plan.roomlink}}</td>
+                    <td>{{sku.plan.created}}</td>
+                    <td>{{sku.plan.modified}}</td>
                 </tr>
                 {# {% endfor %} #}
             </tbody>
         </table>
+        <a href="{% url 'main:modifyplan' sku.plan.id %}">{% trans "Modify this plan" %}</a>
     {% elif is_provider %}
     <a href="{% url 'main:addplan' sku.id %}">{% trans "Accept this sku, Add a Plan to this SKU" %}</a>
     {% else %}

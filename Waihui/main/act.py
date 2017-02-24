@@ -28,10 +28,13 @@ from main.ds import ds_noti_newreply
 from main.ds import ds_get_order_cny_price
 from main.ds import ds_noti_tobuyer_noprovider
 from main.ds import ds_noti_toprovider_lostbuyer
+from main.ds import ds_noti_tobuyer_newplan
+from main.ds import ds_noti_tobuyer_planmodified
 from main.ds import ds_change_provider
 from main.ds import ds_noti_toprovider_skubooked
 from main.ds import ds_sku_status_check
 from main.ds import ds_sku_provider_check
+
 
 from django.utils.translation import ugettext as _
 
@@ -144,24 +147,41 @@ def act_addsku(provider, start_time, end_time, topic=None, buyer=None, status=0)
         result = "OK, Sku:" + provider.name + "'s " + str(start_time) + " added!"
     return result
 
-def act_addplan(sku, topic, status, content, assignment, slides, roomlink, materiallinks, materialhtml, voc, copy_from, sumy):
-    '''it will add a sku '''
-    plan = Plan(
-        sku=sku,
-        topic=topic,
-        status=status,
-        content=content,
-        assignment=assignment,
-        slides=slides,
-        roomlink=roomlink,
-        materialhtml=materialhtml,
-        materiallinks=materiallinks,
-        voc=voc,
-        copy_from=copy_from,
-        sumy=sumy,
-        )
-    plan.save()
-    result = "OK, Plan: " + sku.provider.name + " & " + topic.name + " added!"
+def act_addplan(sku, topic, status, content, assignment, slides, roomlink, materiallinks, materialhtml, voc, copy_from, sumy, plan=None):
+    '''if import a plan, it will change the plan, if not, then add one'''
+    if plan:
+        plan.status = status
+        plan.content = content
+        plan.assignment = assignment
+        plan.slides = slides
+        plan.roomlink = roomlink
+        plan.materialhtml = materialhtml
+        plan.materiallinks = materiallinks
+        plan.voc = voc
+        plan.copy_from = copy_from
+        plan.sumy = sumy
+        result = "OK, Plan: " + sku.provider.name + " & " + topic.name + " modified!"
+        ds_noti_tobuyer_planmodified(plan)
+    else:
+        plan = Plan(
+            sku=sku,
+            topic=topic,
+            status=status,
+            content=content,
+            assignment=assignment,
+            slides=slides,
+            roomlink=roomlink,
+            materialhtml=materialhtml,
+            materiallinks=materiallinks,
+            voc=voc,
+            copy_from=copy_from,
+            sumy=sumy,
+            )
+        plan.save()
+        sku.status = 5
+        sku.save()
+        result = "OK, Plan: " + sku.provider.name + " & " + topic.name + " added!"
+        ds_noti_tobuyer_newplan(plan)
     return result
 
 def act_addrtp(provider_id, buyer_id, sku_id, questionnaire, score):
