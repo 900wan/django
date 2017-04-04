@@ -547,6 +547,7 @@ def act_orderpaid(order, buyer):
         sku.topic = get_object_or_404(Topic, id=topic_id)
         sku.status = 1
         sku.save()
+        ds_noti_toprovider_skubooked(sku)
     order.status = 2
     order.save()
     return True

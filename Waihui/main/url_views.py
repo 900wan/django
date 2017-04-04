@@ -620,7 +620,7 @@ def url_repickpool(request):
     info = act_getinfo(request)
     if info.get('is_provider'):
         msg = _(u"对，你是教师，接下来要抢单")
-        skus = Sku.objects.filter(status=2)
+        skus = Sku.objects.filter(Q(status=2)&Q(start_time__gte=timezone.now()))
     else:
         msg = _(u"对不起，不是老师不能抢单")
     return render(request, "main/repickpool.html", locals())
