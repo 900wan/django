@@ -46,8 +46,8 @@
             </tbody>
         </table>
     <p>================================</p>
-    <p>Plans on this SKU</p>
     {% if sku.has_plan %}
+    <p>Plans on this SKU</p>
         <table>
             <thead>
                 <tr>
@@ -88,9 +88,12 @@
     {% elif is_provider %}
     <a href="{% url 'main:addplan' sku.id %}">{% trans "Accept this sku, Add a Plan to this SKU" %}</a>
     {% else %}
-    {% trans "You are not the teacher of this class, so you can not add plan." %}
+    <p>No Plans right now</p>
+    {% trans "Waiting an unique plan fits buyer's level" %}
     {% endif %}
     <p>================================</p>
+    {% if rtss %}
+        
     <p>Replys to This SKU</p>
 
         <table>
@@ -115,10 +118,13 @@
                 {% endfor %}
             </tbody>
         </table>
-    {% if is_involved %}
-    <a href="{% url 'main:replyrts' sku.id %}">{% trans "Add a reply" %}</a>
     {% else %}
-    {% trans "You are not involved in this class, so you can't leave comments" %}
+    <p>No comments right now</p>
+        {% if is_involved %}
+        <a href="{% url 'main:replyrts' sku.id %}">{% trans "Add a reply" %}</a>
+        {% else %}
+        {% trans "You are not involved in this class, so you can't leave comments" %}
+        {% endif %}
     {% endif %}
 
     <p>================================</p>
