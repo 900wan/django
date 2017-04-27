@@ -425,7 +425,7 @@ def act_generate_skus(provider, schedule):
 
 def act_provider_cancel_sku(sku, user):
     if sku.time_to_start() <= MIN_CANCEL_TIME:
-        msg = _(u"马上开始了如果真要取消的话你自己练习学生做好解释工作，再找管理员取消吧。")
+        msg = _(u"马上开始了如果真要取消的话你自己联系学生做好解释工作，再找管理员取消吧。")
     elif sku.time_to_start() > MIN_CANCEL_TIME and sku.time_to_start() <= OK_CANCEL_TIME:
         sku.status = 3
         sku.save()
@@ -451,12 +451,12 @@ def act_buyer_cancel_sku(sku, user):
         if sku.buyer.count() > 1:
             # '''不知道remove对不对啊，好像是删掉这个buyer本身的意思'''
             sku.buyer.remove(user.buyer)
-            msg = _(u"好了，这节课只有你不用来了，钱以后会打给你")
+            msg = _(u"好了，这节课只有你不用来了")
         elif sku.buyer.count() == 1:
             # 改成保留这个sku，保留证据！
             sku.status = 10
             sku.save()
-            msg = _(u"好了，这节课没人会来了，钱以后会打给你")
+            msg = _(u"好了，取消成功，这节课不用上了")
             # 下面给这个老师再创建一个新的可约sku
             msg = msg + act_addsku(
                 provider=sku.provider,
