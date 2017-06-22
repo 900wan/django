@@ -77,17 +77,20 @@
                     <td>{{sku.start_time|date:"Y-m-d H:i (e)"}}</td>
                     <td>{{sku.end_time|date:"Y-m-d H:i (e)"}}</td>
                     <td>
-                        {% if sku.status == 1 %}
-                            <a href="{% url 'main:provider_cancel_sku' sku.id %}">[REFUSE]</a>
-                        {% elif sku.status == 4 %}
-                            <a href="{% url 'main:provider_cancel_sku' sku.id %}">[DROP]</a>     
-                        {% elif sku.status == 2 %}
-                            IN POOL                 
-                        {% endif %}
-                        {% if sku.has_plan and sku.is_start_soon and not sku.status == 6 %}
-                                <strong><a href="{% url 'main:provider_ready_sku' sku.id %}">[Ready!]</a></strong>
-                        {% elif not sku.has_plan and not sku.status == 0 and not sku.is_past %}
-                                <a href="{% url 'main:addplan' sku.id %}">[Add Plan]</a>
+                         {% if sku.start_time >= info.now_tz %}
+                        1    
+                            {% if sku.status == 1 %}
+                                    <a href="{% url 'main:provider_cancel_sku' sku.id %}">[REFUSE]</a>
+                                {% elif sku.status == 4 %}
+                                    <a href="{% url 'main:provider_cancel_sku' sku.id %}">[DROP]</a>     
+                                {% elif sku.status == 2 %}
+                                    IN POOL                 
+                            {% endif %}
+                            {% if sku.has_plan and sku.is_start_soon and not sku.status == 6 %}
+                                    <strong><a href="{% url 'main:provider_ready_sku' sku.id %}">[Ready!]</a></strong>
+                            {% elif not sku.has_plan and not sku.status == 0 and not sku.is_past %}
+                                    <a href="{% url 'main:addplan' sku.id %}">[Add Plan]</a>
+                            {% endif %}
                         {% endif %}
                     </td>
 

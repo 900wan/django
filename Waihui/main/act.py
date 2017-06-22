@@ -40,7 +40,8 @@ from django.utils.translation import ugettext as _
 
 MIN_CANCEL_TIME = datetime.timedelta(hours=8)
 OK_CANCEL_TIME = datetime.timedelta(hours=12)
-START_SOON_TIME = datetime.timedelta(minutes=15)
+START_SOON_TIME = datetime.timedelta(minutes=30)
+
 
 ORDER_MIN_CANCEL_TIME = datetime.timedelta(hours=8)
 ORDER_OK_CANCEL_TIME = datetime.timedelta(hours=12)
@@ -482,8 +483,10 @@ def act_expand_skus(skus):
     skus_result = []
     for sku in skus:
         setattr(sku, 'is_start_later', (sku.time_to_start() > START_SOON_TIME)) # 这节课是不是距离开始还早着呢
-        setattr(sku, 'is_start_soon', (datetime.timedelta() < sku.time_to_start() < START_SOON_TIME)) # 这节课是不是马上就要开始啦？目前是15分钟内
-        setattr(sku, 'is_should_in_progress', (sku.start_time < timezone.now() < sku.end_time)) # 这节课是不是应该在进行中
+        setattr(sku, 'is_start_soon', (datetime.timedelta() < sku.time_to_start() < START_SOON_TIME)) 
+        # 这节课是不是马上就要开始啦？目前是30分钟内
+        setattr(sku, 'is_should_in_progress', (sku.start_time < timezone.now() < sku.end_time)) # 这节
+        # 课是不是应该在进行中
         setattr(sku, 'is_past', (timezone.now() > sku.end_time)) # 该结束了
         skus_result.append(sku)
     return skus_result
