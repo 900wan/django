@@ -359,10 +359,8 @@ def url_skulist(request):
 
 
 def url_test(request):
-    i = Sku.objects.get(id=7)
-    a = i.duration()
-    b = a['seconds']
-    return render(request, "main/mytest.html", {'i':i, 'a':a, 'b':b})
+    info = act_getinfo(request)
+    return render(request, "main/mytest.html", locals())
 
 def url_idtest(request, set_id):
     result = Test_skufunction(set_id)
@@ -458,7 +456,10 @@ def url_skuintopic(request, topic_id):
     current_user = info.get('current_user')
     skus_with_topics = Sku.objects.filter(topic_id=topic_id, status=0, buyer=None)
     skus_without_topics = Sku.objects.filter(topic=None, status=0, buyer=None)
-    skus = (skus_with_topics|skus_without_topics).filter(start_time__gte=timezone.now()).exclude(provider=current_user.provider)
+    if info['is_login']:
+        skus = (skus_with_topics|skus_without_topics).filter(start_time__gte=timezone.now()).exclude(provider=current_user.provider)
+    else: 
+        skus = (skus_with_topics|skus_without_topics).filter(start_time__gte=timezone.now())
     topic = Topic.objects.get(id=topic_id)
     heading = _(u'Pick a time and meet a teacher')
     if skus.count() == 0:
