@@ -463,6 +463,7 @@ class Notification(models.Model):
         (9, '学生取消了课'),
         (10, '学生发表了回复'),
         (11, '超级通知'),
+        (12, '老师准备就绪，请注意查收上课链接')
     )
 
     user = models.ForeignKey(User)

@@ -80,8 +80,9 @@ def ds_getanoti(noti):
     elif noti.noti == 7:
         content = u"Your course's plan has been modified! please checkout<br/>-- <i>Topic: %s Time: %s</i>" % (noti.sku.topic.name, noti.sku.start_time)
         link = reverse('main:showsku', args=[noti.sku.id])
-
-
+    elif noti.noti == 12:
+        content = _(u"Your teacher is ready! please checkout <br />-- <i>Link: %s ") % (noti.sku.plan.roomlink)
+        link = reverse('main:showsku', args=[noti.sku.id])
     anoti = {'id': noti.id,
              'read' : noti.read,
              'content' : content,
@@ -200,7 +201,7 @@ def ds_noti_tobuyer_newplan(plan):
     return True
 
 def ds_noti_tobuyer_planmodified(plan):
-    '''通知学生，这节课，老师已经备课完成'''
+    '''通知学生，这节课，老师的教案已修改'''
     for buyer in plan.sku.buyer.all():
         notification = Notification(
             user=buyer.user,
@@ -208,6 +209,21 @@ def ds_noti_tobuyer_planmodified(plan):
             sku=plan.sku,
             open_time=timezone.now(),
             close_time=plan.sku.end_time,
+            )
+        notification.save()
+    return True
+
+def ds_noti_tobuyer_skustart(sku):
+    '''通知学生，有节课程老师已经准备就绪，可以点击上课链接roomlink了'''
+    for buyer in sku.buyer.all():
+        notification = Notification(
+            user=buyer.user,
+            noti=12,
+            sku=sku,
+            open_time=timezone.now(),
+            close_time=sku.end_time,
+            note="快上课",
+            url=sku.plan.roomlink,
             )
         notification.save()
     return True

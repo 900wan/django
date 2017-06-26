@@ -360,6 +360,9 @@ def url_skulist(request):
 
 def url_test(request):
     info = act_getinfo(request)
+    infos = ds_getanoti(Notification.objects.get(id=68))
+    typeofinfos = type(info)
+    typeofnotis = type(Notification.objects.get(id=68))
     return render(request, "main/mytest.html", locals())
 
 def url_idtest(request, set_id):
@@ -457,8 +460,9 @@ def url_skuintopic(request, topic_id):
     skus_with_topics = Sku.objects.filter(topic_id=topic_id, status=0, buyer=None)
     skus_without_topics = Sku.objects.filter(topic=None, status=0, buyer=None)
     if info['is_login']:
-        skus = (skus_with_topics|skus_without_topics).filter(start_time__gte=timezone.now()).exclude(provider=current_user.provider)
-    else: 
+        skus = (skus_with_topics|skus_without_topics).filter(start_time__gte=timezone.now())\
+        .exclude(provider=current_user.provider)
+    else:
         skus = (skus_with_topics|skus_without_topics).filter(start_time__gte=timezone.now())
     topic = Topic.objects.get(id=topic_id)
     heading = _(u'Pick a time and meet a teacher')
@@ -568,11 +572,14 @@ def url_schedule(request):
                     try:
                         if raw_item.get('topic_id'):
                             item['topic'] = Topic.objects.get(id=int(raw_item.get('topic_id')))
-                        item['start_time'] = tz.localize(datetime.datetime.strptime(raw_item['start_time'], "%Y-%m-%d %H:%M:%S"))
+                        item['start_time'] = tz.localize(datetime.datetime.strptime(\
+                            raw_item['start_time'], "%Y-%m-%d %H:%M:%S"))
                         if raw_item.get('end_time'):
-                            item['end_time'] = tz.localize(datetime.datetime.strptime(raw_item['end_time'], "%Y-%m-%d %H:%M:%S"))
+                            item['end_time'] = tz.localize(datetime.datetime.strptime(\
+                                raw_item['end_time'], "%Y-%m-%d %H:%M:%S"))
                         else:
-                            item['end_time'] = tz.localize(datetime.datetime.strptime(raw_item['start_time'], "%Y-%m-%d %H:%M:%S") + datetime.timedelta(minutes=30))
+                            item['end_time'] = tz.localize(datetime.datetime.strptime(\
+                                raw_item['start_time'], "%Y-%m-%d %H:%M:%S") + datetime.timedelta(minutes=30))
                         if item['start_time'] and (item['start_time']>now_tz):
                             schedule.append(item)
                     except Exception, e:

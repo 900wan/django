@@ -26,14 +26,15 @@ from main.ds import ds_addlog
 from main.ds import ds_getanoti
 from main.ds import ds_noti_newreply
 from main.ds import ds_get_order_cny_price
-from main.ds import ds_noti_tobuyer_noprovider
-from main.ds import ds_noti_toprovider_lostbuyer
-from main.ds import ds_noti_tobuyer_newplan
-from main.ds import ds_noti_tobuyer_planmodified
 from main.ds import ds_change_provider
-from main.ds import ds_noti_toprovider_skubooked
 from main.ds import ds_sku_status_check
 from main.ds import ds_sku_provider_check
+from main.ds import ds_noti_tobuyer_skustart
+from main.ds import ds_noti_tobuyer_noprovider
+from main.ds import ds_noti_tobuyer_newplan
+from main.ds import ds_noti_tobuyer_planmodified
+from main.ds import ds_noti_toprovider_skubooked
+from main.ds import ds_noti_toprovider_lostbuyer
 
 
 from django.utils.translation import ugettext as _
@@ -499,6 +500,7 @@ def act_provider_ready_sku(sku, roomlink):
         sku.save()
         sku.plan.roomlink = roomlink
         sku.plan.save()
+        ds_noti_tobuyer_skustart(sku)
     return True
 
 def act_buyer_ready_sku(sku):
