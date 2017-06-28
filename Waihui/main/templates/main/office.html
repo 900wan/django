@@ -30,6 +30,7 @@
                 <li>tutoring: {{info.current_user.provider.sku_set.all|length}} courses</li>
             </ul>
         </ul>
+        <p>* <a href="{% url 'main:schedule' %} ">{% trans "Schedule" %}</a></p>
         <h2>* {% trans "Tutoring courses" %}</h2>
         <strong>As a tutor</strong>, you have {{info.current_user.provider.sku_set.all|length}} courses. With more courses comes greater pay :)
         <table>

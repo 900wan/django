@@ -92,6 +92,17 @@ def act_signup(email, password, nickname, http_language, time_zone="Asia/Shangha
     #     pass
     return result
 
+def act_userlogin(request, username, password):
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        if user.is_active:
+            login(request, user)
+            info = act_getinfo(request)
+            return True
+    else:
+        return False
+
+
 def act_addlanguage(chinese_name, english_name, local_name):
     '''add a language'''
     language = Language(
