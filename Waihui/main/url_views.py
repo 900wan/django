@@ -11,6 +11,7 @@ from django.core.urlresolvers import reverse
 # from django import forms
 # from login.models import User
 from main.act import act_signup
+from main.act import act_userlogin
 # from main.act import act_jisuan
 from main.act import act_addlanguage
 from main.act import act_showuser
@@ -101,6 +102,34 @@ def url_signup(request):
     info = act_getinfo(request)
     return render(request, "main/signup.html", {'info':info, 'form':uf, 'msg':msg})
     # act_signup()
+
+def url_login_new(request):    
+    uf = LoginForm(request.POST)
+    msg = ''
+    next = ''
+    info = act_getinfo(request)
+    if request.GET:  
+       next = request.GET['next']
+    if request.method == 'POST':
+        if uf.is_valid():
+            username = uf.cleaned_data['username']
+            password = uf.cleaned_data['password']
+            result = act_userlogin(request, username, password)
+            if result == "not_active":
+                msg = _(u'Login failed, user is not active.')
+            elif result == "none_user":
+                msg = _(u'Guess what? Login failed.')
+            else:
+                if next == '':
+                    return HttpResponseRedirect(reverse('main:home'))
+                else :
+                    return HttpResponseRedirect(next)
+            return render(request, "main/login.html", {'info':info, 'uf':uf, 'msg':msg, 'next':next})
+        else:
+            msg = _(u'form not valid')
+            return render(request, "main/login.html", {'info':info, 'uf':uf, 'msg':msg})
+    else:
+        return render(request, "main/login.html", {'info':info, 'uf':uf, 'msg':msg, 'next':next})
 
 def url_login(request):
     uf = LoginForm(request.POST)

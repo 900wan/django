@@ -3,6 +3,7 @@ import pytz, json, datetime
 from django.utils import translation, timezone
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
+from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 from main.models import User
 from main.models import Language
@@ -98,9 +99,11 @@ def act_userlogin(request, username, password):
         if user.is_active:
             login(request, user)
             info = act_getinfo(request)
-            return True
+            return info
+        else:
+            return "not_active"
     else:
-        return False
+        return "none_user"
 
 
 def act_addlanguage(chinese_name, english_name, local_name):
