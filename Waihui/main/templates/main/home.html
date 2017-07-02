@@ -98,6 +98,67 @@
         {% endif %}
         <li><a href="{% url 'main:addorder' %}">{% trans "Add Order" %}</a></li>
     </ul>
-    
-
+    {% if info.is_login %}
+    <h2>* {% trans "Learn Courses" %}</h2>
+    <strong>As a student</strong>, you have {{info.current_user.buyer.sku_set.all|length}} courses and {{info.current_user.buyer.order_set.all|length}} <a href="{% url 'main:orderlist' %}">orders</a>
+    <table>
+            <thead>
+                <tr>
+                    <th>Topic</th>
+                    <th>Timeflag</th>
+                    <th>ID</th>
+                    <th>Provider</th>
+                    <th>status</th>
+                    <th>Has plan?</th>
+                    <th>Buyer</th>
+                    <th>Start time</th>
+                    <th>End time</th>
+                    <th>Created</th>
+                    <th>Modified</th>
+                    <th>OP</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sku in skus|dictsortreversed:"start_time" %}
+                <tr>
+                    <td><a href="{% url 'main:showsku' sku.id %}">{{sku.topic}}</a></td>
+                    <td>
+                        {% if sku.is_start_later %}
+                            waiting...
+                        {% elif sku.is_start_soon %}
+                            <strong>SOON-countdown: <br/ >{{sku.time_to_start}}</strong>
+                        {% elif sku.is_should_in_progress%}
+                            NOW
+                        {% elif sku.is_past%}
+                            past
+                        {% endif %}
+                    </td>
+                    <td>{{sku.id}}</td>
+                    <td>{{sku.provider}}</td>
+                    <td>{{sku.status}}({{sku.get_status_display}})</td>
+                    <td>
+                        {% if sku.has_plan %}
+                            yes
+                        {% else %}
+                            <strong>NO</strong>
+                        {% endif %}
+                    </td>
+                    <td>{{sku.buyer.all|safeseq|join:", "}}</td>
+                    <td>{{sku.start_time|date:"Y-m-d H:i (e)"}}</td>
+                    <td>{{sku.end_time|date:"Y-m-d H:i (e)"}}</td>
+                    <td>{{sku.created|date:"Y-m-d H:i (e)"}}</td>
+                    <td>{{sku.modified|date:"Y-m-d H:i (e)"}}</td>
+                    <td><a href="{% url 'main:buyer_cancel_sku' sku.id %}">[CANCEL]</a>
+                    {% if sku.has_plan and sku.status == 6 and not sku.is_past %}
+                        <strong><a href="{% url 'main:buyer_ready_sku' sku.id%}">[Ready!]</a></strong>
+                    {% elif sku.status == 7 and not sku.is_past %}
+                        <strong><a href="{% url 'main:showsku' sku.id %}">[ENTER!]</a></strong>
+                    {% endif %}
+                    </td>
+                </tr>
+                {% endfor%}
+            </tbody>
+        </table>
+        <a href="{% url 'main:dashboard' %} ">More...</a>
+    {% endif %}
 {% endblock content %}

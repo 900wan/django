@@ -83,6 +83,8 @@ def url_homepage(request):
     now_tz = timezone.now()
     info = act_getinfo(request)
     heading = _(u'Our hompage heading')
+    if info['is_login']:
+        skus = info['current_user'].buyer.sku_set.order_by('-start_time')[:5]
     return render(request, "main/home.html", locals())
 
 def url_signup(request):
@@ -122,7 +124,7 @@ def url_login_new(request):
             else:
                 if next == '':
                     return HttpResponseRedirect(reverse('main:home'))
-                else :
+                else:
                     return HttpResponseRedirect(next)
             return render(request, "main/login.html", {'info':info, 'uf':uf, 'msg':msg, 'next':next})
         else:
@@ -131,41 +133,41 @@ def url_login_new(request):
     else:
         return render(request, "main/login.html", {'info':info, 'uf':uf, 'msg':msg, 'next':next})
 
-def url_login(request):
-    uf = LoginForm(request.POST)
-    msg = ''
-    next = ''
-    info = act_getinfo(request)
-    if request.GET:  
-       next = request.GET['next']
-    if request.method == 'POST':
-        if uf.is_valid():
-            username = uf.cleaned_data['username']
-            password = uf.cleaned_data['password']
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    info = act_getinfo(request)
-                    act_htmllogin(user)
-                    if next == '':
-                        return render(request, "main/right.html", {'info':info, 'username':username})
-                    else:
-                        return HttpResponseRedirect(next)
-                else:
-                    msg = _(u'Login failed, user is not active.')
-                    return render(request, "main/login.html", {'info':info, 'uf':uf, 'msg':msg, 'next':next})
-            else:
-                msg = _(u'Guess what? Login failed.')
-                return render(request, "main/login.html", {'info':info, 'uf':uf, 'msg':msg, 'next':next})
-        else:
-            msg = _(u'form not valid')
-            return render(request, "main/login.html", {'info':info, 'uf':uf, 'msg':msg})
-        # elif uf.is_valid():
-        #     name=uf.cleaned_data['name']
-        #     return render(request, 'main.test_result.html',{'uf':uf})
-    else:
-        return render(request, "main/login.html", {'info':info, 'uf':uf, 'msg':msg, 'next':next})
+# def url_login(request):
+#     uf = LoginForm(request.POST)
+#     msg = ''
+#     next = ''
+#     info = act_getinfo(request)
+#     if request.GET:  
+#        next = request.GET['next']
+#     if request.method == 'POST':
+#         if uf.is_valid():
+#             username = uf.cleaned_data['username']
+#             password = uf.cleaned_data['password']
+#             user = authenticate(username=username, password=password)
+#             if user is not None:
+#                 if user.is_active:
+#                     login(request, user)
+#                     info = act_getinfo(request)
+#                     act_htmllogin(user)
+#                     if next == '':
+#                         return render(request, "main/right.html", {'info':info, 'username':username})
+#                     else:
+#                         return HttpResponseRedirect(next)
+#                 else:
+#                     msg = _(u'Login failed, user is not active.')
+#                     return render(request, "main/login.html", {'info':info, 'uf':uf, 'msg':msg, 'next':next})
+#             else:
+#                 msg = _(u'Guess what? Login failed.')
+#                 return render(request, "main/login.html", {'info':info, 'uf':uf, 'msg':msg, 'next':next})
+#         else:
+#             msg = _(u'form not valid')
+#             return render(request, "main/login.html", {'info':info, 'uf':uf, 'msg':msg})
+#         # elif uf.is_valid():
+#         #     name=uf.cleaned_data['name']
+#         #     return render(request, 'main.test_result.html',{'uf':uf})
+#     else:
+#         return render(request, "main/login.html", {'info':info, 'uf':uf, 'msg':msg, 'next':next})
 
 # @login_required
 def url_logout(request):
