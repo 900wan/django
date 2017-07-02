@@ -488,14 +488,17 @@ def url_picktopic(request):
 def url_skuintopic(request, topic_id):
     info = act_getinfo(request)
     current_user = info.get('current_user')
+    topic = Topic.objects.get(id=topic_id)
     skus_with_topics = Sku.objects.filter(topic_id=topic_id, status=0, buyer=None)
     skus_without_topics = Sku.objects.filter(topic=None, status=0, buyer=None)
     if info['is_login']:
         skus = (skus_with_topics|skus_without_topics).filter(start_time__gte=timezone.now())\
         .exclude(provider=current_user.provider)
+        providers = Provider.objects.filter(sku=skus)
     else:
         skus = (skus_with_topics|skus_without_topics).filter(start_time__gte=timezone.now())
-    topic = Topic.objects.get(id=topic_id)
+        providers = Provider.objects.filter(sku=skus)
+
     heading = _(u'Pick a time and meet a teacher')
     if skus.count() == 0:
         heading = _(u'Sorry, No sku in this topic right now')
