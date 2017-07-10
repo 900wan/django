@@ -1,0 +1,173 @@
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% load tz %}{% localtime on %}
+{% get_current_timezone as TIME_ZONE %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=0">
+  <meta name="format-detection" content="email=no">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-title" content="{% trans "PandaInn" %}">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <title>{% block title %}{% endblock %} - {% trans "PandaInn" %}</title>
+  {% block inhead %}{% endblock %}
+</head>
+<body>
+
+<div id="ie8">
+  <p>{% blocktrans trimmed %}Your browser is out of date! It looks like you are using an unsupported browser. For the best experience on the web, please update your browser. <a href="https://browsehappy.com/" target="_blank">Upgrade now!</a>{% endblocktrans %}</p>
+</div>
+
+<div class="header clearfix">
+  <div class="header-box">
+    <div class="logo fl">{% trans "PandaInn" %}</div>
+    <a href="javascript:" class="dropdown">
+      <i class="fa fa-bars fa-2x" aria-hidden="true"></i>
+    </a>
+    <div class="clock clearfix">
+      <div class="clock-icon fl"></div>
+      <div class="fl"><span title="{{TIME_ZONE}}">{{info.now_tz.time}} ({{TIME_ZONE}})</span></div>
+
+    </div>
+    <div class="notification js-notification">
+      <a href="javascript:">3</a>
+      <div class="notification-dropdown js-notification-dropdown">
+        <ul>
+          <li>
+            <a class="new" href="javascript:">
+              Your teacher 双双 left a comment in Shopping 购物: Have you learn the plan?
+            </a>
+          </li>
+          <li>
+            <a class="new" href="javascript:">
+              Your course Shopping 购物 is ready! please be prepared, Checkout the plan.
+            </a>
+          </li>
+          <li>
+            <a href="javascript:">Your teacher canceled your course Shopping 购物. Please reschedule a
+                                  course.</a>
+          </li>
+        </ul>
+        <a href="javascript:" class="show-all">Show all notifications...</a>
+      </div>
+    </div>
+
+    <div class="dropdown-box js-dropdown-box">
+      <ul class="menu">
+        <li>
+          <a href="javascript:">Home</a>
+        </li>
+        <li>
+          <a href="javascript:" class="active">Find Classes</a>
+        </li>
+        <li>
+          <a href="javascript:">Apply</a>
+        </li>
+        <li>
+          <a href="javascript:">About Us</a>
+        </li>
+      </ul>
+      <div class="user js-user">
+        <a href="javascript:" class="user-box">
+          <div class="avatar fl">
+            <img src="images/avatar-9c6b7816316e56234a6e4904274fe659.png" alt="josh">
+          </div>
+          <div class="name fl">Josh</div>
+          <div class="arrow fl"></div>
+        </a>
+
+        <ul class="user-dropdown js-user-dropdown">
+          <li>
+            <a href="javascript:">Settings</a>
+          </li>
+          <li>
+            <a href="javascript:">Help</a>
+          </li>
+          <li>
+            <a href="javascript:">Log out</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% block container %}
+<div class="container clearfix">
+</div>
+{% endblock %}
+
+{% block modal %}
+<div class="modal js-modal">
+</div>
+{% endblock %}
+
+<div class="footer">
+  <ul class="footer-box">
+    <li>
+      <a href="javascript:">About us</a>
+    </li>
+    <li>
+      <a href="javascript:">Join us</a>
+    </li>
+    <li>
+      <a href="javascript:">Contact</a>
+    </li>
+    <li>
+      PandaInn &copy; 2017
+    </li>
+  </ul>
+  <div class="language js-language">
+    <a href="javascript:" class="select">
+      <span>English</span>
+      <i class="fa fa-caret-up" aria-hidden="true"></i>
+      <select class="real-select">
+        <option value="1">English</option>
+        <option value="1">中文(简体)</option>
+        <option value="1">اللغة العربية</option>
+      </select>
+    </a>
+    <ul class="language-dropup js-language-dropup">
+      <li>
+        <a href="javascript:">English</a>
+      </li>
+      <li>
+        <a href="javascript:">中文(简体)</a>
+      </li>
+      <li>
+        <a href="javascript:">اللغة العربية</a>
+      </li>
+    </ul>
+  </div>
+</div>
+<script>
+  var ie = (function () {
+
+    let undef,
+      v = 3,
+      div = document.createElement('div'),
+      all = div.getElementsByTagName('i');
+
+    while (
+      div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
+        all[0]
+      );
+
+    return v > 4 ? v : undef;
+
+  }());
+
+  if (ie < 9) {
+    var ie8 = document.getElementById('ie8');
+    ie8.style.display = 'block';
+  }
+</script>
+<script type="text/javascript" src="/static/mvp/js/common.js"></script>
+{% block scriptlist %}{% endblock %}
+</body>
+</html>
+{% endlocaltime %}

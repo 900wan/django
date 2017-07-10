@@ -74,14 +74,18 @@ from main.forms import ProviderFeedbackSkuForm
 from main.forms import BuyerFeedbackSkuForm
 from main.forms import PlaceSkuForm
 
+from easy_timezones.utils import get_ip_address_from_request
+
 def url_homepage(request):
     language = act_getlanguage(request)
     # user_language = language
     # translation.activate(user_language) 系统已经可以自动判断，这个激活暂时不需要
     # request.session[translation.LANGUAGE_SESSION_KEY] = user_language
-    timezone.activate(pytz.timezone("Asia/Shanghai"))
+    # timezone.activate(pytz.timezone("Asia/Shanghai"))
     now_tz = timezone.now()
+    current_tz = timezone.get_current_timezone()
     info = act_getinfo(request)
+    ip = get_ip_address_from_request(request)
     heading = _(u'Our hompage heading')
     if info['is_login']:
         skus = info['current_user'].buyer.sku_set.order_by('-start_time')[:5]
@@ -409,7 +413,7 @@ def url_dashboard(request):
 
 @login_required
 def url_office(request):
-    timezone.activate(pytz.timezone("Asia/Shanghai"))
+    # timezone.activate(pytz.timezone("Asia/Shanghai"))
     info = act_getinfo(request)
     skus = Sku.objects.filter(provider=info['current_user'].provider)
     skus = act_expand_skus(skus)
@@ -587,7 +591,7 @@ def url_bookresult(request):
 @login_required
 def url_schedule(request):
     info = act_getinfo(request)
-    timezone.activate(pytz.timezone("Asia/Shanghai"))
+    # timezone.activate(pytz.timezone("Asia/Shanghai"))
     tz = timezone.get_current_timezone()
     now_tz = timezone.now()
     info = act_getinfo(request)    

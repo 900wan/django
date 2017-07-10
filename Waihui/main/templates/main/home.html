@@ -1,14 +1,11 @@
 {% extends "main/base.html" %}
-{% load i18n %} 
-{% load tz %}
-{% get_current_language as LANGUAGE_CODE %}
-{% get_current_timezone as TIME_ZONE %}
-
 {% block title %}
     Home
 {% endblock title %}
 
 {% block content %}
+    {% load i18n %}{% get_current_language as LANGUAGE_CODE %}
+    {% load tz %}{% localtime on %}{% get_current_timezone as TIME_ZONE %}
     <h1>{{heading}}</h1>
     {% trans "This the content of home page." %}
     <h1>{% trans "User"%}</h1>
@@ -33,7 +30,8 @@
     {{ LANGUAGE_CODE|language_bidi }}) <br>
     {% trans "This is our first auto-translation page." %}
     <h2>* Time zone</h2>
-        Time zone using in this page: {{TIME_ZONE}}
+        <p>Your IP is: {{ip}}</p>
+        <p>Time zone using in this page: {{current_tz}} | {{ TIME_ZONE }} </p>
         <ul style="text-align:right; width:280px;font-family:monospace;">
             {% localtime off %}
             <li>Server: {{now_tz|date:"Y-m-d H:i:s (O)"}}</li>
@@ -45,6 +43,7 @@
             <li>London : {{now_tz|timezone:"Europe/London"|date:"d H:i:s (O)"}}</li>
             <li>Paris : {{now_tz|timezone:"Europe/Paris"|date:"d H:i:s (O)"}}</li>
         </ul>
+        
 
     
     <h1>{% trans "Pages" %}</h1>
@@ -161,4 +160,5 @@
         </table>
         <a href="{% url 'main:dashboard' %} ">More...</a>
     {% endif %}
+    {% endlocaltime %}
 {% endblock content %}

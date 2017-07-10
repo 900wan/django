@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'DjangoUeditor',
+    'easy_timezones',
     'main',
     'minutes'
 )
@@ -53,6 +54,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'easy_timezones.middleware.EasyTimezoneMiddleware',
 )
 
 ROOT_URLCONF = 'Waihui.urls'
@@ -75,7 +77,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'zh-CN'
 
-TIME_ZONE = 'Asia/Shanghai'
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
@@ -92,6 +94,8 @@ LOGIN_URL = '/login/'
 STATIC_URL = '/static/'
 MEDIA_ROOT = 'main/media/'
 MEDIA_URL = '/media/'
+GEOIP_DATABASE = 'main/misc/GeoLiteCity.dat'
+GEOIPV6_DATABASE = 'main/misc/GeoLiteCityv6.dat'
 
 TEMPLATES = [
     {
