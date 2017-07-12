@@ -149,10 +149,10 @@
 <script>
   var ie = (function () {
 
-    let undef;
-    let v = 3;
-    let div = document.createElement('div');
-    let all = div.getElementsByTagName('i');
+    var undef;
+    var v = 3;
+    var div = document.createElement('div');
+    var all = div.getElementsByTagName('i');
 
     while (
       div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
@@ -170,10 +170,10 @@
 
   // Clock time updating
   // let severtime_ori = new Date('2017-07-12T07:52:30.296888+00:00');
-  let severtime_ori = new Date(1989, 11, 14, {{info.now_tz.hour}}, {{info.now_tz.minute}}, {{info.now_tz.second}}); //only time part is meaningful. date and timezone are really wrong and can be omitted, this might be little tricky.
-  let clienttime_ori = new Date();
-  let clienttime_now = clienttime_ori;
-  let timedelta, showtime;
+  var severtime_ori = new Date(1989, 11, 14, {{info.now_tz.hour}}, {{info.now_tz.minute}}, {{info.now_tz.second}}); //only time part is meaningful. date and timezone are really wrong and can be omitted, this might be little tricky.
+  var clienttime_ori = new Date();
+  var clienttime_now = clienttime_ori;
+  var timedelta, showtime;
   function clockTime(){
     clienttime_now = new Date();
     timedelta = clienttime_now -  clienttime_ori;
