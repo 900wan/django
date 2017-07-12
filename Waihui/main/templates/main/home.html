@@ -4,7 +4,7 @@
 {% endblock title %}
 
 {% block content %}
-    {% load i18n %}{% get_current_language as LANGUAGE_CODE %}
+    {% load i18n %}{% get_current_language as LANGUAGE_CODE %}{% get_available_languages as LANGUAGES %}
     {% load tz %}{% localtime on %}{% get_current_timezone as TIME_ZONE %}
     <h1>{{heading}}</h1>
     {% trans "This the content of home page." %}
@@ -23,19 +23,22 @@
     {% endif %}
     <h1>{% trans "Local" %}</h1>
     <h2>* Language</h2>
+    <ul>
+    {% trans "This website speaks... these languages:" %}
+    {% for lang in LANGUAGES %}
+        <li>{{lang.0}}, {{lang.1}}</li>
+    {% endfor %}
+    </ul>
     {% trans "The priority language：" %}{{ LANGUAGE_CODE|language_name_local }}. (
     {{ LANGUAGE_CODE }}, 
     {{ LANGUAGE_CODE|language_name_local }}, 
     {{ LANGUAGE_CODE|language_name }}, 
     {{ LANGUAGE_CODE|language_bidi }}) <br>
-    {% trans "This is our first auto-translation page." %}
     <h2>* Time zone</h2>
         <p>Your IP is: {{ip}}</p>
         <p>Time zone using in this page: {{current_tz}} | {{ TIME_ZONE }} </p>
         <ul style="text-align:right; width:280px;font-family:monospace;">
-            {% localtime off %}
-            <li>Server: {{now_tz|date:"Y-m-d H:i:s (O)"}}</li>
-            {% endlocaltime %}
+            <li>Server: {{info.now_tz|date:"Y-m-d H:i:s (O)"}}</li>
             <li>Beijing : {{now_tz|timezone:"Asia/Shanghai"|date:"d H:i:s (O)"}}</li>
             <li>Los Angeles : {{now_tz|timezone:"America/Los_Angeles"|date:"d H:i:s (O)"}}</li>
             <li>Chicago : {{now_tz|timezone:"America/Chicago"|date:"d H:i:s (O)"}}</li>

@@ -3,7 +3,7 @@ import pytz, json, datetime
 from django.shortcuts import get_object_or_404, render
 from django.db.models import Q
 from django.utils import translation, timezone
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
@@ -81,7 +81,6 @@ def url_homepage(request):
     # user_language = language
     # translation.activate(user_language) 系统已经可以自动判断，这个激活暂时不需要
     # request.session[translation.LANGUAGE_SESSION_KEY] = user_language
-    # timezone.activate(pytz.timezone("Asia/Shanghai"))
     now_tz = timezone.now()
     current_tz = timezone.get_current_timezone()
     info = act_getinfo(request)
@@ -95,7 +94,7 @@ def url_signup(request):
     '''用户通过浏览器将表单内容post到/signup/post后来到这里'''
     uf = SignupForm()
     language = act_getlanguage(request)
-    msg = request.method + language
+    msg = request.method +', '+ language +', '+ timezone.get_current_timezone_name()
     if request.method == 'POST':
         uf = SignupForm(request.POST)
         if uf.is_valid():
@@ -103,8 +102,8 @@ def url_signup(request):
             password = uf.cleaned_data['password']
             email = uf.cleaned_data['email']
             result = act_signup(password=password, nickname=nickname, email=email,
-                http_language=language)
-            msg = result + language
+                http_language=language, time_zone=timezone.get_current_timezone_name())
+            msg = result +', '+ language +', '+ timezone.get_current_timezone_name()
     info = act_getinfo(request)
     return render(request, "main/signup.html", {'info':info, 'form':uf, 'msg':msg})
     # act_signup()
@@ -177,7 +176,8 @@ def url_login_new(request):
 def url_logout(request):
     info = act_getinfo(request)
     logout(request)
-    act_htmllogout(info['current_user'])
+    if info['current_user']:
+        act_htmllogout(info['current_user'])
     return HttpResponseRedirect(reverse('main:home'))
 
 def url_tc(request, offset_id):
@@ -379,7 +379,6 @@ def url_showsku(request, sku_id):
     return render(request, "main/showsku.html", locals())
 
 def url_skulist(request):
-    # timezone.activate(pytz.timezone("Asia/Shanghai"))
     info = act_getinfo(request)
     skus = Sku.objects.all()
     msg = str(request)
@@ -413,7 +412,6 @@ def url_dashboard(request):
 
 @login_required
 def url_office(request):
-    # timezone.activate(pytz.timezone("Asia/Shanghai"))
     info = act_getinfo(request)
     skus = Sku.objects.filter(provider=info['current_user'].provider)
     skus = act_expand_skus(skus)
@@ -591,8 +589,9 @@ def url_bookresult(request):
 @login_required
 def url_schedule(request):
     info = act_getinfo(request)
-    # timezone.activate(pytz.timezone("Asia/Shanghai"))
-    tz = timezone.get_current_timezone()
+    # tz = timezone.get_current_timezone()
+    tz = pytz.timezone("Asia/Shanghai")
+    # 开发过程中这个函数已经在代码中写明用北京时间，而schedule.html的前台javascript是使用的当前电脑默认时区，我们目前使用的本机时区都是北京时间没问题，但是未来如果给其他时区的用户使用就有可能出问题，未来再处理。
     now_tz = timezone.now()
     info = act_getinfo(request)    
     current_user = info['current_user']

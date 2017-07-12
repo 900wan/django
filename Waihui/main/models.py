@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import validate_comma_separated_integer_list
 from django.utils import timezone
 from django.utils.translation import get_language
 from django.utils.translation import ugettext as _
@@ -70,7 +71,7 @@ class Provider(models.Model):
         default=0,
         )
     name = models.CharField(max_length=50, )
-    weekday_pattern = models.CommaSeparatedIntegerField(max_length=200, blank=True, null=True)
+    weekday_pattern = models.CharField(max_length=200, blank=True, null=True, validators=[validate_comma_separated_integer_list])
     fee_rate = models.FloatField(default=1)
     hp = models.FloatField(default=100)
     teaching_language = models.ManyToManyField(Language, blank=True)

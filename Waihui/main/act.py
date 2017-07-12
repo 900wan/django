@@ -38,7 +38,7 @@ from main.ds import ds_noti_toprovider_skubooked
 from main.ds import ds_noti_toprovider_lostbuyer
 
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 MIN_CANCEL_TIME = datetime.timedelta(hours=8)
 OK_CANCEL_TIME = datetime.timedelta(hours=12)
@@ -54,7 +54,7 @@ def act_getlanguage(request):
     # language = request.META.get('HTTP_ACCEPT_LANGUAGE')
     return language
 
-def act_signup(email, password, nickname, http_language, time_zone="Asia/Shanghai"):
+def act_signup(email, password, nickname, http_language, time_zone):
     '''signup a user'''
     
     language = http_language
@@ -88,7 +88,7 @@ def act_signup(email, password, nickname, http_language, time_zone="Asia/Shangha
         user=user)
     wallet.save()
 
-    result = "OK!" + str(email) + "." + str(nickname) + "has added"
+    result = "OK!" + str(email) + "[" + str(nickname) + "] in ["+ str(time_zone) +"] has added"
     # except:
     #     pass
     return result
@@ -384,8 +384,10 @@ def act_getinfo(request):
     else:
         info = {
         'is_login': False,
+        'current_user': None
         }
-    info['now_tz'] = timezone.now()
+    info['now_tz'] = timezone.localtime()
+    info['timezone_name'] = timezone.get_current_timezone_name()
     return info
 
 def act_getanotis(notis):

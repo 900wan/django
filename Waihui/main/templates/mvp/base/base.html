@@ -1,5 +1,6 @@
 {% load i18n %}
 {% get_current_language as LANGUAGE_CODE %}
+{% load waihui_templates %}
 {% load tz %}{% localtime on %}
 {% get_current_timezone as TIME_ZONE %}
 <!DOCTYPE html>
@@ -27,9 +28,11 @@
     <a href="javascript:" class="dropdown">
       <i class="fa fa-bars fa-2x" aria-hidden="true"></i>
     </a>
-    <div class="clock clearfix">
+    <div class="clock clearfix" title="{{info.now_tz.date}}. {% trans "Your current timezone is" %} {{TIME_ZONE}}.">
       <div class="clock-icon fl"></div>
-      <div class="fl"><span title="{{TIME_ZONE}}">{{info.now_tz.time}} ({{TIME_ZONE}})</span></div>
+      <div class="fl"><span id="js-clock-text">{{info.now_tz.time}}</span> 
+      ({% if TIME_ZONE|split:"/"|last == "Harbin" or TIME_ZONE|split:"/"|last == "Shanghai" or TIME_ZONE|split:"/"|last == "Chongqing" or TIME_ZONE|split:"/"|last == "Chungking" or TIME_ZONE|split:"/"|last == "PRC" or TIME_ZONE|split:"/"|last == "ROC" %}Beijing{% else %}{{TIME_ZONE|split:"/"|last}}{% endif %})
+      </div>
 
     </div>
     <div class="notification js-notification">
@@ -58,16 +61,13 @@
     <div class="dropdown-box js-dropdown-box">
       <ul class="menu">
         <li>
-          <a href="javascript:">Home</a>
+          <a href="javascript:" {% if request.path == '/p/' %}class="active"{% endif %}>Home</a>
         </li>
         <li>
-          <a href="javascript:" class="active">Find Classes</a>
+          <a href="javascript:" {% if request.path == '/p/topics/' %}class="active"{% endif %}>Find Courses</a>
         </li>
         <li>
-          <a href="javascript:">Apply</a>
-        </li>
-        <li>
-          <a href="javascript:">About Us</a>
+          <a href="javascript:" {% if request.path == '/p/teachers/' %}class="active"{% endif %}>Find Teachers</a>
         </li>
       </ul>
       <div class="user js-user">
@@ -144,6 +144,8 @@
     </ul>
   </div>
 </div>
+<script type="text/javascript" src="/static/mvp/js/common.js"></script>
+{% block scriptlist %}{% endblock %}
 <script>
   var ie = (function () {
 
@@ -165,9 +167,24 @@
     var ie8 = document.getElementById('ie8');
     ie8.style.display = 'block';
   }
+
+  // Clock time updating
+  // let severtime_ori = new Date('2017-07-12T07:52:30.296888+00:00');
+  let severtime_ori = new Date(1989, 11, 14, {{info.now_tz.hour}}, {{info.now_tz.minute}}, {{info.now_tz.second}}); //only time part is meaningful. date and timezone are really wrong and can be omitted, this might be little tricky.
+  let clienttime_ori = new Date();
+  let clienttime_now = clienttime_ori;
+  let timedelta, showtime;
+  function clockTime(){
+    clienttime_now = new Date();
+    timedelta = clienttime_now -  clienttime_ori;
+    showtime = new Date(severtime_ori.getTime() + timedelta);
+    document.getElementById('js-clock-text').innerHTML = showtime.getHours()  + ":" + 
+                                                         ("0" + showtime.getMinutes()).slice(-2) + ":" + 
+                                                         ("0" + showtime.getSeconds()).slice(-2);
+    setTimeout(function () {clockTime()}, 1000);
+  }
+  clockTime();
 </script>
-<script type="text/javascript" src="/static/mvp/js/common.js"></script>
-{% block scriptlist %}{% endblock %}
 </body>
 </html>
 {% endlocaltime %}

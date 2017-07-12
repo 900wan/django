@@ -2,18 +2,20 @@
 {% load i18n %} 
 {% load tz %}
 {% get_current_language as LANGUAGE_CODE %}
-{% get_current_timezone as TIME_ZONE %}
 {% block title %}
     {{heading}}
 {% endblock title %}
 
 {% block content %}
+{% get_current_timezone as TIME_ZONE %}
     <h1>{{heading}}{% trans "Schedule settings" %}</h1>
     <p>================================</p>
     <ul>
         <li>{{msg}}</li>
         <li>Go <a href="{% url 'main:home' %}">home</a></li>
-        <li>Time zone using in this page: {{TIME_ZONE}}, and now is {{now_tz|date:"Y-m-d H:i:s (O)"}}.</li>
+        <li>Time zone using in this page: {{TIME_ZONE}}, and now is {{info.now_tz|date:"Y-m-d H:i:s (O)"}}.</li>
+        <li>China Standard Time(aka Beijing Time): {{now_tz|timezone:'Asia/Harbin'|date:"Y-m-d H:i:s (O)"}}</li>
+        <li>Your Browser/OS local time: <span id='ltlabel'></span></li>
     </ul>
     <p>================================</p>
     {# <p id="addLi">添加列表项</p> #}
@@ -43,10 +45,11 @@ $(document).ready(function(){
     weekday[5]="五";
     weekday[6]="六";
 
-    var dateitem = new Date();
-    dateitem.setFullYear({{now_tz|date:"Y"}},({{now_tz|date:"m"}}-1),{{now_tz|date:"d"}});//这特么月份是从0开始de
+    $('#ltlabel').html(new Date().toString());
+    var dateitem = new Date('{{now_tz.isoformat}}');
     var datenow = new Date(dateitem);
     dateitem.setHours(0,0,0,0);
+    // alert(dateitem +'|' + datenow);
     for (var j = 0; j < 3; j++) {
         var newdayul='<li>'+weekday[dateitem.getDay()]+' '+dateitem.toDateString()+'<ul id="day_ul_'+j+'"></ul></li>';
         $("#time_ul").append(newdayul);
@@ -72,7 +75,6 @@ $(document).ready(function(){
     //jquery 检索ul li的所有元素
     $("li").click(function(){
         var schedule_result= new Array()
-        var data = "";
 
         $("input[type='checkbox']:checked").each(function(index,value){
             schedule_result.push({
@@ -80,7 +82,6 @@ $(document).ready(function(){
                 // 'end_time':$(this).val()
             });
         })
-        // alert(data);
         $("#id_schedule").val(JSON.stringify(schedule_result));
     })
 })
