@@ -101,8 +101,8 @@ LOGIN_URL = '/login/'
 STATIC_URL = '/static/'
 MEDIA_ROOT = 'main/media/'
 MEDIA_URL = '/media/'
-GEOIP_DATABASE = 'main/misc/GeoLiteCity.dat'
-GEOIPV6_DATABASE = 'main/misc/GeoLiteCityv6.dat'
+GEOIP_DATABASE = os.path.normcase('main/misc/GeoLiteCity.dat')
+GEOIPV6_DATABASE = os.path.normcase('main/misc/GeoLiteCityv6.dat')
 
 TEMPLATES = [
     {
