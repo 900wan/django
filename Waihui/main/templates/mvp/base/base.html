@@ -149,10 +149,7 @@
 <script>
   var ie = (function () {
 
-    let undef,
-      v = 3,
-      div = document.createElement('div'),
-      all = div.getElementsByTagName('i');
+    let undef, v = 3, div = document.createElement('div'), all = div.getElementsByTagName('i');
 
     while (
       div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
