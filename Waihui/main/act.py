@@ -441,6 +441,7 @@ def act_generate_skus(provider, schedule):
     return result
 
 def act_provider_cancel_sku(sku, user):
+    '''卖家主动取消\拒绝订单，reject the booking'''
     if sku.time_to_start() <= MIN_CANCEL_TIME:
         msg = _(u"马上开始了如果真要取消的话你自己联系学生做好解释工作，再找管理员取消吧。")
     elif sku.time_to_start() > MIN_CANCEL_TIME and sku.time_to_start() <= OK_CANCEL_TIME:

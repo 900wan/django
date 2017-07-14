@@ -20,3 +20,8 @@ repickpool的激励机制
 【--SKU是否是相关人才能看？--】
 (2017-7-10)
 Log功能要记录操作时间（用model的创建时间就可以我觉得）、操作IP（url_home里写了取ip的方法）等必要信息。
+
+(2017-7-14)
+Windows下使用其他目录通过python 'Document/Github/waihui-django/Waihui/' runserver仍会报    raise ImproperlyConfigured("GEOIP_DATABASE setting is defined, but file does not exist.")
+django.core.exceptions.ImproperlyConfigured: GEOIP_DATABASE setting is defined, but file does not exist.
+的错误
