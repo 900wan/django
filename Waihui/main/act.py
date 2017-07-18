@@ -283,7 +283,7 @@ def act_addorder(user, skus, buyer, skus_topic=None):
         order.skus = skus
     order.save()
     ds_addlog(client=0, action=2, user=user, order=order)
-    result = _(u'Order added, need to pay: CNY¥'+ str(cny_price) +', this order includes: '+str(skus))
+    result = 'Order added, need to pay: CNY¥'+ str(cny_price) +', this order includes: '+str(skus)
     result = {'info':result, 'order':order}
     return result
 

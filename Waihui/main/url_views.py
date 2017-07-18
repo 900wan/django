@@ -532,7 +532,7 @@ def url_holdsku(request, topic_id, sku_id):
                 msg = _(u'result is false')
                 return render(request, 'main/holdsku.html', locals())
             order = result['order']
-            request.session['heading'] = _(u'Please pay the order')
+            request.session['heading'] = 'Please pay the order'
             request.session['msg'] = result['info']
             return HttpResponseRedirect(reverse('main:showorder', args=[order.id]))
             # return render(request, 'main/result.html', locals())
