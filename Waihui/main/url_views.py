@@ -3,7 +3,8 @@ import pytz, json, datetime
 from django.shortcuts import get_object_or_404, render
 from django.db.models import Q
 from django.utils import translation, timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as l_
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
@@ -205,7 +206,7 @@ def url_orderlist(request):
 
 
 def url_showorder(request, order_id):
-    '''展示order页面，兼容需付款order的情况，文字描述通过session传输'''
+    '''展示order页面，兼容需付款order的情况，可从holdsku功能跳转过来，文字描述通过session传输'''
     info = act_getinfo(request)
     current_user = act_getinfo(request).get('current_user')
     order = get_object_or_404(Order, id=order_id)
@@ -214,10 +215,11 @@ def url_showorder(request, order_id):
         topic_id = (item for item in skus_topic if item["sku_id"] == sku.id).next()['topic_id']
         topic = get_object_or_404(Topic, id=topic_id)
     heading = _(u'Order Summary')
+    msg = str(type(skus_topic)) + str(skus_topic)
     if 'heading' in request.session:
         heading = request.session['heading']
-    if 'msg' in request.session:
-        msg = request.session['msg'] + str(type(skus_topic)) + str(skus_topic)
+    if 'info' in request.session:
+        msg = request.session['info']
     # msg = order.object.all()
     return render(request, 'main/showorder.html', locals())
 
@@ -448,7 +450,7 @@ def url_addorder(request):
         if uf.is_valid():
             skus = uf.cleaned_data['skus']
             # msg = str(isinstance(skus,Sku))
-            msg = act_addorder(info['current_user'], skus, buyer)
+            result = act_addorder(info['current_user'], skus, buyer)
     # result = act_addorder(skus, buyer)
     # uf = OrderForm(request.POST)
     # uf.fields['skus'].queryset = Sku.objects.filter(buyer=info['current_user'].buyer)
@@ -496,10 +498,16 @@ def url_skuintopic(request, topic_id):
     if info['is_login']:
         skus = (skus_with_topics|skus_without_topics).filter(start_time__gte=timezone.now())\
         .exclude(provider=current_user.provider)
-        providers = Provider.objects.filter(sku=skus)
     else:
         skus = (skus_with_topics|skus_without_topics).filter(start_time__gte=timezone.now())
-        providers = Provider.objects.filter(sku=skus)
+    providers = Provider.objects.all()
+    num = []
+    counts = {}
+    for provider in providers:
+        for sku in skus:
+            if sku.provider == provider:
+                num.append(provider.id)
+        counts = { provider : len(num)} 
 
     heading = _(u'Pick a time and meet a teacher')
     if skus.count() == 0:
@@ -509,7 +517,7 @@ def url_skuintopic(request, topic_id):
 
 @login_required
 def url_holdsku(request, topic_id, sku_id):
-    '''用于选择单个sku（course）后直接下单'''
+    '''用于选择单个sku（course）后直接下单, 成功添加order后会跳转到showorder页面'''
     info = act_getinfo(request)
     topic = get_object_or_404(Topic, id=topic_id)
     sku = get_object_or_404(Sku, id=sku_id)
@@ -529,11 +537,11 @@ def url_holdsku(request, topic_id, sku_id):
             # msg = str(isinstance(sku, Sku))
             result = act_addorder(buyer.user, sku, buyer, sku_topic)
             if not result:
-                msg = _(u'result is false')
+                msg = _(u'Result is false')
                 return render(request, 'main/holdsku.html', locals())
             order = result['order']
-            request.session['heading'] = 'Please pay the order'
-            request.session['msg'] = result['info']
+            request.session['heading'] = _(u'Please pay the order')
+            request.session['info'] = result['info']
             return HttpResponseRedirect(reverse('main:showorder', args=[order.id]))
             # return render(request, 'main/result.html', locals())
     msg = str(request.POST)

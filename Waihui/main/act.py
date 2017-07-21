@@ -37,8 +37,8 @@ from main.ds import ds_noti_tobuyer_planmodified
 from main.ds import ds_noti_toprovider_skubooked
 from main.ds import ds_noti_toprovider_lostbuyer
 
-
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as l_
 
 MIN_CANCEL_TIME = datetime.timedelta(hours=8)
 OK_CANCEL_TIME = datetime.timedelta(hours=12)
@@ -283,8 +283,8 @@ def act_addorder(user, skus, buyer, skus_topic=None):
         order.skus = skus
     order.save()
     ds_addlog(client=0, action=2, user=user, order=order)
-    result = 'Order added, need to pay: CNY¥'+ str(cny_price) +', this order includes: '+str(skus)
-    result = {'info':result, 'order':order}
+    info = l_(u'Order added, need to pay: CNY¥ %(cny_price)s , this order includes:') % {'cny_price': cny_price}
+    result = {'info':info, 'order':order}
     return result
 
 def act_showorder(id):

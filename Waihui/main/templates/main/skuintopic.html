@@ -45,14 +45,16 @@
     <table>
         <thead>
             <tr>
-                <th>Name</th>>
+                <th>Name</th>
                 <th>Bio</th>
             </tr>
         </thead>
         <tbody>
             {% for provider in providers %}
                 <tr>
-                    <td><a href="">{{provider.name}}&lt;{{sku.provider_set.all|length}}&gt;</a></td>
+                    <td><a href="">{{provider.name}}&lt;{% for num in counts %}
+                            {{num.provider}}
+                    {% endfor %}&gt;</a></td>
                     <td>{{provider.bio}}</td>
                 </tr>
             {% endfor %}

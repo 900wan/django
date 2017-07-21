@@ -360,7 +360,7 @@ class Order(models.Model):
         verbose_name_plural = "Orders"
 
     def __unicode__(self):
-        return u'%s' % '['+str(self.id)+'] '+"Order of "+ str(self.buyer) + " contains "+ str(len(self.skus.all())) + " skus, cost " + str(self.cny_price) + " Yuan"
+        return _(u'[ %(id)s ] Order of %(buyer)s contains %(len)s skus, cost %(cny_price)s Yuan') % {'id':self.id, 'buyer':self.buyer, 'len':len(self.skus.all()), 'cny_price':self.cny_price}
 
     buyer = models.ForeignKey(Buyer)
     provider = models.ForeignKey(Provider, null=True)
