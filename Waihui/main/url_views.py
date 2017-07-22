@@ -500,14 +500,12 @@ def url_skuintopic(request, topic_id):
         .exclude(provider=current_user.provider)
     else:
         skus = (skus_with_topics|skus_without_topics).filter(start_time__gte=timezone.now())
-    providers = Provider.objects.all()
+    providers = Provider.objects.filter(sku__in=skus).distinct()
     num = []
     counts = {}
     for provider in providers:
         for sku in skus:
-            if sku.provider == provider:
-                num.append(provider.id)
-        counts = { provider : len(num)} 
+            num.append(provider)
 
     heading = _(u'Pick a time and meet a teacher')
     if skus.count() == 0:
