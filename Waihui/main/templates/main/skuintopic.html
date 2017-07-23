@@ -50,12 +50,10 @@
             </tr>
         </thead>
         <tbody>
-            {% for provider in providers %}
+            {% for p in plist %}
                 <tr>
-                    <td><a href="">{{provider.name}}&lt;
-                    
-                    &gt;</a></td>
-                    <td>{{provider.bio}}</td>
+                    <td><a href="">{{p.provider.name}}&lt;{{p.count}}&gt;</a></td>
+                    <td>{{p.provider.bio}}</td>
                 </tr>
             {% endfor %}
         </tbody>

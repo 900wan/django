@@ -501,12 +501,12 @@ def url_skuintopic(request, topic_id):
     else:
         skus = (skus_with_topics|skus_without_topics).filter(start_time__gte=timezone.now())
     providers = Provider.objects.filter(sku__in=skus).distinct()
-    num = []
-    counts = {}
+    plist = []
     for provider in providers:
-        for sku in skus:
-            num.append(provider)
-
+        pdict = {}
+        pdict['provider'] = provider
+        pdict['count'] = skus.filter(provider=provider).count()
+        plist.append(pdict)
     heading = _(u'Pick a time and meet a teacher')
     if skus.count() == 0:
         heading = _(u'Sorry, No sku in this topic right now')
