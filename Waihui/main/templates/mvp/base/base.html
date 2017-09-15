@@ -35,28 +35,23 @@
       </div>
 
     </div>
+    {% if info.is_login%}
     <div class="notification js-notification">
-      <a href="javascript:">3</a>
+      <a href="javascript:">{{info.unread_anotis|length}}</a>
       <div class="notification-dropdown js-notification-dropdown">
         <ul>
+          {% for anoti in info.unread_anotis %}
           <li>
-            <a class="new" href="javascript:">
-              Your teacher 双双 left a comment in Shopping 购物: Have you learn the plan?
+            <a class="{% if not anoti.read %}new{% endif %}" href="{% url 'main:notification_go' anoti.id %}">
+              {{anoti.content|safe}}
             </a>
           </li>
-          <li>
-            <a class="new" href="javascript:">
-              Your course Shopping 购物 is ready! please be prepared, Checkout the plan.
-            </a>
-          </li>
-          <li>
-            <a href="javascript:">Your teacher canceled your course Shopping 购物. Please reschedule a
-                                  course.</a>
-          </li>
+          {% endfor %}
         </ul>
-        <a href="javascript:" class="show-all">Show all notifications...</a>
+        <a href="{% url 'main:notifications' %}" class="show-all">See all notifications...</a>
       </div>
-    </div>
+    </div>      
+    {% endif %}
 
     <div class="dropdown-box js-dropdown-box">
       <ul class="menu">
@@ -70,27 +65,36 @@
           <a href="javascript:" {% if request.path == '/p/teachers/' %}class="active"{% endif %}>Find Teachers</a>
         </li>
       </ul>
+
+      {% if info.is_login%}
       <div class="user js-user">
         <a href="javascript:" class="user-box">
           <div class="avatar fl">
             <img src="images/avatar-9c6b7816316e56234a6e4904274fe659.png" alt="josh">
           </div>
-          <div class="name fl">Josh</div>
+          <div class="name fl">{{info.current_user.buyer.nickname}}</div>
           <div class="arrow fl"></div>
         </a>
 
         <ul class="user-dropdown js-user-dropdown">
           <li>
-            <a href="javascript:">Settings</a>
+            <a href="{% url 'mvp:dashboard' %}">Dashboard</a>
           </li>
           <li>
-            <a href="javascript:">Help</a>
-          </li>
-          <li>
-            <a href="javascript:">Log out</a>
+            <a href="{% url 'main:logout' %}">Log out</a>
           </li>
         </ul>
       </div>
+      {% else %}
+      <ul class="user">
+        <li>
+          <a href="{% url 'main:login' %}" ><span style="color: white;">{% trans "Login" %}</span></a>
+        </li>
+        <li>
+          <a href="{% url 'main:signup' %}"><span style="color: white;">{% trans "Signup" %}</span></a>
+        </li>
+      </ul>
+      {% endif %}
     </div>
 
   </div>
@@ -188,3 +192,5 @@
 </body>
 </html>
 {% endlocaltime %}
+
+

@@ -4,7 +4,6 @@ from django.conf.urls.static import static
 from main import url_views
 from main import test_views
 
-
 test_patterns = [
     url(r'$', test_views.url_test, ),
     url(r'language/$', test_views.get_language, name='get_language')

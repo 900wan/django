@@ -74,3 +74,9 @@ def home(request):
     language = act_getlanguage(request)
     info = act_getinfo(request)
     return render(request, "mvp/home.html", locals())
+
+
+def dashboard(request):
+    language = act_getlanguage(request)
+    info = act_getinfo(request)
+    return render(request, "mvp/dashboard.html", locals())

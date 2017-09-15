@@ -1,0 +1,15 @@
+{% extends "mvp/base/base.html" %}
+{% load i18n %} 
+{% load tz %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_timezone as TIME_ZONE %}
+
+{% block title %}{% trans "Home" %}{% endblock %}
+{% block inhead %}<link href="/static/mvp/css/index.css" rel="stylesheet">{% endblock %}
+{% block scriptlist %}<script type="text/javascript" src="/static/mvp/js/index.js"></script>{% endblock %}
+
+{% block container %}
+<div class="container clearfix">
+    <h1>{% trans "Home" %}</h1>
+</div>
+{% endblock %}
