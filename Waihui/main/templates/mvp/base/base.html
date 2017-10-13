@@ -37,15 +37,17 @@
     </div>
     {% if info.is_login%}
     <div class="notification js-notification">
-      <a href="javascript:">{{info.unread_anotis|length}}</a>
+      <a href="{% url 'main:notifications' %}">{{info.unread_anotis|length|default:""}}</a>
       <div class="notification-dropdown js-notification-dropdown">
         <ul>
-          {% for anoti in info.unread_anotis %}
+          {% for anoti in info.anotis|dictsort:"read"|slice:":5"  %}
           <li>
             <a class="{% if not anoti.read %}new{% endif %}" href="{% url 'main:notification_go' anoti.id %}">
               {{anoti.content|safe}}
             </a>
           </li>
+          {% empty %}
+          <li><center>You have no notifications right now.</center></li>
           {% endfor %}
         </ul>
         <a href="{% url 'main:notifications' %}" class="show-all">See all notifications...</a>
