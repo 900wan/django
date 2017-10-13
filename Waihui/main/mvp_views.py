@@ -75,8 +75,11 @@ def home(request):
     info = act_getinfo(request)
     return render(request, "mvp/home.html", locals())
 
-
+@login_required
 def dashboard(request):
     language = act_getlanguage(request)
     info = act_getinfo(request)
+    skus = act_expand_skus(info.get('current_user').buyer.sku_set.all())
+    skus_ongoing = act_expand_skus(info.get('current_user').buyer.sku_set.filter(end_time__gte = timezone.now()))
+    skus_past = act_expand_skus(info.get('current_user').buyer.sku_set.filter(end_time__lt = timezone.now()))
     return render(request, "mvp/dashboard.html", locals())

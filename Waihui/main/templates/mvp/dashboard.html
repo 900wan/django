@@ -10,6 +10,67 @@
 
 {% block container %}
 <div class="container clearfix">
-    <h1>{% trans "Home" %}</h1>
+  <div class="slider fl">
+    <div class="slider-header">
+      <div class="title fl">MY PROFILE</div>
+      <a href="javascript:" class="btn fr">
+        <span>
+          <i class="fa fa-pencil" aria-hidden="true"></i>
+        </span>
+        <span>EDIT</span>
+      </a>
+    </div>
+    <div class="slider-info clearfix">
+      <div class="avatar fl">
+        <img src="" title=""/>
+      </div>
+      <div class="info-body">
+        <div class="name">{{info.current_user.buyer.nickname}}</div>
+        <div class="line">
+          <span class="icon">
+            <i class="fa fa-clock-o fa-lg" aria-hidden="true"></i>
+          </span>
+          <span class="text">{{info.current_user.buyer.time_zone}}</span>
+        </div>
+        <div class="line">
+          <span class="icon">
+            <i class="fa fa-font fa-lg" aria-hidden="true"></i>
+          </span>
+          <span class="text">{{info.current_user.buyer.mother_tongue.english_name}}</span>
+        </div>
+        <div class="line">
+          <span class="icon">
+            <i class="fa fa-envelope-open-o" aria-hidden="true"></i>
+          </span>
+          <span class="text">{{info.current_user.email}}</span>
+        </div>
+      </div>
+    </div>
+    <div class="slider-item-box js-slider-item-box">
+      <a href="javascript:" class="slider-item-btn">
+        <i class="fa fa-angle-double-down" aria-hidden="true"></i>
+      </a>
+      <div class="slider-item">
+        <div class="module">LEVEL</div>
+        <div class="cell">1 - General</div>
+        <a class="btn" href="javascript:">Take test</a>
+      </div>
+      <div class="slider-item">
+        <div class="module">CLASSES ({{skus|length}})</div>
+        <div class="cell">Ongoing classes: {{skus_ongoing|length}}</div>
+        <div class="cell">Past classes: {{skus_past|length}}</div>
+      </div>
+      <div class="slider-item">
+        <div class="module">ORDERS</div>
+        <div class="cell">My orders: {{info.current_user.buyer.order_set.all|length}}</div>
+      </div>
+      <div class="slider-item">
+        <div class="module">BALANCE</div>
+        <div class="cell">CNY {{info.current_user.wallet.cny_balance}}</div>
+        <a class="btn dark" href="javascript:">$ ADD</a>
+      </div>
+    </div>
+  </div>
+
 </div>
 {% endblock %}
