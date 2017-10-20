@@ -4,7 +4,7 @@
 {% get_current_language as LANGUAGE_CODE %}
 {% get_current_timezone as TIME_ZONE %}
 
-{% block title %}{% trans "Home" %}{% endblock %}
+{% block title %}{% trans "Dashboard" %}{% endblock %}
 {% block inhead %}<link href="/static/mvp/css/index.css" rel="stylesheet">{% endblock %}
 {% block scriptlist %}<script type="text/javascript" src="/static/mvp/js/index.js"></script>{% endblock %}
 
@@ -12,12 +12,12 @@
 <div class="container clearfix">
   <div class="slider fl">
     <div class="slider-header">
-      <div class="title fl">MY PROFILE</div>
+      <div class="title fl">{% trans "MY PROFILE" %}</div>
       <a href="javascript:" class="btn fr">
         <span>
           <i class="fa fa-pencil" aria-hidden="true"></i>
         </span>
-        <span>EDIT</span>
+        <span>{% trans "EDIT" %}</span>
       </a>
     </div>
     <div class="slider-info clearfix">
@@ -51,24 +51,77 @@
         <i class="fa fa-angle-double-down" aria-hidden="true"></i>
       </a>
       <div class="slider-item">
-        <div class="module">LEVEL</div>
-        <div class="cell">1 - General</div>
-        <a class="btn" href="javascript:">Take test</a>
+        <div class="module">{% trans "LEVEL" %}</div>
+        <div class="cell">{% trans "1 - General" %}</div>
+        <a class="btn" href="javascript:">{% trans "Take test" %}</a>
       </div>
       <div class="slider-item">
-        <div class="module">CLASSES ({{skus|length}})</div>
-        <div class="cell">Ongoing classes: {{skus_ongoing|length}}</div>
-        <div class="cell">Past classes: {{skus_past|length}}</div>
+        <div class="module">{% trans "CLASSES" %} ({{skus|length}})</div>
+        <div class="cell">{% trans "Ongoing classes:" %} {{skus_ongoing|length}}</div>
+        <div class="cell">{% trans "Past classes:" %} {{skus_past|length}}</div>
       </div>
       <div class="slider-item">
-        <div class="module">ORDERS</div>
-        <div class="cell">My orders: {{info.current_user.buyer.order_set.all|length}}</div>
+        <div class="module">{% trans "ORDERS" %}</div>
+        <div class="cell">{% trans "My orders:" %} {{info.current_user.buyer.order_set.all|length}}</div>
       </div>
       <div class="slider-item">
-        <div class="module">BALANCE</div>
-        <div class="cell">CNY {{info.current_user.wallet.cny_balance}}</div>
-        <a class="btn dark" href="javascript:">$ ADD</a>
+        <div class="module">{% trans "BALANCE" %}</div>
+        <div class="cell">{% trans "CNY" %} {{info.current_user.wallet.cny_balance}}</div>
+        <a class="btn dark" href="javascript:">{% trans "$ ADD" %}</a>
       </div>
+    </div>
+
+  </div>
+
+  <div class="content fl"> 
+    <div class="content-box">
+      <div class="topbar">
+        <div class="title">{% trans "MY CLASSES" %}</div>
+      </div>
+      <div class="head clearfix">
+        <div class="title fl">{% trans "ONGOING CLASSES" %}</div>
+        <a class="btn fl" href="javascript:">{% trans "Show all classes" %}</a>
+        <div class="search-box fr">
+          <input class="fl" type="text" placeholder="{% trans "Search my class" %}"/>
+          <a class="search-btn fl" href="javascript:"></a>
+        </div>
+      </div>
+      <div class="body">
+        <table class="table">
+          <thead>
+          <tr>
+            <td>{% trans "Topic" %}</td>
+            <td>{% trans "Tutor" %}</td>
+            <td>{% trans "Time" %}</td>
+            <td>{% trans "Status" %}</td>
+            <td>{% trans "Actions" %}</td>
+          </tr>
+          </thead>
+          <tbody>
+          {% for sku in skus|dictsort:"start_time" %}
+          <tr>
+            <td>{{sku.topic}}</td>
+            <td>{{sku.provider}}</td>
+            <td>{{sku.start_time|date:"Y-m-d H:i"}}</td>
+            <td>{{sku.get_status_display}}</td>
+            <td></td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td>None</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="content-box">
+        
     </div>
   </div>
 
