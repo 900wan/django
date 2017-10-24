@@ -21,7 +21,6 @@
     {# <p id="addLi">添加列表项</p> #}
     <ul id="time_ul"></ul>
     {# <p id="collect">看看结果</p> #}
-    <ul id="schedule_autoset"></ul>
 
     <form method="post" enctype="multipart/form-data" action="{% url 'main:schedule' %}">
         {{uf.as_p}}
@@ -37,9 +36,6 @@
 $(document).ready(function(){
 //按钮的点击事件，每次点击的时候动态的创建一个  li对象，jquery直接通过 ul对象的id，使用 append 方法 动态的把li添加到ul里面
     
-    var appointment_time = '<li id="autoschedule"><input id=appointment_time1 type="checkbox" name="appointment_time1" value="appointment_time1" /><label for="appointment_time1"><a href="javascript:void(0)"></a><span style="">appointment_time1</span></label></li>'
-    $('#schedule_autoset').append(appointment_time)
-
     var weekday=new Array(7);
     weekday[0]="日";
     weekday[1]="一";
@@ -67,17 +63,6 @@ $(document).ready(function(){
             dateitem.setTime(dateitem.getTime()+30*60*1000)
         }
     }
-
-    $("#autoschedule").click(function(){
-        var checkbox = $("li").find(':checkbox');
-        checkbox.prop('checked', !checkbox.prop('checked'));
-    })
-
-        // $("input[type = 'checkbox']:checked").each(
-        //     function(index, value){
-        //         $("input[type='checkbox']").prop('checked',!$("input[type='checkbox']").prop('checked'));
-        //     })
-    
 
     $("#addLi").bind("click",function(){ 
 
