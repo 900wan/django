@@ -184,6 +184,7 @@ def url_logout(request):
 def url_tc(request, offset_id):
     return HttpResponse(offset_id)
 
+@login_required
 def url_tutor(request, offset_id):
     '''For show tutor home page'''
     id = int(offset_id)
