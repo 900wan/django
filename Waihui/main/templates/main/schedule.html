@@ -11,7 +11,9 @@
     <h1>{{heading}}{% trans "Schedule settings" %}</h1>
     <p>================================</p>
     <ul>
-        <li>{{msg}}</li>
+        {% if msg %}
+            <li>{{msg}}</li>
+        {% endif %}
         <li>Go <a href="{% url 'main:home' %}">home</a></li>
         <li>Time zone using in this page: {{TIME_ZONE}}, and now is {{info.now_tz|date:"Y-m-d H:i:s (O)"}}.</li>
         <li>China Standard Time(aka Beijing Time): {{now_tz|timezone:'Asia/Harbin'|date:"Y-m-d H:i:s (O)"}}</li>
@@ -37,8 +39,6 @@
 $(document).ready(function(){
 //按钮的点击事件，每次点击的时候动态的创建一个  li对象，jquery直接通过 ul对象的id，使用 append 方法 动态的把li添加到ul里面
     
-    var appointment_time = '<li id="autoschedule"><input id=appointment_time1 type="checkbox" name="appointment_time1" value="appointment_time1" /><label for="appointment_time1"><a href="javascript:void(0)"></a><span style="">appointment_time1</span></label></li>'
-    $('#schedule_autoset').append(appointment_time)
 
     var weekday=new Array(7);
     weekday[0]="日";
@@ -59,7 +59,7 @@ $(document).ready(function(){
         $("#time_ul").append(newdayul);
         for (var i = 0; i < 48; i++) {
             var dateitemstr =  new String(dateitem.getFullYear()+"-"+(dateitem.getMonth()+1)+"-"+dateitem.getDate()+" "+dateitem.toTimeString().split(" ",1)[0]);
-            var msg = '<li><input id="'+dateitemstr+'" type="checkbox" name="'+dateitemstr+'" value="'+dateitemstr+'" /> <label for="'+dateitemstr+'"><a href="javascript:void(0)"></a><span style="">' + dateitemstr + '</span></label></li>';
+            var msg = '<li class="timelist"><input id="'+dateitemstr+'" type="checkbox" name="'+dateitemstr+'" value="'+dateitemstr+'" /> <label for="'+dateitemstr+'"><a href="javascript:void(0)"></a><span style="">' + dateitemstr + '</span></label></li>';
             var dayul='#day_ul_'+j;
             if (datenow<dateitem) {
                 $(dayul).append(msg);    
@@ -68,9 +68,20 @@ $(document).ready(function(){
         }
     }
 
-    $("#autoschedule").click(function(){
-        var checkbox = $("li").find(':checkbox');
-        checkbox.prop('checked', !checkbox.prop('checked'));
+    var appointment_time = '<li id="autoschedule"><input id=appointment_time1 type="checkbox" name="appointment_time1" value="appointment_time1" /><label for="appointment_time1"><a href="javascript:void(0)"></a><span style="">前四项</span></label></li>'
+    $('#schedule_autoset').append(appointment_time)
+
+    $("#autoschedule").find("input").click(function(){
+        $(".timelist:lt(4)").each(function(){
+            $(this).find("input").click();
+        });
+        $("#day_ul_1").find(".timelist:lt(4)").each(function(){
+            $(this).find("input").click();
+        });
+        $("#day_ul_2").find(".timelist:lt(4)").each(function(){
+            $(this).find("input").click();
+        });
+
     })
 
         // $("input[type = 'checkbox']:checked").each(
@@ -88,10 +99,11 @@ $(document).ready(function(){
     //
 
     //jquery 检索ul li的所有元素
-    $("li").click(function(){
+    $(".timelist").click(function(){
         var schedule_result= new Array()
 
-        $("input[type='checkbox']:checked").each(function(index,value){
+        $("input[type='checkbox']:checked", ".timelist").each(function(index,value){
+        // $(this).each(function(index,value){
             schedule_result.push({
                 'start_time':$(this).val(),
                 // 'end_time':$(this).val()
