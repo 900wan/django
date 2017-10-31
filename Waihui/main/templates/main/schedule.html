@@ -38,7 +38,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
 //按钮的点击事件，每次点击的时候动态的创建一个  li对象，jquery直接通过 ul对象的id，使用 append 方法 动态的把li添加到ul里面
-    
+    $topic_selector = $('<li><p>hahhah</p></li>');    
 
     var weekday=new Array(7);
     weekday[0]="日";
@@ -100,14 +100,27 @@ $(document).ready(function(){
 
     //jquery 检索ul li的所有元素
     $(".timelist").click(function(){
-        var schedule_result= new Array()
+        var schedule_result= new Array();
+        //     $(this).append(topic_selector);
+        //     $(this).toggle(topic_selector);
+        // $(this).find(":checkbox").css('border', '1px solid green');
 
+        var checked = $(this).find(":checkbox").prop('checked');
+        if (checked) {
+            alert("checked");
+            $(this).parent().append($topic_selector);
+        } else {
+            alert("unchecked");
+            $topic_selector.remove();
+        }
         $("input[type='checkbox']:checked", ".timelist").each(function(index,value){
         // $(this).each(function(index,value){
             schedule_result.push({
                 'start_time':$(this).val(),
                 // 'end_time':$(this).val()
             });
+        // var topic_selector = '<li id="topic_selector"><input id="selector" type="checkbox" name="selector_topic" value="" /><label for="selector"><a href="javascript:void(0)"></a><span style="">选择一个课程</span></label></li>';
+            
         })
         $("#id_schedule").val(JSON.stringify(schedule_result));
     })
