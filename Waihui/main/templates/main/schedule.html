@@ -38,7 +38,8 @@
 <script type="text/javascript">
 $(document).ready(function(){
 //按钮的点击事件，每次点击的时候动态的创建一个  li对象，jquery直接通过 ul对象的id，使用 append 方法 动态的把li添加到ul里面
-    $topic_selector = $('<li><p>hahhah</p></li>');    
+
+   
 
     var weekday=new Array(7);
     weekday[0]="日";
@@ -67,7 +68,7 @@ $(document).ready(function(){
             dateitem.setTime(dateitem.getTime()+30*60*1000)
         }
     }
-
+//创建“前四项”按钮，jQuery通过模拟点击，选中3天的前四项时间段
     var appointment_time = '<li id="autoschedule"><input id=appointment_time1 type="checkbox" name="appointment_time1" value="appointment_time1" /><label for="appointment_time1"><a href="javascript:void(0)"></a><span style="">前四项</span></label></li>'
     $('#schedule_autoset').append(appointment_time)
 
@@ -99,30 +100,93 @@ $(document).ready(function(){
     //
 
     //jquery 检索ul li的所有元素
-    $(".timelist").click(function(){
-        var schedule_result= new Array();
-        //     $(this).append(topic_selector);
-        //     $(this).toggle(topic_selector);
-        // $(this).find(":checkbox").css('border', '1px solid green');
+    $(":checkbox", ".timelist").click(function(){
 
-        var checked = $(this).find(":checkbox").prop('checked');
-        if (checked) {
-            alert("checked");
-            $(this).parent().append($topic_selector);
+        var schedule_result= new Array();
+        var dateitemstr = $(this).next().find("span").html();
+        console.log(dateitemstr);
+        $topic_selector = $(
+            '<ul>'
+            +'<li>hah</li>'
+            +'</ul>'
+            )
+
+        // +'<li><input id="method_'+$(this).parent().find('input')+'" type="radio" name="method_'+dateitemstr
+        if ($(this).prop('checked')) {
+            console.log("checked");
+            $(this).next().css('background','green');
+            $(this).next().append(($topic_selector).clone());
         } else {
-            alert("unchecked");
-            $topic_selector.remove();
-        }
+            console.log("unchecked");
+            $(this).next().css('background','red');
+            $(this).next().find("ul").remove();
+        };
+
         $("input[type='checkbox']:checked", ".timelist").each(function(index,value){
-        // $(this).each(function(index,value){
             schedule_result.push({
                 'start_time':$(this).val(),
-                // 'end_time':$(this).val()
             });
-        // var topic_selector = '<li id="topic_selector"><input id="selector" type="checkbox" name="selector_topic" value="" /><label for="selector"><a href="javascript:void(0)"></a><span style="">选择一个课程</span></label></li>';
-            
         })
+
         $("#id_schedule").val(JSON.stringify(schedule_result));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // $(this).css('background','green');
+        // $("input[type='checkbox']:checked", ".timelist").next().css('background','green');
+        // .append(topic_selector)
+        //$(this).append(topic_selector);
+        //$(this).toggle(topic_selector);
+        //$(this).find(":checkbox").css('border', '1px solid green');
+        //选中以后，增加topic选择器，取消选择后隐藏不删除。
+        
+
+        // var checked = $(this).prop('checked');
+        
+        // if ($(this).is(':checked')) {
+        //     alert($(this));
+        //     $(this).next().css('background','blue');
+
+        // //         schedule_result.push({
+        // //         'start_time':$(this).val(),
+        // //         // 'end_time':$(this).val()
+        // //         });
+        // // // var topic_selector = '<li id="topic_selector"><input id="selector" type="checkbox" name="selector_topic" value="" /><label for="selector"><a href="javascript:void(0)"></a><span style="">选择一个课程</span></label></li>';
+            
+        // //     });
+        // //     $(this).append($topic_selector);
+        // } else {
+        //     alert($(this).html());
+        //     $(this).css('background','green');
+        //     $topic_selector.remove();
+        // };
+
+        // $("input[type='checkbox']:checked", ".timelist").each(function(index,value){
+        // // $(this).each(function(index,value){
+        //     // $(this).append($topic_selector);
+        //     // $(this).next().append($topic_selector).css('border', '1px solid green');
+        //     schedule_result.push({
+        //         'start_time':$(this).val(),
+        //         // 'end_time':$(this).val()
+        //     });
+        // // var topic_selector = '<li id="topic_selector"><input id="selector" type="checkbox" name="selector_topic" value="" /><label for="selector"><a href="javascript:void(0)"></a><span style="">选择一个课程</span></label></li>';
+        // })
+
+        // $("#id_schedule").val(JSON.stringify(schedule_result));
     })
 })
 </script>
