@@ -84,7 +84,9 @@
                 {# {% endfor %} #}
             </tbody>
         </table>
+        {% if is_provder %}
         <a href="{% url 'main:modifyplan' sku.plan.id %}">{% trans "Modify this plan" %}</a>
+        {% endif %}
     {% elif is_provider %}
     <a href="{% url 'main:addplan' sku.id %}">{% trans "Accept this sku, Add a Plan to this SKU" %}</a>
     <a href="{% url 'main:provider_cancel_sku' sku.id %}">{% trans "Reject it" %}</a>
