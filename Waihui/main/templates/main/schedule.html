@@ -100,7 +100,7 @@ $(document).ready(function(){
     //
 
     //jquery 检索ul li的所有元素
-    $(":checkbox", ".timelist").click(function(){
+    $(":checkbox", ".timelist", this).click(function(){
 
         var schedule_result= new Array();
         var dateitemstr = $(this).next().find("span").html();
@@ -108,10 +108,12 @@ $(document).ready(function(){
         $topic_selector = $(
             '<ul>'
             +'<li>hah</li>'
-            +'</ul>'
+            +'<li><input id="allSku" type="radio" name="method_'+dateitemstr+'" value= "allSku" /><label for="allSku"><a href="javascript:void(0)"></a><span style="">All Topic</span></label>'
+            +'<input id="familierSku" type="radio" name="method_'+dateitemstr+'" value= "familierSku" /><label for="familierSku"><a href="javascript:void(0)"></a><span style="">Familier Sku</span></label>'
+            +'<input id="chooseSku" type="radio" name="method_'+dateitemstr+'" value= "chooseSku" /><label for="chooseSku"><a href="javascript:void(0)"></a><span style="">Choose Sku</span></label>'
+            +'</li></ul>'
             )
 
-        // +'<li><input id="method_'+$(this).parent().find('input')+'" type="radio" name="method_'+dateitemstr
         if ($(this).prop('checked')) {
             console.log("checked");
             $(this).next().css('background','green');
@@ -119,7 +121,8 @@ $(document).ready(function(){
         } else {
             console.log("unchecked");
             $(this).next().css('background','red');
-            $(this).next().find("ul").remove();
+            $(this).next().find( ":radio", "li").css('background','green');
+            $(this).next().next().find( ":checkbox", "ul").css('background','blue');
         };
 
         $("input[type='checkbox']:checked", ".timelist").each(function(index,value){
