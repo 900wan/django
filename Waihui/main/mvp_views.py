@@ -84,3 +84,12 @@ def dashboard(request):
     skus_ongoing = act_expand_skus(info.get('current_user').buyer.sku_set.filter(end_time__gte = timezone.now()))
     skus_past = act_expand_skus(info.get('current_user').buyer.sku_set.filter(end_time__lt = timezone.now()))
     return render(request, "mvp/dashboard.html", locals())
+
+def dashboard_all_classes(request):
+    language = act_getlanguage(request)
+    info = act_getinfo(request)
+    skus = act_expand_skus(info.get('current_user').buyer.sku_set.all())
+    # 所谓 ongoing 实际上是指当前未结束以及未来未开始的所有课，所谓 past，就是已经结束的课了！
+    skus_ongoing = act_expand_skus(info.get('current_user').buyer.sku_set.filter(end_time__gte = timezone.now()))
+    skus_past = act_expand_skus(info.get('current_user').buyer.sku_set.filter(end_time__lt = timezone.now()))
+    return render(request, "mvp/dashboard-all-classes.html", locals())

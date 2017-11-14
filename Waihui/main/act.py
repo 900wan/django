@@ -43,13 +43,14 @@ from django.utils.translation import ugettext_lazy as l_
 MIN_CANCEL_TIME = datetime.timedelta(hours=8)
 OK_CANCEL_TIME = datetime.timedelta(hours=12)
 START_SOON_TIME = datetime.timedelta(minutes=30)
-
+ZERO_TIME = datetime.timedelta(0)
 
 ORDER_MIN_CANCEL_TIME = datetime.timedelta(hours=8)
 ORDER_OK_CANCEL_TIME = datetime.timedelta(hours=12)
 ORDER_PAY_SOON_TIME = datetime.timedelta(minutes=15)
 
 def act_getlanguage(request):
+    '''get browser language'''
     language = request.LANGUAGE_CODE
     # language = request.META.get('HTTP_ACCEPT_LANGUAGE')
     return language
@@ -226,7 +227,7 @@ def act_addrtb(provider_id, buyer_id, sku_id):
         sku=sku,
         )
     rtb.save()
-    result = "OK, " + provider.name + "has leave a review to " + Buyer.name
+    result = "OK, " + provider.name + "has leave a review to " + Buyer.nickname
     return result
 
 def act_addrts(user, type, content, reply_to, sku):
@@ -442,9 +443,11 @@ def act_generate_skus(provider, schedule):
 
 def act_provider_cancel_sku(sku, user):
     '''卖家主动取消\拒绝订单，reject the booking'''
-    if sku.time_to_start() <= MIN_CANCEL_TIME:
-        msg = _(u"马上开始了如果真要取消的话你自己联系学生做好解释工作，再找管理员取消吧。")
-    elif sku.time_to_start() > MIN_CANCEL_TIME and sku.time_to_start() <= OK_CANCEL_TIME:
+    if sku.time_to_start() < ZERO_TIME:
+        msg = _(u"已经超过课程开始时间（%s），不能取消。如有特殊情况请与客服联系。") % sku.time_to_start()
+    elif sku.time_to_start() <= MIN_CANCEL_TIME:
+        msg = _(u"马上开始了如果真要取消的话你自己联系学生做好解释工作，再找管理员取消吧。%s") % (sku.time_to_start())
+    elif sku.time_to_start() > MIN_CANCEL_TIME and sku.time_to_start() <= ZERO_TIME:
         sku.status = 3
         sku.save()
         ds_noti_tobuyer_noprovider(sku)

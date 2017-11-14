@@ -1,0 +1,80 @@
+{% extends "mvp/base/base.html" %}
+{% load i18n %} 
+{% load tz %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_timezone as TIME_ZONE %}
+
+{% block title %}{% trans "Dashboard" %}{% endblock %}
+{% block inhead %}<link href="/static/mvp/css/index.css" rel="stylesheet">{% endblock %}
+{% block scriptlist %}<script type="text/javascript" src="/static/mvp/js/index.js"></script>{% endblock %}
+
+{% block container %}
+<div class="container clearfix">
+  <div class="slider fl">
+    <div class="slider-header">
+      <div class="title fl">{% trans "MY PROFILE" %}</div>
+      <a href="javascript:" class="btn fr">
+        <span>
+          <i class="fa fa-pencil" aria-hidden="true"></i>
+        </span>
+        <span>{% trans "EDIT" %}</span>
+      </a>
+    </div>
+    <div class="slider-info clearfix">
+      <div class="avatar fl">
+        <img src="" title=""/>
+      </div>
+      <div class="info-body">
+        <div class="name">{{info.current_user.buyer.nickname}}</div>
+        <div class="line">
+          <span class="icon">
+            <i class="fa fa-clock-o fa-lg" aria-hidden="true"></i>
+          </span>
+          <span class="text">{{info.current_user.buyer.time_zone}}</span>
+        </div>
+        <div class="line">
+          <span class="icon">
+            <i class="fa fa-font fa-lg" aria-hidden="true"></i>
+          </span>
+          <span class="text">{{info.current_user.buyer.mother_tongue.english_name}}</span>
+        </div>
+        <div class="line">
+          <span class="icon">
+            <i class="fa fa-envelope-open-o" aria-hidden="true"></i>
+          </span>
+          <span class="text">{{info.current_user.email}}</span>
+        </div>
+      </div>
+    </div>
+    <div class="slider-item-box js-slider-item-box">
+      <a href="javascript:" class="slider-item-btn">
+        <i class="fa fa-angle-double-down" aria-hidden="true"></i>
+      </a>
+      <div class="slider-item">
+        <div class="module">{% trans "LEVEL" %}</div>
+        <div class="cell">{% trans "1 - General" %}</div>
+        <a class="btn" href="javascript:">{% trans "Take test" %}</a>
+      </div>
+      <div class="slider-item">
+        <div class="module">{% trans "CLASSES" %} ({{skus|length}})</div>
+        <div class="cell">{% trans "Ongoing classes:" %} {{skus_ongoing|length}}</div>
+        <div class="cell">{% trans "Past classes:" %} {{skus_past|length}}</div>
+      </div>
+      <div class="slider-item">
+        <div class="module">{% trans "ORDERS" %}</div>
+        <div class="cell">{% trans "My orders:" %} {{info.current_user.buyer.order_set.all|length}}</div>
+      </div>
+      <div class="slider-item">
+        <div class="module">{% trans "BALANCE" %}</div>
+        <div class="cell">{% trans "CNY" %} {{info.current_user.wallet.cny_balance}}</div>
+        <a class="btn dark" href="javascript:">{% trans "$ ADD" %}</a>
+      </div>
+    </div>
+
+  </div>
+
+{% block content %}
+{% endblock %}
+
+</div>
+{% endblock %}

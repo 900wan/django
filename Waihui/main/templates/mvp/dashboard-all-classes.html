@@ -4,7 +4,7 @@
 {% get_current_language as LANGUAGE_CODE %}
 {% get_current_timezone as TIME_ZONE %}
 
-{% block title %}{% trans "Dashboard" %}{% endblock %}
+{% block title %}{% trans "My classes" %} - {% trans "Dashboard" %}{% endblock %}
 
 {% block content %}
   <div class="content fl"> 
@@ -13,8 +13,8 @@
         <div class="title">{% trans "MY CLASSES" %}</div>
       </div>
       <div class="head clearfix">
-        <div class="title fl">{% trans "ONGOING CLASSES" %}</div>
-        <a class="btn fl" href="{% url 'mvp:dashboard-all-classes' %}">{% trans "Show all classes" %}</a>
+        <div class="title fl">{% trans "ALL CLASSES" %}</div>
+        <a class="btn fl" href="{% url 'mvp:dashboard' %}">&lt; {% trans "Back to dashboard" %}</a>
         <div class="search-box fr">
           <input class="fl" type="text" placeholder="{% trans "Search my class" %}"/>
           <a class="search-btn fl" href="javascript:"></a>
@@ -32,7 +32,7 @@
           </tr>
           </thead>
           <tbody>
-          {% for sku in skus_ongoing|dictsort:"start_time" %}
+          {% for sku in skus|dictsort:"start_time" %}
           <tr>
             <td>{{sku.topic}}</td>
             <td>{{sku.provider}}</td>
@@ -48,10 +48,6 @@
           </tbody>
         </table>
       </div>
-    </div>
-
-    <div class="content-box">
-        
     </div>
   </div>
 {% endblock %}
