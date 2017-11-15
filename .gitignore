@@ -59,6 +59,9 @@ target/
 # IDEA
 .idea/
 
+# VSCode
+.vscode/
+
 .DS_Store
 
 *.dat
