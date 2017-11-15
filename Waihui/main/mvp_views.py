@@ -1,5 +1,7 @@
- # -*- coding: utf-8 -*-
-import pytz, json, datetime
+# -*- coding: utf-8 -*-
+import pytz
+import json
+import datetime
 from django.shortcuts import get_object_or_404, render
 from django.db.models import Q
 from django.utils import translation, timezone
@@ -40,7 +42,7 @@ from main.act import act_buyer_cancel_order
 from main.act import act_htmllogout
 from main.act import act_orderpaid
 
-from main.ds import  ds_getanoti
+from main.ds import ds_getanoti
 
 from main.models import User
 from main.models import Language
@@ -70,26 +72,35 @@ from main.forms import ProviderFeedbackSkuForm
 from main.forms import BuyerFeedbackSkuForm
 from main.forms import PlaceSkuForm
 
+
 def home(request):
     language = act_getlanguage(request)
     info = act_getinfo(request)
     return render(request, "mvp/home.html", locals())
 
+
 @login_required
 def dashboard(request):
+    '''Dashboard Entry'''
     language = act_getlanguage(request)
     info = act_getinfo(request)
     skus = act_expand_skus(info.get('current_user').buyer.sku_set.all())
     # 所谓 ongoing 实际上是指当前未结束以及未来未开始的所有课，所谓 past，就是已经结束的课了！
-    skus_ongoing = act_expand_skus(info.get('current_user').buyer.sku_set.filter(end_time__gte = timezone.now()))
-    skus_past = act_expand_skus(info.get('current_user').buyer.sku_set.filter(end_time__lt = timezone.now()))
+    skus_ongoing = act_expand_skus(
+        info.get('current_user').buyer.sku_set.filter(end_time__gte=timezone.now()))
+    skus_past = act_expand_skus(
+        info.get('current_user').buyer.sku_set.filter(end_time__lt=timezone.now()))
     return render(request, "mvp/dashboard.html", locals())
 
+
 def dashboard_all_classes(request):
+    '''Dashboard all classes Entry'''
     language = act_getlanguage(request)
     info = act_getinfo(request)
     skus = act_expand_skus(info.get('current_user').buyer.sku_set.all())
     # 所谓 ongoing 实际上是指当前未结束以及未来未开始的所有课，所谓 past，就是已经结束的课了！
-    skus_ongoing = act_expand_skus(info.get('current_user').buyer.sku_set.filter(end_time__gte = timezone.now()))
-    skus_past = act_expand_skus(info.get('current_user').buyer.sku_set.filter(end_time__lt = timezone.now()))
+    skus_ongoing = act_expand_skus(
+        info.get('current_user').buyer.sku_set.filter(end_time__gte=timezone.now()))
+    skus_past = act_expand_skus(
+        info.get('current_user').buyer.sku_set.filter(end_time__lt=timezone.now()))
     return render(request, "mvp/dashboard-all-classes.html", locals())
