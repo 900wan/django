@@ -101,8 +101,6 @@ $(document).ready(function(){
 
     //jquery 检索ul li的所有元素
     $(":checkbox", ".timelist", this).click(function(){
-
-        var schedule_result= new Array();
         var dateitemstr = $(this).next().find("span").html();
         console.log(dateitemstr);
         $topic_selector = $(
@@ -120,80 +118,23 @@ $(document).ready(function(){
             console.log("unchecked");
             $(this).parent().find('ul').remove();
         };
-
-        $("input[type='checkbox']:checked", ".timelist").each(function(index,value){
-            var radioval ="1";
-            $(":radio").click(function(){
-                radioval = $(this).val();
-                console.log(radioval);
-                schedule_result.push({
-                    'start_time':"$(this).val()",
-                    'topic_selector':radioval,
-
-                });
-            });
-               
+        
+        $(this).nextAll().eq(1).find("input:radio").click(function(){
+            var schedule_result= new Array();
+            radioval = $(this).val();
             console.log(radioval);
-            schedule_result.push({
-                'start_time':$(this).val(),
-                'topic_selector':radioval,
-
+            $("input:checkbox:checked", ".timelist").each(function(index,value){
+                var radioval =$(this).nextAll().eq(1).find("input:radio:checked").val();
+                var start_time_var = $(this).val();
+                schedule_result.push({
+                    'start_time':start_time_var,
+                    'topic_selector':radioval,
+                });
+                console.log(schedule_result);
             });
+            $("#id_schedule").val(JSON.stringify(schedule_result));
         });
-
-        
-
-        $("#id_schedule").val(JSON.stringify(schedule_result));
-        // $(this).css('background','green');
-        // $("input[type='checkbox']:checked", ".timelist").next().css('background','green');
-        // .append(topic_selector)
-        //$(this).append(topic_selector);
-        //$(this).toggle(topic_selector);
-        //$(this).find(":checkbox").css('border', '1px solid green');
-        //选中以后，增加topic选择器，取消选择后隐藏不删除。
-        
-
-        // var checked = $(this).prop('checked');
-        
-        // if ($(this).is(':checked')) {
-        //     alert($(this));
-        //     $(this).next().css('background','blue');
-
-        // //         schedule_result.push({
-        // //         'start_time':$(this).val(),
-        // //         // 'end_time':$(this).val()
-        // //         });
-        // // // var topic_selector = '<li id="topic_selector"><input id="selector" type="checkbox" name="selector_topic" value="" /><label for="selector"><a href="javascript:void(0)"></a><span style="">选择一个课程</span></label></li>';
-            
-        // //     });
-        // //     $(this).append($topic_selector);
-        // } else {
-        //     alert($(this).html());
-        //     $(this).css('background','green');
-        //     $topic_selector.remove();
-        // };
-
-        // $("input[type='checkbox']:checked", ".timelist").each(function(index,value){
-        // // $(this).each(function(index,value){
-        //     // $(this).append($topic_selector);
-        //     // $(this).next().append($topic_selector).css('border', '1px solid green');
-        //     schedule_result.push({
-        //         'start_time':$(this).val(),
-        //         // 'end_time':$(this).val()
-        //     });
-        // // var topic_selector = '<li id="topic_selector"><input id="selector" type="checkbox" name="selector_topic" value="" /><label for="selector"><a href="javascript:void(0)"></a><span style="">选择一个课程</span></label></li>';
-        // })
-
-        // $("#id_schedule").val(JSON.stringify(schedule_result));
     })
-    // $("input[type='radio']:checked", ".timelist").each(function(index,value){
-    //     schedule_result.push({
-    //         'start_time':"$(this).val()",
-    //         'topic_selector':$(this).val(),
-
-    //     });
-    //     $("#id_schedule").val(JSON.stringify(schedule_result));
-    // });
 })
 
 </script>
