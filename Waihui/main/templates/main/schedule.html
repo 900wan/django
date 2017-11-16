@@ -107,48 +107,43 @@ $(document).ready(function(){
         console.log(dateitemstr);
         $topic_selector = $(
             '<ul>'
-            +'<li>hah</li>'
-            +'<li><input id="allSku" type="radio" name="method_'+dateitemstr+'" value= "allSku" /><label for="allSku"><a href="javascript:void(0)"></a><span style="">All Topic</span></label>'
-            +'<input id="familierSku" type="radio" name="method_'+dateitemstr+'" value= "familierSku" /><label for="familierSku"><a href="javascript:void(0)"></a><span style="">Familier Sku</span></label>'
-            +'<input id="chooseSku" type="radio" name="method_'+dateitemstr+'" value= "chooseSku" /><label for="chooseSku"><a href="javascript:void(0)"></a><span style="">Choose Sku</span></label>'
+            +'<li><input id="allSku'+dateitemstr+'" type="radio" name="method_'+dateitemstr+'" value= "allSku" /><label for="allSku'+dateitemstr+'"><a href="javascript:void(0)"></a><span style="">All Topic</span></label>'
+            +'<input id="familierSku'+dateitemstr+'" type="radio" name="method_'+dateitemstr+'" value= "familierSku" /><label for="familierSku'+dateitemstr+'"><a href="javascript:void(0)"></a><span style="">Familier Sku</span></label>'
+            +'<input id="chooseSku'+dateitemstr+'" type="radio" name="method_'+dateitemstr+'" value= "chooseSku" /><label for="chooseSku'+dateitemstr+'"><a href="javascript:void(0)"></a><span style="">Choose Sku</span></label>'
             +'</li></ul>'
             )
 
         if ($(this).prop('checked')) {
             console.log("checked");
-            $(this).next().css('background','green');
-            $(this).next().append(($topic_selector).clone());
+            $(this).parent().append(($topic_selector).clone());
         } else {
             console.log("unchecked");
-            $(this).next().css('background','red');
-            $(this).next().find( ":radio", "li").css('background','green');
-            $(this).next().next().find( ":checkbox", "ul").css('background','blue');
+            $(this).parent().find('ul').remove();
         };
 
         $("input[type='checkbox']:checked", ".timelist").each(function(index,value){
+            var radioval ="1";
+            $(":radio").click(function(){
+                radioval = $(this).val();
+                console.log(radioval);
+                schedule_result.push({
+                    'start_time':"$(this).val()",
+                    'topic_selector':radioval,
+
+                });
+            });
+               
+            console.log(radioval);
             schedule_result.push({
                 'start_time':$(this).val(),
+                'topic_selector':radioval,
+
             });
-        })
+        });
+
+        
 
         $("#id_schedule").val(JSON.stringify(schedule_result));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         // $(this).css('background','green');
         // $("input[type='checkbox']:checked", ".timelist").next().css('background','green');
         // .append(topic_selector)
@@ -191,6 +186,15 @@ $(document).ready(function(){
 
         // $("#id_schedule").val(JSON.stringify(schedule_result));
     })
+    // $("input[type='radio']:checked", ".timelist").each(function(index,value){
+    //     schedule_result.push({
+    //         'start_time':"$(this).val()",
+    //         'topic_selector':$(this).val(),
+
+    //     });
+    //     $("#id_schedule").val(JSON.stringify(schedule_result));
+    // });
 })
+
 </script>
 {% endblock head%}
