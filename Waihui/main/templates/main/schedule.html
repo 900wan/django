@@ -98,6 +98,19 @@ $(document).ready(function(){
         // bindListener();
     });
     //
+    function getResult(){
+        var schedule_result= new Array();
+        $("input:checkbox:checked", ".timelist").each(function(index,value){
+            var radioval =$(this).nextAll().eq(1).find("input:radio:checked").val();
+            var start_time_var = $(this).val();
+            schedule_result.push({
+                'start_time':start_time_var,
+                'topic_selector':radioval,
+            });
+            console.log(schedule_result);
+        });
+        $("#id_schedule").val(JSON.stringify(schedule_result));
+    }
 
     //jquery 检索ul li的所有元素
     $(":checkbox", ".timelist", this).click(function(){
@@ -105,7 +118,7 @@ $(document).ready(function(){
         console.log(dateitemstr);
         $topic_selector = $(
             '<ul>'
-            +'<li><input id="allSku'+dateitemstr+'" type="radio" name="method_'+dateitemstr+'" value= "allSku" /><label for="allSku'+dateitemstr+'"><a href="javascript:void(0)"></a><span style="">All Topic</span></label>'
+            +'<li><input id="allSku'+dateitemstr+'" type="radio" name="method_'+dateitemstr+'" value= "allSku" checked="checked" /><label for="allSku'+dateitemstr+'"><a href="javascript:void(0)"></a><span style="">All Topic</span></label>'
             +'<input id="familierSku'+dateitemstr+'" type="radio" name="method_'+dateitemstr+'" value= "familierSku" /><label for="familierSku'+dateitemstr+'"><a href="javascript:void(0)"></a><span style="">Familier Sku</span></label>'
             +'<input id="chooseSku'+dateitemstr+'" type="radio" name="method_'+dateitemstr+'" value= "chooseSku" /><label for="chooseSku'+dateitemstr+'"><a href="javascript:void(0)"></a><span style="">Choose Sku</span></label>'
             +'</li></ul>'
@@ -118,21 +131,13 @@ $(document).ready(function(){
             console.log("unchecked");
             $(this).parent().find('ul').remove();
         };
+        getResult();
+
         
         $(this).nextAll().eq(1).find("input:radio").click(function(){
-            var schedule_result= new Array();
             radioval = $(this).val();
             console.log(radioval);
-            $("input:checkbox:checked", ".timelist").each(function(index,value){
-                var radioval =$(this).nextAll().eq(1).find("input:radio:checked").val();
-                var start_time_var = $(this).val();
-                schedule_result.push({
-                    'start_time':start_time_var,
-                    'topic_selector':radioval,
-                });
-                console.log(schedule_result);
-            });
-            $("#id_schedule").val(JSON.stringify(schedule_result));
+            getResult();
         });
     })
 })
