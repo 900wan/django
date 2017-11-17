@@ -575,3 +575,9 @@ def act_orderpaid(order, buyer):
     order.status = 2
     order.save()
     return True
+
+def act_recharge_balance(wallet, amount):
+    '''Recharge user's balance'''
+    wallet.cny_balance += amount
+    wallet.save()
+    return wallet

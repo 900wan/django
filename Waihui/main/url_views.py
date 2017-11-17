@@ -109,12 +109,12 @@ def url_signup(request):
     return render(request, "main/signup.html", {'info':info, 'form':uf, 'msg':msg})
     # act_signup()
 
-def url_login_new(request):    
+def url_login_new(request):
     uf = LoginForm(request.POST)
     msg = ''
     next = ''
     info = act_getinfo(request)
-    if request.GET:  
+    if request.GET:
        next = request.GET['next']
     if request.method == 'POST':
         if uf.is_valid():
@@ -142,7 +142,7 @@ def url_login_new(request):
 #     msg = ''
 #     next = ''
 #     info = act_getinfo(request)
-#     if request.GET:  
+#     if request.GET:
 #        next = request.GET['next']
 #     if request.method == 'POST':
 #         if uf.is_valid():
@@ -230,7 +230,7 @@ def url_buyer_cancel_order(request, order_id):
     if info['current_user'].buyer == order.buyer:
         result = act_buyer_cancel_order(info['current_user'], order)
         heading = _(u'Order canceled')
-        msg = str(order) + _(u'已经被取消') 
+        msg = str(order) + _(u'已经被取消')
     else:
         return HttpResponse(_(u'Not the order''s buyer'))
     return render(request, 'main/ordercanceled.html', locals())
@@ -257,7 +257,7 @@ def url_user(request,offset_id):
     id = int(offset_id)
     user = act_showindividual(id, 'user')
     usern = user.username
-    email = user.email 
+    email = user.email
     password = user.password
     result = usern + email + password
     return HttpResponse(result)
@@ -278,7 +278,7 @@ def url_replytosku(request, sku_id):
                 content = uf.cleaned_data['content']
                 replyto = uf.cleaned_data['reply_to']
                 if current_user.provider == sku.provider:
-                    type = 1    
+                    type = 1
                 else:
                     type = 0
                 result = act_addrts(user=current_user, type=type, content=content, reply_to=replyto, sku=sku)
@@ -333,7 +333,7 @@ def url_modifyplan(request, plan_id):
     if plan.sku.provider != current_user.provider:
         heading = _(u'教案也是有版权的，只有老师能改，别人不行哟')
         msg = str(plan.sku.provider) + ' & ' + str(current_user.provider) + _(u'不是一个用户')
-        return render(request, "main/error.html", locals())   
+        return render(request, "main/error.html", locals())
     else:
         if request.method == 'POST':
             uf = AddPlanForm(request.POST)
@@ -370,7 +370,7 @@ def url_modifyplan(request, plan_id):
     return render(request, "main/addplan.html", locals())
 
 @login_required
-def url_showsku(request, sku_id): 
+def url_showsku(request, sku_id):
     info = act_getinfo(request)
     current_user = act_getinfo(request).get('current_user')
     sku = get_object_or_404(Sku, id=sku_id)
@@ -455,7 +455,7 @@ def url_addorder(request):
     # result = act_addorder(skus, buyer)
     # uf = OrderForm(request.POST)
     # uf.fields['skus'].queryset = Sku.objects.filter(buyer=info['current_user'].buyer)
-    
+
     return render(request, "main/addorder.html", locals())
 
 @login_required
@@ -551,7 +551,7 @@ def url_holdsku(request, topic_id, sku_id):
 # def url_holdsku(request):
 #     '''make a sku for order, One order can have many skus'''
 #     info = act_getinfo(request)
-#     current_user = info['current_user'] 
+#     current_user = info['current_user']
 #     skus = Sku.objects.all()
 #     msg = request.method+", user: ["+str(current_user.username)+"], user's buyer: ["+str(current_user.buyer)+"]"
 #     if request.method == 'POST':
@@ -564,11 +564,11 @@ def url_holdsku(request, topic_id, sku_id):
 #             result = act_addsku(provider=provider, topic=topic, start_time=start_time, end_time=end_time, buyer=current_user.buyer)
 #             msg = result
 #     else:
-#         uf = HoldSkuForm()    
+#         uf = HoldSkuForm()
 #     return render(request, "main/addsku.html", {'info':info, 'uf':uf, 'msg':msg, 'heading':"add sku", 'skus':skus})
 #     # teachers = Provider.objects.all()
 #     # topics = Topic.objects.all()
-#     # 
+#     #
 #     # return render(request, "main/addsku.html", {'teacher_list':teachers, 'topic_list':topics,})
 
 @login_required
@@ -582,7 +582,7 @@ def url_booksku(request, topic_id, sku_id,):
             buyer = info['current_user'].buyer
             result = act_booksku(sku_id=sku_id, topic=topic)
             msg = result
-            return render(request, 'main/result.html', locals())   
+            return render(request, 'main/result.html', locals())
     msg = str(request.POST)
     heading = _(u'Conform you course information')
     return render(request, 'main/booksku.html', locals())
@@ -600,7 +600,7 @@ def url_schedule(request):
     tz = pytz.timezone("Asia/Shanghai")
     # 开发过程中这个函数已经在代码中写明用北京时间，而schedule.html的前台javascript是使用的当前电脑默认时区，我们目前使用的本机时区都是北京时间没问题，但是未来如果给其他时区的用户使用就有可能出问题，未来再处理。
     now_tz = timezone.now()
-    info = act_getinfo(request)    
+    info = act_getinfo(request)
     current_user = info['current_user']
     provider = current_user.provider
     msg=''
@@ -724,14 +724,14 @@ def url_buyer_ready_sku(request, sku_id):
     return render(request, "main/bready.html", locals())
 
 def url_my_profile(request):
-    info = act_getinfo(request)    
+    info = act_getinfo(request)
     provider = info.get('current_user').provider
     skus = act_expand_skus(Sku.objects.filter(provider=provider, status=0))
     finished_skus_count = Sku.objects.filter(Q(status=8) | Q(status=9), Q(provider=provider)).count()
     return render(request, "main/my_profile.html", locals())
 
 def url_provider_profile(request, user_id):
-    info = act_getinfo(request)    
+    info = act_getinfo(request)
     provider = User.objects.get(id=user_id).provider
     skus = act_expand_skus(Sku.objects.filter(provider=provider, status=0))
     finished_skus_count = Sku.objects.filter(Q(status=8) | Q(status=9), Q(provider=provider)).count()
@@ -757,7 +757,7 @@ def url_provider_profile_edit(request,):
         uf = ProviderProfileForm(initial={'name':provider.name,
                                           'video':provider.video,
                                           'teaching_language':provider.teaching_language.all()})
-        
+
     return render(request, "main/provider_profile_edit.html", locals())
 
 @login_required
@@ -826,3 +826,10 @@ def url_orderpaid(request, order_id):
     heading = _(u'Order Paid')
     return render(request, "main/orderpaid.html", locals())
 
+@login_required
+def url_walletpage(request):
+    '''This page shows wallet information '''
+    info = act_getinfo(request)
+    wallet = info.get('current_user').wallet
+    heading = _(u'My wallet')
+    return render(request, "main/wallet.html", locals())

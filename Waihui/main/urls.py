@@ -58,5 +58,6 @@ urlpatterns = [
     url(r'^order/(\d+)/$', url_views.url_showorder, name='showorder'),
     url(r'^order/(\d+)/canceled/$', url_views.url_buyer_cancel_order, name='ordercancel'),
     url(r'^order/(\d+)/paid/$', url_views.url_orderpaid, name='orderpaid'),
+    url(r'^wallet/$', url_views.url_walletpage, name='wallet'),
     # url(r'^reviews/$', url_views.url_reviews, name='reviews'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,28 @@
+{% extends "main/base.html" %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% block title %}
+    {{heading}}
+{% endblock title %}
+
+{% block content %}
+    <h1>{{heading}}</h1>
+    <div class="">
+        <p>Make your every effort meaningful</p>
+        <h2>{% trans "* Balance information" %}</h2>
+        <ul>
+            <li><p>{% trans "my balance:" %}{{wallet.cny_balance}}[<a href="">{% trans "Recharge" %}</a>]</p></li>
+        </ul>
+        <h2>{% trans "* Recent transactions" %}</h2>
+
+    </div>
+
+
+    <script type="text/javascript">
+        var List = {{skus_topic|safe}};
+        $(document).ready(function(){
+            var 
+        })
+    </script>
+
+{% endblock content %}
