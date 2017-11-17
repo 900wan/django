@@ -11,7 +11,7 @@
         <p>Make your every effort meaningful</p>
         <h2>{% trans "* Balance information" %}</h2>
         <ul>
-            <li><p>{% trans "my balance:" %}{{wallet.cny_balance}}[<a href="">{% trans "Recharge" %}</a>]</p></li>
+            <li><span>{% trans "my balance:" %}{{wallet.cny_balance}}[<a href="javascript:void(0)" id="recharge">{% trans "Recharge" %}</a>]</span></li>
         </ul>
         <h2>{% trans "* Recent transactions" %}</h2>
 
@@ -19,9 +19,13 @@
 
 
     <script type="text/javascript">
-        var List = {{skus_topic|safe}};
         $(document).ready(function(){
-            var 
+            $amountInput = $(
+                '<form style="margin:0px;display:inline;" action="{% url 'main:casher' %}" method="get"><input id="amount" type="text" name="amount" ><input type="submit" value="{% trans "Submit" %}"></form></li>'
+                )
+            $("#recharge").click(function(){
+                $(this).parent().append($amountInput)
+            })
         })
     </script>
 

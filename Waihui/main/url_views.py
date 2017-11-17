@@ -830,6 +830,14 @@ def url_orderpaid(request, order_id):
 def url_walletpage(request):
     '''This page shows wallet information '''
     info = act_getinfo(request)
-    wallet = info.get('current_user').wallet
     heading = _(u'My wallet')
+    wallet = info.get('current_user').wallet
     return render(request, "main/wallet.html", locals())
+
+@login_required
+def url_casher(request):
+    '''This'''
+    info = act_getinfo(request)
+    heading = _(u'Casher')
+    amount = request.GET['amount']
+    return render(request, "main/casher.html", locals())
