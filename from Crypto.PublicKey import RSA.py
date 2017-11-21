@@ -16,8 +16,8 @@ json = json.dumps(data)
 def sign(json):
 	rsakey = RSA.importKey(priKey)
 	signer = PKCS1_v1_5.new(rsakey)
-	h = SHA256.new()
-	h.update(b64decode(json))
+	h = SHA256.new(json)
+	# h.update(b64decode(json))
 	signature = signer.sign(h)
 	return base64.b64encode(signature)
 print json
@@ -25,11 +25,12 @@ print json
 def sign1(json):
 	rsakey = RSA.importKey(priKey)
 	signer = PKCS1_v1_5.new(rsakey)
-	h = SHA256.new()
-	h.update(b64decode(json))
+	h = SHA256.new(json)
+	# h.update(b64decode(json))
 	signature = signer.sign(h)
 	return b64encode(signature)
 print sign(json)
+print ('a=123')
 print sign1('a=123')
 # def sign(data_file_name, signature_file_name, private_key_file_name):
 # 	"""
