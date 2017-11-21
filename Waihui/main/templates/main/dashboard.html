@@ -16,7 +16,7 @@
             <li>login name: {{info.current_user.get_username}}</li>
             <li>email: {{info.current_user.email}}</li>
             <li>last login: {{info.current_user.last_login|date:"Y-m-d H:i:s (O)"}}</li>
-            <li>wallet balance: CNY {{info.current_user.wallet.cny_balance}}</li>
+            <li><a href="{% url 'main:wallet' %} ">{% trans "wallet balance" %}</a>: CNY {{info.current_user.wallet.cny_balance}}</li>
             <li>as a student:</li>
             <ul>
                 <li>nickname: {{info.current_user.buyer.nickname}}</li>

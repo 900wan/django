@@ -60,5 +60,6 @@ urlpatterns = [
     url(r'^order/(\d+)/paid/$', url_views.url_orderpaid, name='orderpaid'),
     url(r'^wallet/$', url_views.url_walletpage, name='wallet'),
     url(r'^casher/$', url_views.url_casher, name='casher'),
+    url(r'^payment_result/$', url_views.url_payment_result, name='payment_result'),
     # url(r'^reviews/$', url_views.url_reviews, name='reviews'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

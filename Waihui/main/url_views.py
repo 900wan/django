@@ -836,8 +836,18 @@ def url_walletpage(request):
 
 @login_required
 def url_casher(request):
-    '''This'''
+    '''This page leads user to the payment portal, '''
     info = act_getinfo(request)
     heading = _(u'Casher')
     amount = request.GET['amount']
     return render(request, "main/casher.html", locals())
+
+@login_required
+def url_payment_result(request):
+    '''This page gets the payment result from the payment portal'''
+    info = act_getinfo(request)
+    heading = _(u'Payment Result')
+    result = request.POST['result']
+    amount = request.POST['amount']
+    wallet = info.get('current_user').wallet
+    return render(request, "main/paymentResult.html")

@@ -7,13 +7,13 @@
 
 {% block content %}
     <h1>{{heading}}</h1>
-    <h2>{% trans "You want to recharge" %} <span style="">{{amount}}</span> {% trans "YUAN" %}</h2>
+    <h2>{% trans "Want to recharge" %} <span style="">{{amount}}</span> {% trans "YUAN?" %}</h2>
     <span>* {% trans "Please choose your payment method" %}</span>
     <ul>
-        <li>Paypal</li>
-        <li>Credit Card</li>
-        <li>Apple Pay</li>
-        <li>Alipay</li>
-        <li>WeiXin Pay</li>
+        <li><a href="{% url 'main:payment_result' %}">Paypal</a></li>
+        <li><a href="{% url 'main:payment_result' %}">Credit Card</a></li>
+        <li><a href="{% url 'main:payment_result' %}">Apple Pay</a></li>
+        <li><a href="{% url 'main:payment_result' %}">Alipay</a></li>
+        <li><a href="{% url 'main:payment_result' %}">WeiXin Pay</a></li>
     </ul>
 {% endblock content %}

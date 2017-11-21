@@ -1,0 +1,17 @@
+{% extends "main/base.html" %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% block title %}
+    {{heading}}
+{% endblock title %}
+
+{% block content %}
+    <h1>{{heading}}</h1>
+    {% if {{result}} %}
+        <span>{% trans "Recharge has been completed, Please enjoy your course" %}{% trans "You recharge" %} {{amount}} {% trans "currency" %} {% trans "and your balance is" %} {{wallet.balance}}
+        </span>
+    {% else %}
+        <span>{% trans "Recharge has not completed, Please try again" %}</span>
+    {% endif %}
+   
+{% endblock content %}
