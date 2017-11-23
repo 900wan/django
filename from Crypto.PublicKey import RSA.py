@@ -11,6 +11,7 @@ json = json.dumps(data)
 
 
 def sign_read_type1(data):
+    '''计算参数的签名'''
     with open('app_private_key.pem', 'r') as f:
         priKey = f.read().encode()
     rsakey = RSA.importKey(priKey)
@@ -21,33 +22,76 @@ def sign_read_type1(data):
     return b64encode(signature)
 
 def sign_read_type2(data):
+    '''计算参数的签名，密钥读取缩减至1行，输出b64'''
     with open('app_private_key.pem', 'r') as f:
         signer = PKCS1_v1_5.new(RSA.importKey(f.read().encode()))
     h = SHA256.new(data)
-    # h.update(b64decode(json))
     signature = signer.sign(h)
     return b64encode(signature)
 
-def sign_string(private_key_path, unsigned_string):
+def sign_read_without_b64en(data):
+    '''计算参数的签名，密钥读取缩减至1行，不输出b64'''
+    with open('app_private_key.pem', 'r') as f:
+        signer = PKCS1_v1_5.new(RSA.importKey(f.read().encode()))
+    h = SHA256.new(data)
+    signature = signer.sign(h)
+    return signature
+
+def sign_string(privateKey_path, unsigned_string):
     # 开始计算签名
-    key = RSA.importKey(open(private_key_path).read())
+    key = RSA.importKey(open(privateKey_path).read())
     signer = PKCS1_v1_5.new(key)
     signature = signer.sign(SHA256.new(unsigned_string.encode("utf8")))
-    # base64 编码，转换为unicode表示并移除回车,python2.7中改为encodestring
+    # base64 编码，转换为unicode表示并移除回车,python2.7中改为encodestring, 感觉这个写法好复杂，为何不能直接用b64encode呢？
     sign = base64.encodestring(signature).decode("utf8").replace("\n", "")
     return sign
 
-signed_string = sign_string('app_private_key.pem', "abc\n")    
+
+def validate_sign(publicKey_path, message, signature):
+    with open(publicKey_path, 'r') as f:
+        signer = PKCS1_v1_5.new(RSA.importKey(f.read()))
+    digest = SHA256.new()
+    digest.update(message.encode("utf8"))
+    # if signer.verify(digest, base64.decodestring(signature.encode("utf8"))):
+    if signer.verify(digest, b64decode(signature)):
+
+        return True
+    return False
+
+def show_sign(publicKey_path, message):
+    with open(publicKey_path, 'r') as f:
+        signer = PKCS1_v1_5.new(RSA.importKey(f.read()))
+    digest = SHA256.new()
+    # 下面生成摘要
+    digest.update(message.encode("utf8"))
+    # 下面使用公钥将摘要签名
+    signature = signer.sign(digest)
+    return signature
+
+signed_string = sign_string('app_private_key.pem', "abc\n")
+result = validate_sign('app_public_key.pem', "abc\n", signed_string) 
 
 print ('{"a":"123"}')
 print sign_read_type1(json)
-print ('a=123, read pem file')
+
+print ('a=123, sign_read_type1')
 print sign_read_type1('a=123')
-print ('a=123, read pem file, with packing')
+
+print ('a=123, sign_read_type2, with packing')
 print sign_read_type2('a=123')
-print ('abc\n, read pem file, with packing')
+
+print ('"abc\\n", sign_read_type2, with packing')
 print sign_read_type2('abc\n')
-print signed_string  
+
+print ('"abc\\n", sign_read_without_b64en, with packing')
+print sign_read_without_b64en('abc\n')
+
+print ('"abc\\n", flzee method, signed_strings')
+print sign_string('app_private_key.pem', "abc\n")
+print ("Result of validate signature is " + str(result))
+
+print ('show sign, without base64')
+print b64encode(show_sign('app_private_key.pem', "abc\n"))
 # def sign(data_file_name, signature_file_name, private_key_file_name):
 #   """
 #     签名函数使用指定的私钥Key对文件进行签名，并将签名结果写入文件中
@@ -59,3 +103,6 @@ print signed_string
 
 #     # 读取待签名数据
 #     data_file = open(data_file_name, 'app')
+
+# 感谢fzlee的ifconfiger
+# 参考http://blog.csdn.net/guyongqiangx/article/details/74454969
