@@ -54,7 +54,7 @@ alipay = Alipay(
     appid="2016080100138366",
     app_notify_url="",
     app_private_key_path="main/misc/app_private_key.pem",
-    alipay_public_key_path="",
+    alipay_public_key_path="main/misc/ali_public_key.pem",
     sign_type="RSA2",
     dubug=False
     )

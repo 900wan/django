@@ -6,9 +6,32 @@ from Crypto.Hash import SHA256
 from base64 import b64encode, b64decode
 
 
-data = [{"a":"123"}]
-json = json.dumps(data)
+ASTRING = [{"a":"123"}]
+JSON = json.dumps(ASTRING)
+DATA = {
+    "out_trade_no": "201601020304",
+    "biz_content": {"product": "xxx", "title": "xxx"}
+}
 
+print("DATA.items: "+str(DATA.items()))
+
+def ordered_data(data):
+    '''没看明白'''
+    complex_keys = []
+    for key, value in data.items():
+        if isinstance(value, dict):
+            complex_keys.append(key)
+
+    # 将字典类型的数据单独排序
+    for key in complex_keys:
+        data[key] = json.dumps(data[key], sort_keys=True).replace(" ", "")
+
+    return sorted([(k, v) for k, v in data.items()])
+
+unsigned_items = ordered_data(DATA)
+a = ("{}={}".format(k, v) for k, v in unsigned_items)
+print str(a)
+unsigned_string = "&".join("{}={}".format(k, v) for k, v in unsigned_items)
 
 def sign_read_type1(data):
     '''计算参数的签名'''
@@ -72,7 +95,7 @@ signed_string = sign_string('app_private_key.pem', "abc\n")
 result = validate_sign('app_public_key.pem', "abc\n", signed_string) 
 
 print ('{"a":"123"}')
-print sign_read_type1(json)
+print sign_read_type1(JSON)
 
 print ('a=123, sign_read_type1')
 print sign_read_type1('a=123')
@@ -92,6 +115,9 @@ print ("Result of validate signature is " + str(result))
 
 print ('show sign, without base64')
 print b64encode(show_sign('app_private_key.pem', "abc\n"))
+
+print ("-------* Show the unsigned_items *--------- \n" + str(unsigned_items))
+print ('-* Show the unsigned_string *- \n' + str(unsigned_string))
 # def sign(data_file_name, signature_file_name, private_key_file_name):
 #   """
 #     签名函数使用指定的私钥Key对文件进行签名，并将签名结果写入文件中

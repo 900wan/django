@@ -7,7 +7,7 @@
 
 {% block content %}
     <h1>{{heading}}</h1>
-    {% if {{result}} %}
+    {% if {{result}}=="success" %}
         <span>{% trans "Recharge has been completed, Please enjoy your course" %}{% trans "You recharge" %} {{amount}} {% trans "currency" %} {% trans "and your balance is" %} {{wallet.balance}}
         </span>
     {% else %}
