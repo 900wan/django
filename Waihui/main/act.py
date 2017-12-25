@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import pytz, json, datetime 
-from alipay import Alipay
+from alipay import AliPay, ISVAliPay
 from django.utils import translation, timezone
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
@@ -50,13 +50,13 @@ ORDER_MIN_CANCEL_TIME = datetime.timedelta(hours=8)
 ORDER_OK_CANCEL_TIME = datetime.timedelta(hours=12)
 ORDER_PAY_SOON_TIME = datetime.timedelta(minutes=15)
 
-alipay = Alipay(
+alipay = AliPay(
     appid="2016080100138366",
     app_notify_url="",
     app_private_key_path="main/misc/app_private_key.pem",
     alipay_public_key_path="main/misc/ali_public_key.pem",
     sign_type="RSA2",
-    dubug=False
+    # dubug=False
     )
 
 def act_getlanguage(request):
@@ -600,3 +600,4 @@ def act_alipay_trade_page(subject, out_trade_no, total_amount):
         subject=subject,
         return_url=""
         )
+    return order_string

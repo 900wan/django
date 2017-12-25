@@ -44,6 +44,7 @@ from main.act import act_provider_feedback_sku
 from main.act import act_buyer_cancel_order
 from main.act import act_htmllogout
 from main.act import act_orderpaid
+from main.act import act_alipay_trade_page
 
 from main.ds import  ds_getanoti
 
@@ -850,4 +851,15 @@ def url_payment_result(request):
     result = request.POST['result']
     amount = request.POST['amount']
     wallet = info.get('current_user').wallet
-    return render(request, "main/paymentResult.html")
+    return render(request, "main/paymentResult.html", locals())
+
+@login_required
+def url_alipay_webtrade_test(request, amount):
+    info = act_getinfo(request)
+    heading = _(u'AliPay trade_page_pay test')
+    subject = _(u'Recharge the balance') + str(amount)
+    out_trade_no = "201712261246"
+    order_string = act_alipay_trade_page(subject, out_trade_no, amount)
+    alipayurl = "https://openapi.alipaydev.com/gateway.do?" + str(order_string)
+
+    return render(request, "main/alipay_webtrade_test.html", locals())

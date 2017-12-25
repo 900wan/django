@@ -1,0 +1,16 @@
+{% extends "main/base.html" %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% block title %}
+    {{heading}}
+{% endblock title %}
+
+{% block content %}
+    <h1>{{heading}}</h1>
+    <h2>{% trans "Want to recharge" %} <span style="">{{amount}}</span> {% trans "YUAN?" %}</h2>
+    <span>* {% trans "Payment info:" %}</span>
+    <ul>
+        {{order_string}}
+        <a href="{{alipayurl}}" >Go to Pay</a>
+    </ul>
+{% endblock content %}
