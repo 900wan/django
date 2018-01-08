@@ -9,8 +9,19 @@
     <h1>{{heading}}</h1>
     <h2>{% trans "Want to recharge" %} <span style="">{{amount}}</span> {% trans "YUAN?" %}</h2>
     <span>* {% trans "Payment info:" %}</span>
+    
     <ul>
-        {{order_string}}
+        <span>* safe</span>
+        <li>{{order_string|safe}}</li>
+        <li>{{alipayurl|safe}}</li>
+        <span>* no safe</span>
+        <li>{{order_string}}</li>
+        <li>{{alipayurl}}</li>
+        <span>* safe</span>
+        <a href="{{alipayurl|safe}}" >Go to Pay</a>
+        <span>* no safe</span>
         <a href="{{alipayurl}}" >Go to Pay</a>
     </ul>
+    
+
 {% endblock content %}

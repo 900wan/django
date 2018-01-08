@@ -12,8 +12,8 @@ DATA = {
     "out_trade_no": "201601020304",
     "biz_content": {"product": "xxx", "title": "xxx"}
 }
-
 print("DATA.items: "+str(DATA.items()))
+
 
 def ordered_data(data):
     '''没看明白'''
@@ -91,31 +91,42 @@ def show_sign(publicKey_path, message):
     signature = signer.sign(digest)
     return signature
 
-signed_string = sign_string('app_private_key.pem', "abc\n")
-result = validate_sign('app_public_key.pem', "abc\n", signed_string) 
+STRDATA = 'https://openapi.alipaydev.com/gateway.do?app_id=2016080100138366&biz_content={"out_trade_no":"201712261246","product_code":"FAST_INSTANT_TRADE_PAY","total_amount":"1111","subject":"Recharge the balance1111"}&charset=utf-8&method=alipay.trade.page.pay&notify_url=&return_url=http://www.chanvr.com/demo&sign_type=RSA2&timestamp=2017-12-27 14:56:04&version=1.0'
+
+alipaydata = 'app_id=2016080100138366&biz_content=%7B%22out_trade_no%22%3A%22201712261246%22%2C%22product_code%22%3A%22FAST_INSTANT_TRADE_PAY%22%2C%22total_amount%22%3A%221111%22%2C%22subject%22%3A%22Recharge+the+balance1111%22%7D&charset=utf-8&method=alipay.trade.page.pay&notify_url=&return_url=&sign_type=RSA2&timestamp=2017-12-26+15%3A48%3A53&version=1.0&sign=qZPJ5uYF1uhQ1XSAgQnsNxzKx26V5Lu1KnX3yahVnvZv%2F%2BndgDMxkiFXtGTpCkkplVZwyQjO15A5h08ChvON%2B9iCwJ0tBqC3KBNFDiV%2F5OGUOp2pgc5mRWOkffhy67nSu0EP%2B9Y88rc%2F1L60vJixYMdbi8zjTGgnf%2BJGYyCs4QUCFq%2FLE0U0pQEmgk9gWWumLTu5BnZR07XVbC40SEOjIcgKsyV7pJIHEP6A0%2BVrwJ51zIdoxCZjPejYCql3A%2Bq%2FXA85KzB7WtKWmgjd0vYsDCJ92VEFOjGA678%2F9rO7IjX1k1gNjvXeSY3wCenbIwlQ0AsguCCuGbTBmx5zFh2a4Q%3D%3D'
+
 
 print ('{"a":"123"}')
 print sign_read_type1(JSON)
-
+print '\n'
 print ('a=123, sign_read_type1')
 print sign_read_type1('a=123')
-
+print '\n'
 print ('a=123, sign_read_type2, with packing')
 print sign_read_type2('a=123')
-
+print '\n'
 print ('"abc\\n", sign_read_type2, with packing')
 print sign_read_type2('abc\n')
-
+print '\n'
 print ('"abc\\n", sign_read_without_b64en, with packing')
 print sign_read_without_b64en('abc\n')
-
+print '\n'
 print ('"abc\\n", flzee method, signed_strings')
 print sign_string('app_private_key.pem', "abc\n")
+print '\n'
+
+print ("-------* Show the alipay sign string*--------- ")
+signed_string = sign_string('app_private_key.pem', STRDATA)
+print sign_string('app_private_key.pem', STRDATA)
+print ("-------* Show the alipay sign *--------- ")
+print b64encode(show_sign('app_private_key.pem', STRDATA))
+result = validate_sign('app_public_key.pem', STRDATA, signed_string) 
 print ("Result of validate signature is " + str(result))
 
-print ('show sign, without base64')
+print '\n'
+print ('"abc\\n", show sign, without base64')
 print b64encode(show_sign('app_private_key.pem', "abc\n"))
-
+print '\n'
 print ("-------* Show the unsigned_items *--------- \n" + str(unsigned_items))
 print ('-* Show the unsigned_string *- \n' + str(unsigned_string))
 # def sign(data_file_name, signature_file_name, private_key_file_name):

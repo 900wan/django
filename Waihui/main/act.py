@@ -593,11 +593,12 @@ def act_recharge_balance(wallet, amount):
     return wallet
 
 def act_alipay_trade_page(subject, out_trade_no, total_amount):
+    '''Generate order_string'''
     subject = subject.encode('utf8')
     order_string = alipay.api_alipay_trade_page_pay(
         out_trade_no=out_trade_no,
         total_amount=total_amount,
         subject=subject,
-        return_url=""
+        return_url="http://www.chanvr.com/demo"
         )
     return order_string
