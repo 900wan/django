@@ -129,3 +129,4 @@ class BuyerFeedbackSkuForm(forms.Form):
     """Form for buyers to feedback on a course"""
     questionnaire = forms.CharField(max_length=200)
     comment = forms.CharField(max_length=200)
+

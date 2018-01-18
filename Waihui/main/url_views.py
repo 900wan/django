@@ -858,8 +858,9 @@ def url_alipay_webtrade_test(request, amount):
     info = act_getinfo(request)
     heading = _(u'AliPay trade_page_pay test')
     subject = str('Recharge the balance') + str(amount)
-    out_trade_no = "201712261246"
+    out_trade_no = str("201712261246")
     order_string = act_alipay_trade_page(subject, out_trade_no, amount)
-    alipayurl = "https://openapi.alipaydev.com/gateway.do?" + str(order_string)
+    alipayurl = "https://openapi.alipaydev.com/gateway.do"
+    alipayurlget = "https://openapi.alipaydev.com/gateway.do?" + str(order_string)
 
     return render(request, "main/alipay_webtrade_test.html", locals())

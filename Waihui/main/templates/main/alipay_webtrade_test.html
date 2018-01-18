@@ -13,15 +13,20 @@
     <ul>
         <span>* safe</span>
         <li>{{order_string|safe}}</li>
-        <li>{{alipayurl|safe}}</li>
+        <li>{{alipayurlget|safe}}</li>
         <span>* no safe</span>
         <li>{{order_string}}</li>
-        <li>{{alipayurl}}</li>
+        <li>{{alipayurlget}}</li>
         <span>* safe</span>
-        <a href="{{alipayurl|safe}}" >Go to Pay</a>
+        <a href="{{alipayurlget|safe}}" >Go to Pay</a>
         <span>* no safe</span>
-        <a href="{{alipayurl}}" >Go to Pay</a>
+        <a href="{{alipayurlget}}" >Go to Pay</a>
     </ul>
+
+    <form action="{{alipayurl}}" method="POST">
+        <input type="text" name="order_string" value="{{order_string}}">
+        <input type="submit" value="Pay!">
+    </form>
     
 
 {% endblock content %}
