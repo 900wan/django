@@ -592,11 +592,14 @@ def act_recharge_balance(wallet, amount):
     wallet.save()
     return wallet
 
-def act_alipay_trade_page(subject, out_trade_no, total_amount):
+def act_alipay_trade_page(subject, total_amount):
     '''Generate order_string'''
     subject = subject.encode('utf8')
+    sdatenow = str(timezone.now().year)+str(timezone.now().month)+str(timezone.now().day)\
+    +str(timezone.now().hour)+str(timezone.now().minute)+str(timezone.now().second)\
+    +str(timezone.now().microsecond)
     order_string = alipay.api_alipay_trade_page_pay(
-        out_trade_no=out_trade_no,
+        out_trade_no=sdatenow,
         total_amount=total_amount,
         subject=subject,
         return_url="http://www.chanvr.com/demo",
