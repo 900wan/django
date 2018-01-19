@@ -52,8 +52,8 @@ ORDER_PAY_SOON_TIME = datetime.timedelta(minutes=15)
 
 alipay = AliPay(
     appid="2016080100138366",
-    app_notify_url="",
-    app_private_key_path="main/misc/app_private_key.pem",
+    app_notify_url="https://example.com/notify",
+    app_private_key_path="main/misc/privatekey.pem",
     alipay_public_key_path="main/misc/ali_public_key.pem",
     sign_type="RSA2",
     # dubug=False
@@ -599,6 +599,18 @@ def act_alipay_trade_page(subject, out_trade_no, total_amount):
         out_trade_no=out_trade_no,
         total_amount=total_amount,
         subject=subject,
-        return_url="http://www.chanvr.com/demo"
+        return_url="http://www.chanvr.com/demo",
+        notify_url="https://example.com/notify"
+        )
+    return order_string
+
+def test_alipay_trade_page():
+    subject = u"测试订单".encode("utf8")
+    order_string = alipay.api_alipay_trade_page_pay(
+        out_trade_no="20161112",
+        total_amount=0.01,
+        subject=subject,
+        return_url="https://example.com",
+        notify_url="https://example.com/notify" # 可选, 不填则使用默认notify url
         )
     return order_string

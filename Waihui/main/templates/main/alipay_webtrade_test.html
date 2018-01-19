@@ -9,24 +9,33 @@
     <h1>{{heading}}</h1>
     <h2>{% trans "Want to recharge" %} <span style="">{{amount}}</span> {% trans "YUAN?" %}</h2>
     <span>* {% trans "Payment info:" %}</span>
-    
+    <p>{{timeinfo}}</p>
     <ul>
-        <span>* safe</span>
-        <li>{{order_string|safe}}</li>
-        <li>{{alipayurlget|safe}}</li>
-        <span>* no safe</span>
+        <span>* build-in</span>
         <li>{{order_string}}</li>
         <li>{{alipayurlget}}</li>
-        <span>* safe</span>
-        <a href="{{alipayurlget|safe}}" >Go to Pay</a>
-        <span>* no safe</span>
+        <p></p>
+        <span>* success url</span>
+        <li>{{successraw}}</li>
+        <li>{{successurlget}}</li>
+        <p></p>
+        <span>* raw url</span>
+        <li>{{original_raw}}</li>
+        <li>{{original_raw_get}}</li>
+        <p></p>
+        <span>* build-in</span>
         <a href="{{alipayurlget}}" >Go to Pay</a>
+        <span>* success url</span>
+        <a href="{{successurlget}}">Go to success</a>
+        <span>* raw url</span>
+        <a href="{{original_raw_get}}">Go to raw</a>
     </ul>
 
-    <form action="{{alipayurl}}" method="POST">
-        <input type="text" name="order_string" value="{{order_string}}">
+    <form action="{{alipayurlpost}}" method="POST">
+        <input type="text" name="order_string" value="{{successurlget}}">
         <input type="submit" value="Pay!">
     </form>
     
+
 
 {% endblock content %}

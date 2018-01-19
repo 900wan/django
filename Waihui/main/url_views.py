@@ -3,12 +3,14 @@ import pytz, json, datetime
 from django.shortcuts import get_object_or_404, render
 from django.db.models import Q
 from django.utils import translation, timezone
+from django.utils.http import urlquote
 from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_lazy as l_
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
+
 # from django import forms
 # from login.models import User
 from main.act import act_signup
@@ -45,6 +47,7 @@ from main.act import act_buyer_cancel_order
 from main.act import act_htmllogout
 from main.act import act_orderpaid
 from main.act import act_alipay_trade_page
+from main.act import test_alipay_trade_page
 
 from main.ds import  ds_getanoti
 
@@ -857,10 +860,17 @@ def url_payment_result(request):
 def url_alipay_webtrade_test(request, amount):
     info = act_getinfo(request)
     heading = _(u'AliPay trade_page_pay test')
-    subject = str('Recharge the balance') + str(amount)
-    out_trade_no = str("201712261246")
+    subject = u"recharge ".encode("utf8") + str(amount)
+    out_trade_no = u"201712261247".encode("utf8")
     order_string = act_alipay_trade_page(subject, out_trade_no, amount)
-    alipayurl = "https://openapi.alipaydev.com/gateway.do"
+    alipayurl = "https://openapi.alipaydev.com/gateway.do?"
     alipayurlget = "https://openapi.alipaydev.com/gateway.do?" + str(order_string)
+    successraw = 'biz_content=%7b%22product_code%22%3a%22FAST_INSTANT_TRADE_PAY%22%2c%22body%22%3a%22%22%2c%22subject%22%3a%22%e6%b5%8b%e8%af%95%22%2c%22total_amount%22%3a%220.01%22%2c%22out_trade_no%22%3a%22201811902239854%22%7d&app_id=2016080100138366&version=1.0&sign_type=RSA2&method=alipay.trade.page.pay&timestamp=2018-01-18+16%3A23%3A48&notify_url=http%3A%2F%2Fcjwn.us%2Falipay.trade.page.pay-PHP-UTF-8%2Fnotify_url.php&return_url=http%3A%2F%2Fcjwn.us%2Falipay.trade.page.pay-PHP-UTF-8%2Freturn_url.php&charset=UTF-8&sign=oUOhC6uOU2Cots6wE%2bnvsy7VxXPYS3fNd1DSM%2fxi9IrJhTMBhzuSzqkPjsYkD7Qrt9b6E4QX07djSLIu4uO3Qko86aQBlEpdcULqLt%2f%2f5Qw%2b7j6Ft06c3A5Kkf%2fTW%2fkOtwAhNU%2bYrH2NxGhg%2bnImjYqhVmvTUnZh2q0dxs86PLoEYxf5Lk2wCAxBMjJQg5yRu2MMaAMULbSmA2fsY1u5vxNQJ3EpJF9xA%2fULJ43v%2bl8W4JQdHe2WWB6nB6B%2bDzJhl9nu%2fJPC2BuDvmhvC3IBLHEM4T%2fSayUM0rjknZHqcpEDr3ST9yAu5nkT5kKnzzL6VfCJqAA31m%2fH6S%2b15YBb2g%3d%3d'
+    successurlget = str(alipayurl) + str(successraw)
 
+    original_raw = test_alipay_trade_page()
+    original_raw_get = str(alipayurl)+str(original_raw)
+    timeinfo = str(timezone.now().year)+str(timezone.now().month)\
+    +str(timezone.now().hour)+str(timezone.now().minute)\
+    +str(timezone.now().second)
     return render(request, "main/alipay_webtrade_test.html", locals())
