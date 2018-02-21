@@ -1,0 +1,13 @@
+{% extends "main/base.html" %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% block title %}
+    {{heading}}
+{% endblock title %}
+
+{% block content %}
+    <h1>{{heading}}</h1>
+    {{data}}
+
+
+{% endblock content %}

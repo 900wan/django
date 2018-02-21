@@ -602,8 +602,8 @@ def act_alipay_trade_page(subject, total_amount):
         out_trade_no=sdatenow,
         total_amount=total_amount,
         subject=subject,
-        return_url="http://www.chanvr.com/demo",
-        notify_url="https://example.com/notify"
+        return_url="http://127.0.0.1:8000/alipay/return/",
+        notify_url="http://127.0.0.1:8000/alipay/notify/"
         )
     return order_string
 

@@ -9,27 +9,17 @@
     <h1>{{heading}}</h1>
     <h2>{% trans "Want to recharge" %} <span style="">{{amount}}</span> {% trans "YUAN?" %}</h2>
     <span>* {% trans "Payment info:" %}</span>
-    <p>{{timeinfo}}</p>
     <p>{{timenow}}</p>
     <ul>
-        <span>* build-in</span>
-        <li>{{order_string}}</li>
-        <li>{{alipayurlget}}</li>
+        <h2>* build-in</h2>
+        <li><strong>Raw</strong></li>
+        {{order_string}}
+        <li><strong>DecodeRaw</strong></li>
+        {{decoderaw}}
+        <li><strong>Url</strong></li>
+        {{alipayurlget}}
         <p></p>
-        <span>* success url</span>
-        <li>{{successraw}}</li>
-        <li>{{successurlget}}</li>
-        <p></p>
-        <span>* raw url</span>
-        <li>{{original_raw}}</li>
-        <li>{{original_raw_get}}</li>
-        <p></p>
-        <span>* build-in</span>
         <a href="{{alipayurlget}}"  target="view_window">Go to Pay</a>
-        <span>* success url</span>
-        <a href="{{successurlget}}" target="view_window">Go to success</a>
-        <span>* raw url</span>
-        <a href="{{original_raw_get}}" target="view_window">Go to raw</a>
     </ul>
 
     <form action="{{alipayurlpost}}" method="POST">
