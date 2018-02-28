@@ -331,12 +331,19 @@ class ReplyToSku(models.Model):
         verbose_name = "ReplyToSku"
         verbose_name_plural = "ReplyToSkus"
 
+    TYPE_OF_CONTENT = (
+        (0, _(u'闲聊')),
+        (1, _(u'问题')),
+    )
+
+
     def __unicode__(self):
         return u'%s' % self.content
     sku = models.ForeignKey(Sku)
     user = models.ForeignKey(User)
     type = models.IntegerField()
     content = models.TextField()
+    content_type = models.IntegerField(choices=TYPE_OF_CONTENT)
     reply_to = models.ForeignKey('self', blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)

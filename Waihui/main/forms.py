@@ -125,8 +125,12 @@ class ProviderFeedbackSkuForm(forms.Form):
     comment = forms.CharField(max_length=200)
     buyer = forms.ModelChoiceField(queryset=None, empty_label=None)
 
+def get_js_questionnair(js_questionnairjs):
+    pass
+    
 class BuyerFeedbackSkuForm(forms.Form):
     """Form for buyers to feedback on a course"""
+
     questionnaire = forms.CharField(max_length=200)
     comment = forms.CharField(max_length=200)
 

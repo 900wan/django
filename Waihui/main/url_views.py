@@ -48,6 +48,7 @@ from main.act import act_buyer_cancel_order
 from main.act import act_htmllogout
 from main.act import act_orderpaid
 from main.act import act_alipay_trade_page
+from main.act import act_feedback_questionnaire
 from main.act import test_alipay_trade_page
 
 from main.ds import  ds_getanoti
@@ -787,9 +788,10 @@ def url_providers(request):
     return render(request, "main/providers.html", locals())
 
 def url_feedback_sku(request, sku_id):
+    '''Rating the skus after the course'''
     info = act_getinfo(request)
     sku = get_object_or_404(Sku, id=sku_id)
-    result = "HI there, i can't tell the info"
+    result = "Hi there, I can't tell the info"
     if info.get('current_user').provider == sku.provider:
         identity = "provider"
         if request.method == 'POST':
@@ -810,8 +812,9 @@ def url_feedback_sku(request, sku_id):
             result = "You sure are the provider of this cousrs "
     elif info.get('current_user').buyer in sku.buyer.all():
         identity = "buyer"
+        js_questionnaire = act_feedback_questionnaire("b2s")
         if request.method == 'POST':
-            uf = BuyerFeedbackSkuForm(request.POST)
+            uf = BuyerFeedbackSkuForm(request.POST, js_questionnaire)
             if uf.is_valid():
                 questionnaire = uf.cleaned_data['questionnaire']
                 comment = uf.cleaned_data['comment']
@@ -859,6 +862,7 @@ def url_payment_result(request):
 
 @login_required
 def url_alipay_webtrade_test(request, amount):
+    '''alipay webpage payment test'''
     info = act_getinfo(request)
     heading = _(u'AliPay trade_page_pay test')
     subject = _(u'Recharge moneny ') + str(amount)
@@ -876,6 +880,7 @@ def url_alipay_webtrade_test(request, amount):
 
 @login_required
 def url_alipay_webtrade_return(request):
+    '''Alipay webpage payment return'''
     info = act_getinfo(request)
     heading = _(u'Alipay Return Page')
     if request.GET:

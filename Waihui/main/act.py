@@ -557,7 +557,7 @@ def act_provider_feedback_sku(questionnaire, comment, sku, buyer):
     '''提交provider对于sku向buyer的feedback'''
     rtp = ReviewToBuyer(sku=sku, questionnaire=questionnaire, comment=comment, buyer=buyer, provider=sku.provider)
     rtp.save()
-    sku.status=9
+    sku.status = 9
     sku.save()
     return True
 
@@ -571,6 +571,28 @@ def act_buyer_feedback_sku(questionnaire, comment, sku, buyer):
     sku.status = 9
     sku.save()
     return True
+
+def act_feedback_questionnaire(profile):
+    '''返回所有的调查表
+    b2p（18.2.22）
+    1本次课程你对老师是否满意:5星
+    2教案是否清楚明白：A条理清楚 B只是还可以 C完全看不懂他要讲什么
+    3老师讲课是否清楚明白：A非常清楚 B一般，勉强听懂 C不清楚
+    4你还会选这个老师的课程吗：A十分愿意 B值得考虑 C不会了，再也不会了
+    5用一句话评价一下这次的课程
+    '''
+    if profile == "p2s":
+        questionnaire = ''
+    elif profile == "b2s":
+        questionnaire = '{\
+        "q1":{"name":"本次课程你对老师是否满意","score":0},\
+        "q2":{"name":"教案是否清楚明白","answer":[{"q2a1":"条理清楚","score":3},{"q2a2":"只是还可以","score":2},{"q2a3":"完全看不懂他要讲什么","score":1}],"score":0},\
+        "q3":{"name":"老师讲课是否清楚明白","answer":[{"q3a1":"非常清楚","score":3},{"q3a2":"一般，勉强听懂","score":2},{"q3a3":"不清楚","score":1}],"score":0},\
+        "q4":{"name":"你还会选这个老师的课程吗","answer":[{"q4a1":"十分愿意","score":3},{"q4a2":"值得考虑","score":2},{"q4a3":"不会了，再也不会了","score":1}],"score":0},\
+        "q5":{"name":"用一句话评价一下这次的课程","reply":""}}'
+        js_questionnaire = json.loads(questionnaire)
+    return js_questionnaire
+
 
 def act_orderpaid(order, buyer):
     '''当order支付后对order相关信息进行增补'''
