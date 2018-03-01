@@ -27,4 +27,53 @@
         不能评价啦
         <p>==================</p>
     {% endif %}
+
+    <h2>Questionnair</h2>
+    <p id="q1name"></p>
+
+{% block jquery %}
+{% autoescape off %}
+    <script type="text/javascript">
+    $(document).ready(function(){
+        var js_questionnaire = {{js_questionnaire}}
+        for (q in js_questionnaire)
+        {
+            console.log(q);
+            var q_item = js_questionnaire[q];
+            console.log(q_item)
+            var q_name = q_item.name;
+            console.log(q_name);
+
+            $("p#q1name").append('<li>'+q+":"+q_name+'</li>');
+            if (qa=q_item.answer) {
+                $("p#q1name").append('<table><tr><th>choice</th><th>content</th><th>score</th></tr>')
+                for(a in qa){
+                    console.log(a)
+                    var answer = qa[a];
+                    console.log(typeof(answer))
+                    console.log(answer)
+
+                    a_content = answer.name
+                    a_score = answer.score
+                    for (a_item in answer){
+                        console.log(a_item)
+                        // a_content = answer[a_item]
+
+                        console.log(a_content);
+                        var name_a_item = answer[a_item];
+                        // console.log(name_a_item);
+                    }
+                    // console.log(answer);
+                    $("p#q1name").append('<tr><td>'+a+"</td><td>"+a_content+"</td><td>&emsp;<strong><span>得分:</span>"+a_score+"</strong></td>");
+                }
+                $("p#q1name").append('</tr>')
+            }
+        }
+        // $("p#q1name").append(js_questionnaire.q1.name)
+        console.log(js_questionnaire.q1.name)
+    })</script>
+
+{% endautoescape %}
+{% endblock jquery %}
+
 {% endblock content %}

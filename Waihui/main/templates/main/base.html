@@ -5,8 +5,10 @@
 <head>
     <meta charset="UTF-8">
         <title>{% block title %}{% trans "SilkyChinese" %}{% endblock %}</title>
-        <script type="text/javascript" src="/static/js/jquery.js"></script>
         {% block javascript %}{% endblock javascript %}
+        <script type="text/javascript" src="/static/js/jquery.js"></script>
+
+        
         <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
         {% block stylesheet %}{% endblock stylesheet %}
         {% block head %}{% endblock head %}
@@ -31,6 +33,8 @@
     {% endif %}
     <hr>
     {% block content %}
+    {% block jquery %}
+    {% endblock jquery %}
     {% endblock content %}
 
     <hr>

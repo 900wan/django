@@ -573,7 +573,9 @@ def act_buyer_feedback_sku(questionnaire, comment, sku, buyer):
     return True
 
 def act_feedback_questionnaire(profile):
-    '''返回所有的调查表
+    '''返回所有的调查表，暂时无法实现，
+    预期是均存储为JSON。之后在FORM、template中进行递归读取问题，
+    但是好像不容易实现，也没有查到有相关的最佳实践
     b2p（18.2.22）
     1本次课程你对老师是否满意:5星
     2教案是否清楚明白：A条理清楚 B只是还可以 C完全看不懂他要讲什么
@@ -586,12 +588,12 @@ def act_feedback_questionnaire(profile):
     elif profile == "b2s":
         questionnaire = '{\
         "q1":{"name":"本次课程你对老师是否满意","score":0},\
-        "q2":{"name":"教案是否清楚明白","answer":[{"q2a1":"条理清楚","score":3},{"q2a2":"只是还可以","score":2},{"q2a3":"完全看不懂他要讲什么","score":1}],"score":0},\
-        "q3":{"name":"老师讲课是否清楚明白","answer":[{"q3a1":"非常清楚","score":3},{"q3a2":"一般，勉强听懂","score":2},{"q3a3":"不清楚","score":1}],"score":0},\
-        "q4":{"name":"你还会选这个老师的课程吗","answer":[{"q4a1":"十分愿意","score":3},{"q4a2":"值得考虑","score":2},{"q4a3":"不会了，再也不会了","score":1}],"score":0},\
+        "q2":{"name":"教案是否清楚明白","answer":{"a1":{"name":"条理清楚","score":3},"a2":{"name":"只是还可以","score":2},"a3":{"name":"完全看不懂他要讲什么","score":1}},"score":0},\
+        "q3":{"name":"老师讲课是否清楚明白","answer":{"a1":{"name":"非常清楚","score":3},"a2":{"name":"一般，勉强听懂","score":2},"a3":{"name":"不清楚","score":1}},"score":0},\
+        "q4":{"name":"你还会选这个老师的课程吗","answer":{"a1":{"name":"十分愿意","score":3},"a2":{"name":"值得考虑","score":2},"a3":{"name":"不会了，再也不会了","score":1}},"score":0},\
         "q5":{"name":"用一句话评价一下这次的课程","reply":""}}'
         js_questionnaire = json.loads(questionnaire)
-    return js_questionnaire
+    return questionnaire
 
 
 def act_orderpaid(order, buyer):
