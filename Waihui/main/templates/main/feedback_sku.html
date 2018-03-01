@@ -46,7 +46,15 @@
 
             $("p#q1name").append('<li>'+q+":"+q_name+'</li>');
             if (qa=q_item.answer) {
-                $("p#q1name").append('<table><tr><th>choice</th><th>content</th><th>score</th></tr>')
+                var q_table ='<table>\
+                        <thead>\
+                            <tr>\
+                                <th>choice</th>\
+                                <th>content</th>\
+                                <th>score</th>\
+                            </tr>\
+                        </thead>\
+                        <tbody>'
                 for(a in qa){
                     console.log(a)
                     var answer = qa[a];
@@ -57,16 +65,13 @@
                     a_score = answer.score
                     for (a_item in answer){
                         console.log(a_item)
-                        // a_content = answer[a_item]
-
                         console.log(a_content);
                         var name_a_item = answer[a_item];
-                        // console.log(name_a_item);
                     }
-                    // console.log(answer);
-                    $("p#q1name").append('<tr><td>'+a+"</td><td>"+a_content+"</td><td>&emsp;<strong><span>得分:</span>"+a_score+"</strong></td>");
+                    q_table +='<tr><td>'+a+"</td><td>"+a_content+"</td><td>&emsp;<strong><span>得分:</span>"+a_score+"</strong></td>";
                 }
-                $("p#q1name").append('</tr>')
+                q_table +='</tbody></table>'
+                $("p#q1name").append(q_table)
             }
         }
         // $("p#q1name").append(js_questionnaire.q1.name)
