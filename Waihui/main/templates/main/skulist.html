@@ -27,6 +27,7 @@
                     <th>ID</th>
                     <th>Provider</th>
                     <th>Buyer</th>
+                    <th>Status</th>
                     <th>Start time</th>
                     <th>End time</th>
                     <th>Created</th>
@@ -40,6 +41,7 @@
                     <td>{{sku.id}}</td>
                     <td><a href="{% url 'main:provider_profile' sku.provider.user.id %}">{{sku.provider}}</a></td>
                     <td>{{sku.buyer.all|safeseq|join:", "}}</td>
+                    <td>{{sku.status}}({{sku.get_status_display}})</td>
                     <td>{{sku.start_time|date:"Y-m-d H:i (e)"}}</td>
                     <td>{{sku.end_time|date:"Y-m-d H:i (e)"}}</td>
                     <td>{{sku.created|date:"Y-m-d H:i (e)"}}</td>

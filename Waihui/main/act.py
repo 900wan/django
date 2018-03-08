@@ -37,6 +37,9 @@ from main.ds import ds_noti_tobuyer_newplan
 from main.ds import ds_noti_tobuyer_planmodified
 from main.ds import ds_noti_toprovider_skubooked
 from main.ds import ds_noti_toprovider_lostbuyer
+from main.ds import ds_c_provider_in_sku
+from main.ds import ds_get_review_score
+
 
 from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_lazy as l_
@@ -174,8 +177,11 @@ def act_addsku(provider, start_time, end_time, topic=None, buyer=None, status=0)
         result = "OK, Sku:" + provider.name + "'s " + str(start_time) + " added!"
     return result
 
-def act_addplan(sku, topic, status, content, assignment, slides, roomlink, materiallinks, materialhtml, voc, copy_from, sumy, plan=None):
-    '''if import a plan, it will change the plan, if not, then add one'''
+def act_addplan(sku, topic,\
+    new_plan=None, plan=None, status=None, content=None, assignment=None, slides=None,\
+    roomlink=None, materialhtml=None, materiallinks=None, voc=None, copy_from=None, sumy=None,\
+    ):
+    '''Receive a ModelForm of new_plan'''
     if plan:
         plan.status = status
         plan.content = content
@@ -189,27 +195,53 @@ def act_addplan(sku, topic, status, content, assignment, slides, roomlink, mater
         plan.sumy = sumy
         result = "OK, Plan: " + sku.provider.name + " & " + topic.name + " modified!"
         ds_noti_tobuyer_planmodified(plan)
-    else:
-        plan = Plan(
-            sku=sku,
-            topic=topic,
-            status=status,
-            content=content,
-            assignment=assignment,
-            slides=slides,
-            roomlink=roomlink,
-            materialhtml=materialhtml,
-            materiallinks=materiallinks,
-            voc=voc,
-            copy_from=copy_from,
-            sumy=sumy,
-            )
-        plan.save()
+    if new_plan:
+        new_plan.sku = sku
+        new_plan.topic = topic
+        new_plan.status = 1
+        new_plan.save()
         sku.status = 5
         sku.save()
         result = "OK, Plan: " + sku.provider.name + " & " + topic.name + " added!"
-        ds_noti_tobuyer_newplan(plan)
+        ds_noti_tobuyer_newplan(new_plan)
     return result
+
+# def act_addplan(sku, topic, status, content, assignment, slides, roomlink, materiallinks, materialhtml, voc, copy_from, sumy, plan=None):
+#     '''if import a plan, it will change the plan, if not, then add one'''
+#     if plan:
+#         plan.status = status
+#         plan.content = content
+#         plan.assignment = assignment
+#         plan.slides = slides
+#         plan.roomlink = roomlink
+#         plan.materialhtml = materialhtml
+#         plan.materiallinks = materiallinks
+#         plan.voc = voc
+#         plan.copy_from = copy_from
+#         plan.sumy = sumy
+#         result = "OK, Plan: " + sku.provider.name + " & " + topic.name + " modified!"
+#         ds_noti_tobuyer_planmodified(plan)
+#     else:
+#         plan = Plan(
+#             sku=sku,
+#             topic=topic,
+#             status=status,
+#             content=content,
+#             assignment=assignment,
+#             slides=slides,
+#             roomlink=roomlink,
+#             materialhtml=materialhtml,
+#             materiallinks=materiallinks,
+#             voc=voc,
+#             copy_from=copy_from,
+#             sumy=sumy,
+#             )
+#         plan.save()
+#         sku.status = 5
+#         sku.save()
+#         result = "OK, Plan: " + sku.provider.name + " & " + topic.name + " added!"
+#         ds_noti_tobuyer_newplan(plan)
+#     return result
 
 def act_addrtp(provider_id, buyer_id, sku_id, questionnaire, score):
     '''it will add a ReviewToProvider'''
@@ -268,11 +300,6 @@ def act_showuser(id):
     '''it will show User information'''
     user = User.objects.get(id=id),
     return user
-
-def act_showprovider(id):
-    '''it will show Provider information'''
-    provider = Provider.objects.get(id=id)
-    return provider
 
 def act_showbuyer(id):
     '''it will show Buyer information'''
@@ -539,6 +566,17 @@ def act_buyer_ready_sku(sku):
         sku.save()
     return True
 
+def act_provider_finished_sku(sku):
+    '''设定教师已完成sku，返回值目前只有True，不能抛出异样，还是有问题'''
+    if sku.status == 7:
+        sku.status = 8
+        sku.save()
+        result = True
+    else:
+        result = _(u'对不起') +"，"+ _(u'不允许结束')
+    return result
+
+
 def act_edit_provider_profile(provider, name, video, teaching_language):
     '''对Provider的profile其中的属性进行加工'''
     # provider.avatar = avatar
@@ -561,15 +599,23 @@ def act_provider_feedback_sku(questionnaire, comment, sku, buyer):
     sku.save()
     return True
 
-def act_buyer_feedback_sku(questionnaire, comment, sku, buyer):
+def act_buyer_feedback_sku(sku, buyer, ufq):
     '''提交buyer对于sku对provider的feedback'''
     provider = sku.provider
-    raw_json = json.loads(questionnaire)
-    score = (raw_json.get('q1') + raw_json.get('q2') + raw_json.get('q3') + raw_json.get('q4')) * 2.5
-    rtb = ReviewToProvider(sku=sku, questionnaire=questionnaire, comment=comment, buyer=buyer, provider=provider, score=score)
-    rtb.save()
+    dict_of_ufq = ufq.cleaned_data
+    feedbackquestionnaire_b2p = ufq.save(commit=False)
+    questionnaire = dict_of_ufq
+    comment = ""
+    score = ds_get_review_score(dict_of_ufq)
+    # raw_json = json.loads(questionnaire)
+    # score = (raw_json.get('q1') + raw_json.get('q2') + raw_json.get('q3') + raw_json.get('q4')) * 2.5
+    rtp = ReviewToProvider(sku=sku, questionnaire=questionnaire, comment=comment, buyer=buyer, provider=provider, score=score)
+    rtp.save()
     sku.status = 9
     sku.save()
+    feedbackquestionnaire_b2p.rtp = rtp
+    feedbackquestionnaire_b2p.save()
+    # 如果要存储此次questionnair的内容,我认为可以直接写个model function来读取model信息至编制json存储至rtp。
     return True
 
 def act_feedback_questionnaire(profile):

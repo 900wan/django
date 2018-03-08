@@ -2,6 +2,8 @@
 from django.shortcuts import get_object_or_404, render
 from django.utils.translation import ugettext as _
 from django.http import HttpResponse
+from main.act import act_getinfo
+from main.forms import TestModelformFKForm
 def url_test(request):
     return get_language(request)
 
@@ -58,3 +60,14 @@ def test_addtopic(set):
         result = act_addtopic(
             name='支付宝',
             category='')
+
+def test_modelformfk(request):
+    ''''''
+    info = act_getinfo(request)
+    heading = "Test Modelformfk"
+    if request.method == "POST":
+        uf = TestModelformFKForm(request)
+        uf.save(commit=False)
+    else:
+        uf = TestModelformFKForm()
+    return render(request, "main/test_form.html", locals())

@@ -7,6 +7,8 @@ from main.models import ReplyToSku
 from main.models import Plan
 from main.models import Order
 from main.models import Language
+from main.models import FeedbackQuestionnaireB2P
+from main.models import TestModelformFK
 
 class SignupForm(forms.Form):
     nickname = forms.CharField(
@@ -48,19 +50,26 @@ class AddRTSForm(forms.Form):
     # reply_to = forms.ModelChoiceField(queryset=ReplyToSku.objects.all(), required=False)
     reply_to = forms.ModelChoiceField(queryset=None, required=False)
 
-class AddPlanForm(forms.Form):
-    # sku = forms.ModelChoiceField(queryset=Sku.objects.all())
-    # topic = forms.ModelChoiceField(queryset=Topic.objects.all())
-    status = forms.IntegerField()
-    content = forms.CharField(widget=forms.Textarea())
-    assignment = forms.CharField(widget=forms.Textarea(), required=False)
-    slides = forms.CharField(widget=forms.Textarea(), required=False)
-    roomlink = forms.URLField(required=False)
-    materiallinks = forms.CharField(widget=forms.Textarea(), required=False)
-    materialhtml = forms.CharField(widget=forms.Textarea(), required=False)
-    voc = forms.CharField(widget=forms.Textarea(), required=False)
-    copy_from = forms.ModelChoiceField(queryset=Plan.objects.all(), required=False)
-    sumy = forms.CharField(widget=forms.Textarea(), required=False)
+class AddPlanForm(forms.ModelForm):
+    '''ModelForm For Plan'''
+    class Meta:
+        model = Plan
+        fields = ('content', 'assignment', 'slides', 'materiallinks', 'materialhtml',\
+        'voc', 'copy_from', 'sumy', 'roomlink')
+
+# class AddPlanForm(forms.Form):
+#     # sku = forms.ModelChoiceField(queryset=Sku.objects.all())
+#     # topic = forms.ModelChoiceField(queryset=Topic.objects.all())
+#     status = forms.IntegerField()
+#     content = forms.CharField(widget=forms.Textarea())
+#     assignment = forms.CharField(widget=forms.Textarea(), required=False)
+#     slides = forms.CharField(widget=forms.Textarea(), required=False)
+#     roomlink = forms.URLField(required=False)
+#     materiallinks = forms.CharField(widget=forms.Textarea(), required=False)
+#     materialhtml = forms.CharField(widget=forms.Textarea(), required=False)
+#     voc = forms.CharField(widget=forms.Textarea(), required=False)
+#     copy_from = forms.ModelChoiceField(queryset=Plan.objects.all(), required=False)
+#     sumy = forms.CharField(widget=forms.Textarea(), required=False)
 
 class ScheduleForm(forms.Form):
     provider = forms.ModelChoiceField(queryset=Provider.objects.all(), required=False, empty_label=None, widget=forms.Select(attrs={'disabled':'disabled'}))
@@ -124,13 +133,21 @@ class ProviderFeedbackSkuForm(forms.Form):
     questionnaire = forms.CharField(max_length=200)
     comment = forms.CharField(max_length=200)
     buyer = forms.ModelChoiceField(queryset=None, empty_label=None)
-
-def get_js_questionnair(js_questionnairjs):
-    pass
     
 class BuyerFeedbackSkuForm(forms.Form):
     """Form for buyers to feedback on a course"""
 
     questionnaire = forms.CharField(max_length=200)
     comment = forms.CharField(max_length=200)
+
+class FeedbackQuestionnaireB2PForm(forms.ModelForm):
+    class Meta:
+        model = FeedbackQuestionnaireB2P
+        fields = ('satisfaction', 'plan', 'teaching', 'continuing', 'comment')
+
+# TEST
+class TestModelformFKForm(forms.ModelForm):
+    class Meta:
+        model = TestModelformFK
+        fields = ('status', )
 

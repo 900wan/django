@@ -6,6 +6,7 @@
 {% endblock title %}
 {% block content %}
     <p>===================</p>
+    <p>{{method}}</p>
         <p>{{result}}</p>
         {% if sku.status == 8 %}
     <p>===================</p>
@@ -17,18 +18,8 @@
         {% endif %}
         say something about this course
     </h2>
-    <form enctype="multipart/form-data" method="post">
-        {{uf.as_p}}
-        {% csrf_token %}
-        <input type="submit" name="submit">
-    </form>
     
-    {% else %}
-        不能评价啦
-        <p>==================</p>
-    {% endif %}
-
-    <h2>Questionnair</h2>
+        <h2>Questionnair</h2>
     <p id="q1name"></p>
 
 {% block jquery %}
@@ -80,5 +71,23 @@
 
 {% endautoescape %}
 {% endblock jquery %}
+
+<h2>Questionnaire Form</h2>
+ <form enctype="multipart/form-data" method="post">
+        {{ufquestionnaire.as_p}}
+        {% csrf_token %}
+        <input type="submit" name="submit">
+</form>
+
+<h2>Fieldes</h2>
+<p>a_fields:{{a_fields}}</p>
+<p>{{dictofufq}}</p>
+
+    {% else %}
+        不能评价啦
+        <p>==================</p>
+    {% endif %}
+
+
 
 {% endblock content %}

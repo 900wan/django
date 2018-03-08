@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django import forms
+from django.forms import ModelForm
 from django.contrib.auth.models import User
 from django.core.validators import validate_comma_separated_integer_list
 from django.utils import timezone
@@ -198,11 +200,11 @@ class Sku(models.Model):
         (5, '已备课'),
         (6, '老师ready'),
         (7, '学生进了教室'),
-        (8, '已结束待评价'),
+        (8, '待评价'), #学生评价老师
         (9, '已结束 '),
         (10, '学生取消'),
     )
-    
+
     status = models.IntegerField(
         choices=STATUS_OF_SKU_CHOICES,
         default=0,
@@ -243,23 +245,30 @@ class Plan(models.Model):
 
     def __unicode__(self):
         return u'Plan of %s' % self.sku
-    sku = models.OneToOneField(Sku ,blank=True, null=True)
-    topic = models.ForeignKey(Topic, )
+    sku = models.OneToOneField(Sku, blank=True, null=True)
+    topic = models.ForeignKey(Topic)
 # 给sku：
 # 已备课；已上完；
 # 给topic：
 # 待审核；成功通过；失败待修改
-    status = models.IntegerField()
-    content = models.TextField()
-    assignment = models.TextField(blank=True,null=True)
-    slides = models.TextField(blank=True,null=True)
-    materiallinks = models.TextField(blank=True,null=True)
-    materialhtml = models.TextField(blank=True,null=True)
-    voc = models.TextField(blank=True,null=True)
-    copy_from = models.ForeignKey('self',blank=True,null=True)
+# 2018.3.6:提出修改建议，简化至4个状态，不做对于Topic的区分。
+    CHOICES_OF_STATUS = (
+        (0, _(u'未备课')),
+        (1, _(u'待审核')),
+        (2, _(u'未通过')),
+        (3, _(u'已备课')),
+        )
+    status = models.IntegerField(_(u'教案状态'), choices=CHOICES_OF_STATUS)
+    content = models.TextField(_(u'课程大纲'))
+    assignment = models.TextField(_(u'课后作业'), blank=True, null=True)
+    slides = models.TextField(_(u'课件'), blank=True, null=True)
+    materiallinks = models.TextField(_(u'课件链接'), blank=True, null=True)
+    materialhtml = models.TextField(_(u'课件网页'), blank=True, null=True)
+    voc = models.TextField(_(u'生词'), blank=True, null=True)
+    copy_from = models.ForeignKey('self', verbose_name=_(u'源自'), blank=True, null=True)
     # summary 写sum我怕出问题
-    sumy = models.TextField(blank=True,null=True)
-    roomlink = models.URLField(null=True)
+    sumy = models.TextField(_(u'总结'), blank=True, null=True)
+    roomlink = models.URLField(_(u'上课链接'), blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
@@ -287,8 +296,6 @@ class Wallet(models.Model):
         self.save()
         return self.cny_balance
 
-
-
 # index 9
 class ReviewToProvider(models.Model):
 
@@ -297,12 +304,12 @@ class ReviewToProvider(models.Model):
         verbose_name_plural = "ReviewToProviders"
 
     def __unicode__(self):
-        return u'%s' % 'SkuID:[' + str(self.sku.id) + ']' + ' Score:[' + str(self.score) + '] ' +str(self.buyer.nickname) + ' reviews to ' + str(self.provider.name)
+        return u'%s' % 'ReviewToProvider SkuID:[' + str(self.sku.id) + ']' + ' Score:[' + str(self.score) + '] ' +str(self.buyer.nickname) + ' reviews to ' + str(self.provider.name) + ' on SkuID:[' + str(self.sku.id) + ']'
     provider = models.ForeignKey(Provider)
     buyer = models.ForeignKey(Buyer)
     sku = models.OneToOneField(Sku)
-    questionnaire = models.CharField(max_length=50)
-    comment = models.CharField(max_length=250, blank=True, null=True)
+    questionnaire = models.CharField(max_length=50, blank=True, null=True)
+    comment = models.CharField(max_length=250, blank=True, null=True) #此处倾向于记录后台对教师的评语
     score = models.FloatField()
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -323,6 +330,50 @@ class ReviewToBuyer(models.Model):
     comment = models.CharField(max_length=50, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
+
+class FeedbackQuestionnaireB2P(models.Model):
+
+    class Meta:
+        verbose_name = "Questionnaire of Feedback from Buyer to Provider"
+        verbose_name_plural = "Questionnaires of Feedback from Buyer to Provider"
+
+    def __str__(self):
+        return str(self.rtp)
+
+    CHOICES_OF_SATISFACTION = (
+        # (0, _(u'已失效')),
+        (1, _(u'0星')),
+        (2, _(u'1星')),
+        (3, _(u'2星')),
+        (4, _(u'3星')),
+        (5, _(u'4星')),
+        (6, _(u'5星')),
+        )
+    CHOICES_OF_PLAN = (
+        # (0, _(u'已失效')),
+        (1, _(u'条理清楚')),
+        (2, _(u'只是还可以')),
+        (3, _(u'完全看不懂他要讲什么')),
+        )
+    CHOICES_OF_TEACHING = (
+        # (0, _(u'已失效')),
+        (1, _(u'非常清楚')),
+        (2, _(u'一般，勉强听懂')),
+        (3, _(u'不清楚')),
+        )
+    CHOICES_OF_CONTINUING = (
+        # (0, _(u'已失效')),
+        (1, _(u'十分愿意')),
+        (2, _(u'值得考虑')),
+        (3, _(u'不会了，再也不会了')),
+        )
+    satisfaction = models.IntegerField(_(u'本次课程你对老师是否满意'), choices=CHOICES_OF_SATISFACTION, null=True)
+    plan = models.IntegerField(_(u'教案是否清楚明白'), choices=CHOICES_OF_PLAN, null=True)
+    teaching = models.IntegerField(_(u'老师讲课是否清楚明白'), choices=CHOICES_OF_TEACHING, null=True)
+    continuing = models.IntegerField(_(u'你还会选这个老师的课程吗'), choices=CHOICES_OF_CONTINUING, null=True)
+    comment = models.TextField(_(u'用一句话评价一下这次的课程'))
+    rtp = models.ForeignKey(ReviewToProvider)
+
 
 # index 11
 class ReplyToSku(models.Model):
@@ -505,3 +556,16 @@ def provider_avatar_path(instance, filename):
 # 最后再根据文档过一遍，看看还有哪里有遗漏
 
 # TODO 添加方法（coolgene 将写出文档）    
+
+# TEST
+class TestModelformFK(models.Model):
+
+    class Meta:
+        verbose_name = "TestModelformFK"
+        verbose_name_plural = "TestModelformFKs"
+
+    def __str__(self):
+        return str(self.status)
+    sku = models.OneToOneField(Sku, blank=True, null=True)
+    topic = models.ForeignKey(Topic)
+    status = models.IntegerField()

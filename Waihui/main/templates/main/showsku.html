@@ -47,7 +47,7 @@
         </table>
     <p>================================</p>
     {% if sku.has_plan %}
-    <p>Plans on this SKU</p>
+    <h2>Plans on this SKU</h2>
         <table>
             <thead>
                 <tr>
@@ -84,7 +84,7 @@
                 {# {% endfor %} #}
             </tbody>
         </table>
-        {% if is_provder %}
+        {% if is_provider %}
         <a href="{% url 'main:modifyplan' sku.plan.id %}">{% trans "Modify this plan" %}</a>
         {% endif %}
     {% elif is_provider %}
@@ -97,7 +97,7 @@
     <p>================================</p>
     {% if rtss %}
         
-    <p>Replys to This SKU</p>
+    <h2>Replys to This SKU</h2>
 
         <table>
             <thead>
@@ -131,8 +131,19 @@
     {% endif %}
 
     <p>================================</p>
-    {% if sku.status == 8 %}
-        <p><a href="{% url 'main:feedback_sku' sku.id %}">Give a Feedback</a></p>
+    {% if not sku.is_past %}
+        {% if is_provider %}
+            {% if sku.status == 5 %}
+                <p><a href="{% url 'main:provider_ready_sku' sku.id %}">Ready to teach</a></p>        
+            {% elif sku.status == 7 %}
+                <p><a href="{% url 'main:provider_finished_sku' sku.id %}">the course is Finished</a></p>  
+            {% endif %}
+        {% endif %}
+        {% if sku.has_plan and sku.status == 6 and is_buyer %}
+            <strong><a href="{% url 'main:buyer_ready_sku' sku.id%}">Ready to learn</a></strong>    
+        {% elif sku.status == 8 and is_involved %}
+            <p><a href="{% url 'main:feedback_sku' sku.id %}">Give a Feedback</a></p>
+        {% endif %}
     {% endif %}
     
 

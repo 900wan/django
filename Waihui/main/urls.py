@@ -6,6 +6,7 @@ from main import test_views
 
 test_patterns = [
     url(r'$', test_views.url_test, ),
+    url(r'^testform/$', test_views.test_modelformfk, name='testmodelformfk'),
     url(r'language/$', test_views.get_language, name='get_language')
 ]
 urlpatterns = [
@@ -13,6 +14,7 @@ urlpatterns = [
     # url(r'^$', 'Waihui.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
     url(r'^test/', include(test_patterns)),
+    url(r'^testformff/$', url_views.url_modelformfk, name='urlmodelformfk'),
     # url(r'^test/$', url_views.url_test, name='url_test'),
     url(r'^$', url_views.url_homepage, name="home"),
     url(r'^signup/$', url_views.url_signup, name="signup"),
@@ -37,6 +39,7 @@ urlpatterns = [
     url(r'^sku/(\d+)/repick/$', url_views.url_provider_repick, name="provider_repick"),
     url(r'^sku/(\d+)/t/ready/$', url_views.url_provider_ready_sku, name="provider_ready_sku"),
     url(r'^sku/(\d+)/b/ready/$', url_views.url_buyer_ready_sku, name="buyer_ready_sku"),
+    url(r'^sku/(\d+)/t/finished/$', url_views.url_provider_finished_sku, name="provider_finished_sku"),
     url(r'^sku/(\d+)/t/cancel/$', url_views.url_provider_cancel_sku, name="provider_cancel_sku"),
     url(r'^sku/(\d+)/feedback/$', url_views.url_feedback_sku, name="feedback_sku"),
     url(r'^addorder/$', url_views.url_addorder, name="addorder"),

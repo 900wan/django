@@ -1,0 +1,21 @@
+{% extends "main/base.html" %}
+{% load i18n %} 
+{% load tz %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_timezone as TIME_ZONE %}
+{% localtime on %}
+{% block title %}
+    {{heading}}
+{% endblock title %}
+{% block content %}
+    <p>=====================================================</p>
+    {{msg}}
+    <p>=====================================================</p>
+    <h1>This is a {{heading}} page</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {{uf.as_p}}
+        {% csrf_token %}
+        <input type="submit" name="submit">
+    </form>
+{% endblock content %}
+{% endlocaltime %}

@@ -49,9 +49,14 @@ from main.act import act_htmllogout
 from main.act import act_orderpaid
 from main.act import act_alipay_trade_page
 from main.act import act_feedback_questionnaire
+from main.act import act_provider_finished_sku
+
 from main.act import test_alipay_trade_page
 
-from main.ds import  ds_getanoti
+from main.ds import ds_getanoti
+from main.ds import ds_c_provider_in_sku
+from main.ds import ds_c_buyer_in_sku
+from main.ds import ds_c_buyer_in_sku_1
 
 from main.models import User
 from main.models import Language
@@ -80,6 +85,8 @@ from main.forms import ProviderAvatarForm
 from main.forms import ProviderFeedbackSkuForm
 from main.forms import BuyerFeedbackSkuForm
 from main.forms import PlaceSkuForm
+from main.forms import FeedbackQuestionnaireB2PForm
+from main.forms import TestModelformFKForm
 
 from easy_timezones.utils import get_ip_address_from_request
 
@@ -301,31 +308,25 @@ def url_replytosku(request, sku_id):
 def url_addplan(request, sku_id):
     info = act_getinfo(request)
     current_user = request.user
-    uf = AddPlanForm(request.POST)
     sku = get_object_or_404(Sku, id=sku_id)
+    # if request.method = "POST":
     if current_user != sku.provider.user:
-        msg = "no"
+        msg = _(u'您不是这节课的老师')
+        msg += _(u'不能备课')
     else:
         msg = request.method
+        # if :
+        #     pass
         topic = sku.topic
         if request.method == 'POST':
+            uf = AddPlanForm(request.POST)
             if uf.is_valid():
-                status = uf.cleaned_data['status']
-                content = uf.cleaned_data['content']
-                assignment = uf.cleaned_data['assignment']
-                slides = uf.cleaned_data['slides']
-                roomlink = uf.cleaned_data['roomlink']
-                materiallinks = uf.cleaned_data['materiallinks']
-                materialhtml = uf.cleaned_data['materialhtml']
-                voc = uf.cleaned_data['voc']
-                copy_from = uf.cleaned_data['copy_from']
-                sumy = uf.cleaned_data['sumy']
-                result = act_addplan(sku=sku, topic=topic, status=status, content=content,
-                                     assignment=assignment, slides=slides, roomlink=roomlink,
-                                     materialhtml=materialhtml, materiallinks=materiallinks, voc=voc,
-                                     copy_from=copy_from, sumy=sumy)
-                msg = result
+                new_plan = uf.save(commit=False)
+                # new_plan = new_plan(sku=sku, topic=topic, status=1) 这里没有办法写成单行嘛？？
+                result = act_addplan(new_plan=new_plan, sku=sku, topic=topic)
+                msg = "GOOD"
         else:
+            uf = AddPlanForm()
             if sku.status != 5: sku.status = 4
         sku.save()
     return render(request, "main/addplan.html", {'info':info, 'uf':uf, 'msg':msg, 'heading':"Add a plan on SKU", 'sku':sku})
@@ -378,11 +379,12 @@ def url_modifyplan(request, plan_id):
 @login_required
 def url_showsku(request, sku_id):
     info = act_getinfo(request)
-    current_user = act_getinfo(request).get('current_user')
+    current_user = info.get('current_user')
     sku = get_object_or_404(Sku, id=sku_id)
-    is_involved = (current_user.provider == sku.provider) or (sku.buyer.filter(id=current_user.buyer.id).exists())
+    is_provider = ds_c_provider_in_sku(info, sku)
+    is_buyer = ds_c_buyer_in_sku_1(info, sku)
+    is_involved = is_provider or is_buyer
     rtss = ReplyToSku.objects.filter(sku=sku)
-    is_provider = True if current_user == sku.provider.user else False
     msg = str(request)
     heading = _(u'SKU #') + str(sku.id)
     return render(request, "main/showsku.html", locals())
@@ -686,7 +688,7 @@ def url_repickpool(request):
 @login_required
 def url_provider_repick(request, sku_id):
     info = act_getinfo(request)
-    sku = Sku.objects.get(id=sku_id)
+    sku = get_object_or_404(Sku, id=sku_id)
     if info.get('is_provider'):
         msg = act_provider_repick(sku=sku, new_provider=info['current_user'].provider)
     return render(request, "main/result.html", locals())
@@ -694,8 +696,8 @@ def url_provider_repick(request, sku_id):
 @login_required
 def url_provider_ready_sku(request, sku_id):
     info = act_getinfo(request)
-    sku = Sku.objects.get(id=sku_id)
-    if info.get('is_provider'):
+    sku = get_object_or_404(Sku, id=sku_id)
+    if ds_c_provider_in_sku(info, sku):
         if sku.has_plan():
             if request.method == 'POST':
                 uf = RoomlinkForm(request.POST)
@@ -713,7 +715,8 @@ def url_provider_ready_sku(request, sku_id):
 
 @login_required
 def url_buyer_ready_sku(request, sku_id):
-    '''设定学生已准备好，之前会判断是否是这节课的学生，sku是否为6（教师已准备好），传入request与sku_id'''
+    '''用于学生表示已经准备完毕，可以开始上课，设定学生已准备好。
+    之前会判断是否是这节课的学生，sku是否为6（教师已准备好），传入request与sku_id'''
     info = act_getinfo(request)
     sku = Sku.objects.get(id=sku_id)
     # sku = act_expand_skus(sku)
@@ -728,6 +731,25 @@ def url_buyer_ready_sku(request, sku_id):
     else:
         msg = _(u"诶，你不是这节课的学生呀")
     return render(request, "main/bready.html", locals())
+
+@login_required
+def url_provider_finished_sku(request, sku_id):
+    '''用于教师表示已完成课程
+    会判断当前用户是否为本节课的教师，无虞运行则设定课程状态为已完成（Sku.status = 8 已结束待评价)'''
+    info = act_getinfo(request)
+    this_sku = Sku.objects.get(id=sku_id)
+    heading = _(u'要结束课程吗？')
+    if ds_c_provider_in_sku(info, this_sku):
+        result = act_provider_finished_sku(this_sku)
+        if result is True:
+            return HttpResponseRedirect(reverse('main:showsku', args=[this_sku.id]))
+        else:
+            msg = result
+    else:
+        msg = _(u"诶，你不是这节课的老师呀")
+    return render(request, "main/onlygetmsg.html", locals())
+
+
 
 def url_my_profile(request):
     info = act_getinfo(request)
@@ -787,12 +809,13 @@ def url_providers(request):
     providers = Provider.objects.all()
     return render(request, "main/providers.html", locals())
 
+@login_required
 def url_feedback_sku(request, sku_id):
     '''Rating the skus after the course'''
     info = act_getinfo(request)
     sku = get_object_or_404(Sku, id=sku_id)
     result = "Hi there, I can't tell the info"
-    if info.get('current_user').provider == sku.provider:
+    if ds_c_provider_in_sku(info, sku):
         identity = "provider"
         if request.method == 'POST':
             uf = ProviderFeedbackSkuForm(request.POST)
@@ -810,17 +833,20 @@ def url_feedback_sku(request, sku_id):
                 uf = ProviderFeedbackSkuForm()
                 uf.fields.get('buyer').queryset = sku.buyer.all()
             result = "You sure are the provider of this cousrs "
-    elif info.get('current_user').buyer in sku.buyer.all():
+    elif ds_c_buyer_in_sku(info, sku):
         identity = "buyer"
         js_questionnaire = act_feedback_questionnaire("b2s")
         if request.method == 'POST':
-            uf = BuyerFeedbackSkuForm(request.POST, js_questionnaire)
-            if uf.is_valid():
-                questionnaire = uf.cleaned_data['questionnaire']
-                comment = uf.cleaned_data['comment']
-                result = act_buyer_feedback_sku(questionnaire=questionnaire, comment=comment, sku=sku, buyer=info.get('current_user').buyer)
+            method = 'POST'
+            ufquestionnaire = FeedbackQuestionnaireB2PForm(request.POST)
+            if ufquestionnaire.is_valid():
+                result = act_buyer_feedback_sku(sku=sku, buyer=info.get('current_user').buyer, ufq=ufquestionnaire)
+                if result:
+                    return HttpResponseRedirect(reverse('main:showsku', args=[sku.id]))
+                else:
+                    result = "Hi there, I can't tell the info"
         else:
-            uf = BuyerFeedbackSkuForm()
+            ufquestionnaire = FeedbackQuestionnaireB2PForm()
             result = "you sure are the buyer of this coures"
     return render(request, "main/feedback_sku.html", locals())
 
@@ -898,3 +924,21 @@ def url_alipay_webtrade_return(request):
         out_trade_no = request.out_trade_no
         version = request.version
     return render(request, "main/alipay_webtrade_return.html", locals())
+
+# TEST
+def url_modelformfk(request):
+    ''''''
+    info = act_getinfo(request)
+    heading = "Test Modelformfk"
+    if request.method == "POST":
+        uf = TestModelformFKForm(request.POST)
+        if uf.is_valid():
+            new_uf=uf.save(commit=False)
+            sku = get_object_or_404(Sku, id=227)
+            topic = sku.topic
+            new_uf.sku = sku
+            new_uf.topic = topic
+            new_uf.save()
+    else:
+        uf = TestModelformFKForm()
+    return render(request, "main/test_form.html", locals())
