@@ -39,7 +39,7 @@ from main.ds import ds_noti_toprovider_skubooked
 from main.ds import ds_noti_toprovider_lostbuyer
 from main.ds import ds_c_provider_in_sku
 from main.ds import ds_get_review_score
-
+from main.ds import ds_lograte
 
 from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_lazy as l_
@@ -113,7 +113,7 @@ def act_userlogin(request, username, password):
         if user.is_active:
             login(request, user)
             info = act_getinfo(request)
-            return info
+            return info.get('current_user')
         else:
             return "not_active"
     else:
@@ -399,13 +399,23 @@ def act_showindividual(id, c):
     return r
 
 def act_htmllogin(user):
+    '''用于记录用户浏览器登录日志'''
     log = ds_addlog(client=0, action=0, user=user)
-    return
+    result = True if log else False
+    return result
 
 def act_htmllogout(user):
+    '''用于记录用户浏览器登出日志'''
     log = ds_addlog(client=0, action=1, user=user)
-    return
+    result = True if log else False
+    return result
 
+def act_make_log(log, client):
+    '''用于设置日志中的操作客户端'''
+    if 'Mozilla' in client:
+        log.client = 0
+    log.save()
+    return log
 
 def act_getinfo(request):
     if request.user.is_authenticated():
@@ -687,3 +697,18 @@ def test_alipay_trade_page():
         notify_url="https://example.com/notify" # 可选, 不填则使用默认notify url
         )
     return order_string
+
+def act_provider_activity(provider):
+    '''计算教师活跃度，希望包含是否每日登录，每周登录次数，据结算周期内每周登录频度，结算周期内可上课时长，结算周期内上课时长'''
+    days = 7
+
+    if provider.status != 0:
+        log_info = provider.user.log_set.filter(created__gte=(timezone.now() - datetime.timedelta(days=days)))
+
+    logrates = ds_lograte(log_info, days)
+    return logrates
+
+def act_pay_provider(provider):
+    amount = 0
+    result = amount if amount else False
+    return result

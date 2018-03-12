@@ -234,10 +234,7 @@ def ds_c_provider_in_sku(info, sku):
 
 def ds_c_buyer_in_sku(info, sku):
     '''Check whether the curent user is buyer'''
-    if info.get('current_user').buyer in sku.buyer.all():
-        return True
-    else:
-        return False
+    return bool(info.get('current_user').buyer in sku.buyer.all())
 
 def ds_c_buyer_in_sku_1(info, sku):
     '''Check whether the curent user is buyer version 1'''
@@ -247,3 +244,15 @@ def ds_get_review_score(ufq):
     '''返回课程评价得分，满分100，小数四舍五入'''
     score = ((ufq['satisfaction']-1)*20+round((3*4-(ufq['plan']+ufq['teaching']+ufq['continuing']))*100/3))/4
     return round(score)
+
+def ds_lograte(log_info, days):
+    inday = {}
+    logrates = 0
+    for i in log_info:
+        i = i.created
+        for x in xrange(1, days):
+            a = x if i >= timezone.now() - datetime.timedelta(days=(x)) and i < timezone.now() - datetime.timedelta(days=x-1) else 0
+            if a != 0:
+                inday[x] = 1
+    logrates = float(sum(inday.values()))/days
+    return logrates

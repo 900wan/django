@@ -1,0 +1,20 @@
+{% extends "main/base.html" %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% block title %}
+    {{heading}}
+{% endblock title %}
+
+{% block content %}
+    <h1>{{heading}}</h1>
+    <h2>infolist</h2>
+    {% for item in infolist %}
+        <ul><li>ID:{{item.id}} Name:{{item.name}}</li></ul>
+    {% endfor %}
+    <h2>infolist1</h2>
+    {% for item in infolist1 %}
+        <ul><li>ID:{{item.id}} Name:{{item.name}}</li></ul>
+    {% endfor %}
+    <h2>Item</h2>
+    <ol><li>Item:{{item}}</li></ol>
+{% endblock content %}

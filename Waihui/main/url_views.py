@@ -128,21 +128,21 @@ def url_login_new(request):
     next = ''
     info = act_getinfo(request)
     if request.GET:
-       next = request.GET['next']
+        next = request.GET['next']
     if request.method == 'POST':
         if uf.is_valid():
             username = uf.cleaned_data['username']
             password = uf.cleaned_data['password']
             result = act_userlogin(request, username, password)
+
             if result == "not_active":
                 msg = _(u'Login failed, user is not active.')
             elif result == "none_user":
                 msg = _(u'Guess what? Login failed.')
             else:
-                if next == '':
-                    return HttpResponseRedirect(reverse('main:home'))
-                else:
-                    return HttpResponseRedirect(next)
+                act_htmllogin(result)
+                result = HttpResponseRedirect(reverse('main:home')) if next == '' else HttpResponseRedirect(next)
+                return result
             return render(request, "main/login.html", {'info':info, 'uf':uf, 'msg':msg, 'next':next})
         else:
             msg = _(u'form not valid')
@@ -402,17 +402,6 @@ def url_skulist(request):
 #         thesku = Sku.objects.filter(id=i)
 #         thesku.status = 2
 
-
-def url_test(request):
-    info = act_getinfo(request)
-    infos = ds_getanoti(Notification.objects.get(id=68))
-    typeofinfos = type(info)
-    typeofnotis = type(Notification.objects.get(id=68))
-    return render(request, "main/mytest.html", locals())
-
-def url_idtest(request, set_id):
-    result = Test_skufunction(set_id)
-    return render(request, "main/mytest", {'result':result})
 
 @login_required
 def url_dashboard(request):
@@ -886,59 +875,3 @@ def url_payment_result(request):
     wallet = info.get('current_user').wallet
     return render(request, "main/paymentResult.html", locals())
 
-@login_required
-def url_alipay_webtrade_test(request, amount):
-    '''alipay webpage payment test'''
-    info = act_getinfo(request)
-    heading = _(u'AliPay trade_page_pay test')
-    subject = _(u'Recharge moneny ') + str(amount)
-    order_string = act_alipay_trade_page(subject, amount)
-    alipayurl = "https://openapi.alipaydev.com/gateway.do?"
-    alipayurlget = str(alipayurl) + str(order_string)
-    decoderaw = unquote(order_string)
-
-    splitraw = decoderaw.split('&')
-    jsonraw = json.dumps(str(decoderaw))
-    strsplitraw = str(splitraw)
-
-    timenow = str(timezone.now())
-    return render(request, "main/alipay_webtrade_test.html", locals())
-
-@login_required
-def url_alipay_webtrade_return(request):
-    '''Alipay webpage payment return'''
-    info = act_getinfo(request)
-    heading = _(u'Alipay Return Page')
-    if request.GET:
-        data = request
-        total_amount = request.total_amount
-        timestamp = request.timestamp
-        sign = request.sign
-        trade_no = request.trade_no
-        sign_type = request.sign_type
-        auth_app_id = request.auth_app_id
-        charset = request.charset
-        seller_id = request.seller_id
-        method = request.method
-        app_id = request.app_id
-        out_trade_no = request.out_trade_no
-        version = request.version
-    return render(request, "main/alipay_webtrade_return.html", locals())
-
-# TEST
-def url_modelformfk(request):
-    ''''''
-    info = act_getinfo(request)
-    heading = "Test Modelformfk"
-    if request.method == "POST":
-        uf = TestModelformFKForm(request.POST)
-        if uf.is_valid():
-            new_uf=uf.save(commit=False)
-            sku = get_object_or_404(Sku, id=227)
-            topic = sku.topic
-            new_uf.sku = sku
-            new_uf.topic = topic
-            new_uf.save()
-    else:
-        uf = TestModelformFKForm()
-    return render(request, "main/test_form.html", locals())

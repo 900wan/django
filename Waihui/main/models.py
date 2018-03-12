@@ -470,7 +470,7 @@ class Log(models.Model):
         verbose_name_plural = "Logs"
 
     def __unicode__(self):
-        return u'%s' % '['+str(self.user.username)+'] '+ self.get_action_display() + ' on ' + self.get_client_display() + ' as ' + str(self.get_character_display())
+        return u'%s' % '['+str(self.user.username)+'] '+ self.get_action_display() + ' on ' + self.get_client_display() + ' as ' + str(self.get_character_display()) + ' at ' + str(self.created)
 
 
     TYPE_OF_CLIENT = (

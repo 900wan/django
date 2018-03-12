@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^', include('main.urls', namespace="main")),
     url(r'^p/', include('main.mvp_urls', namespace="mvp")),
+    url(r'^test/', include('main.test_urls', namespace="test")),
     url(r'^minutes/', include('minutes.urls')),
     url(r'^ueditor/', include('DjangoUeditor.urls')),
     url(r'^qr/(.+)$', minutes.views.generate_qrcode, name='qrcode'),

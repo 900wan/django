@@ -4,18 +4,10 @@ from django.conf.urls.static import static
 from main import url_views
 from main import test_views
 
-test_patterns = [
-    url(r'$', test_views.url_test, ),
-    url(r'^testform/$', test_views.test_modelformfk, name='testmodelformfk'),
-    url(r'language/$', test_views.get_language, name='get_language')
-]
 urlpatterns = [
     # Examples:
     # url(r'^$', 'Waihui.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
-    url(r'^test/', include(test_patterns)),
-    url(r'^testformff/$', url_views.url_modelformfk, name='urlmodelformfk'),
-    # url(r'^test/$', url_views.url_test, name='url_test'),
     url(r'^$', url_views.url_homepage, name="home"),
     url(r'^signup/$', url_views.url_signup, name="signup"),
     # url(r'^login/$', url_views.url_login, name="login"),
@@ -55,8 +47,6 @@ urlpatterns = [
     url(r'^office/schedule/$', url_views.url_schedule, name="schedule"),
     url(r'^notifications/$', url_views.url_notifications, name="notifications"),
     url(r'^notification/(\d+)/$', url_views.url_notification_go, name="notification_go"),
-    url(r'^mytest/$', url_views.url_test, name="mytest"),
-    url(r'^mytest/(\d+)/$', url_views.url_idtest, name="idtest"),
     url(r'^order/$', url_views.url_orderlist, name='orderlist'),
     url(r'^order/(\d+)/$', url_views.url_showorder, name='showorder'),
     url(r'^order/(\d+)/canceled/$', url_views.url_buyer_cancel_order, name='ordercancel'),
@@ -64,7 +54,7 @@ urlpatterns = [
     url(r'^wallet/$', url_views.url_walletpage, name='wallet'),
     url(r'^casher/$', url_views.url_casher, name='casher'),
     url(r'^payment_result/$', url_views.url_payment_result, name='payment_result'),
-    url(r'^alipay_trade_page_test/(\d+)/$', url_views.url_alipay_webtrade_test, name='alipay_test'),
-    url(r'^alipay/return/', url_views.url_alipay_webtrade_return, name='alipay_return')
+    url(r'^alipay_trade_page_test/(\d+)/$', test_views.url_alipay_webtrade_test, name='alipay_test'),
+    url(r'^alipay/return/', test_views.url_alipay_webtrade_return, name='alipay_return')
     # url(r'^reviews/$', url_views.url_reviews, name='reviews'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
