@@ -256,3 +256,6 @@ def ds_lograte(log_info, days):
                 inday[x] = 1
     logrates = float(sum(inday.values()))/days
     return logrates
+
+def ds_get_payoff_amount():
+    pass

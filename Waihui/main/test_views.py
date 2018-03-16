@@ -12,11 +12,21 @@ from django.contrib.auth.decorators import login_required
 
 from urllib import unquote
 
+from main.test_act import *
 from main.act import *
 from main.models import *
 
 from main.forms import TestModelformFKForm
 
+def test_infolist(request):
+    info = act_getinfo(request)
+    heading = _(u'Provider list')
+    provider = get_object_or_404(Provider, id=1)
+    infolist = Provider.objects.all()
+    result = act_pay_provider(provider)
+    item = result['error']
+    # item = act_provider_activity(provider)
+    return render(request, "test/info.html", locals())
 
 def url_test(request):
     return get_language(request)
@@ -161,10 +171,4 @@ def url_alipay_webtrade_return(request):
         version = request.version
     return render(request, "main/alipay_webtrade_return.html", locals())
 
-def test_infolist(request):
-    info = act_getinfo(request)
-    heading = _(u'Provider list')
-    provider = get_object_or_404(Provider, id=1)
-    infolist = Provider.objects.all()
-    item = act_provider_activity(provider)
-    return render(request, "test/info.html", locals())
+

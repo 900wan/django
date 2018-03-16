@@ -212,6 +212,7 @@ class Sku(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     topic = models.ForeignKey(Topic, blank=True, null=True)
+    # payoff = models.ForeignKey(ProviderPayoff, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     def duration(self):
@@ -499,6 +500,19 @@ class Log(models.Model):
     character = models.IntegerField(choices=TYPE_OF_CHARACTER, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
 
+class ProviderPayoff(models.Model):
+    '''the record of paying the provider'''
+    class Meta:
+        verbose_name = "ProviderPayoff"
+        verbose_name_plural = "ProviderPayoffs"
+
+    def __str__(self):
+        return u'teacher:%s has %d sku worthy:%s ' % (str(self.provider), self.skus.count() , str(self.amount))
+    provider = models.ForeignKey(Provider)
+    skus = models.ManyToManyField(Sku)
+    amount = models.FloatField()
+    currency = models.IntegerField(default=0)
+    created = models.DateTimeField(auto_now_add=True)
 
 class Notification(models.Model):
 
@@ -556,6 +570,7 @@ def provider_avatar_path(instance, filename):
 # 最后再根据文档过一遍，看看还有哪里有遗漏
 
 # TODO 添加方法（coolgene 将写出文档）    
+
 
 # TEST
 class TestModelformFK(models.Model):

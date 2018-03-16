@@ -18,7 +18,6 @@ from main.act import act_signup
 from main.act import act_userlogin
 # from main.act import act_jisuan
 from main.act import act_addlanguage
-from main.act import act_showuser
 from main.act import act_showindividual
 from main.act import act_addtopic
 from main.act import act_htmllogin
@@ -47,11 +46,8 @@ from main.act import act_provider_feedback_sku
 from main.act import act_buyer_cancel_order
 from main.act import act_htmllogout
 from main.act import act_orderpaid
-from main.act import act_alipay_trade_page
 from main.act import act_feedback_questionnaire
 from main.act import act_provider_finished_sku
-
-from main.act import test_alipay_trade_page
 
 from main.ds import ds_getanoti
 from main.ds import ds_c_provider_in_sku
@@ -570,7 +566,9 @@ def url_holdsku(request, topic_id, sku_id):
 
 @login_required
 def url_booksku(request, topic_id, sku_id,):
-    '''url name:booksku'''
+    '''
+    INVAILD!!
+    url name:booksku'''
     info = act_getinfo(request)
     uf = BookSkuForm(request.POST)
     topic = Topic.objects.get(id=topic_id)

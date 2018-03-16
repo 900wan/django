@@ -23,4 +23,4 @@ admin.site.register(ReviewToProvider)
 admin.site.register(ReviewToBuyer)
 admin.site.register(FeedbackQuestionnaireB2P)
 admin.site.register(TestModelformFK)
-    
+admin.site.register(ProviderPayoff)

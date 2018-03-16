@@ -22,6 +22,7 @@ from main.models import ReviewToProvider
 from main.models import ReviewToBuyer
 from main.models import Log
 from main.models import Notification
+from main.models import ProviderPayoff
 from main.forms import OrderForm
 
 from main.ds import ds_addlog
@@ -206,43 +207,6 @@ def act_addplan(sku, topic,\
         ds_noti_tobuyer_newplan(new_plan)
     return result
 
-# def act_addplan(sku, topic, status, content, assignment, slides, roomlink, materiallinks, materialhtml, voc, copy_from, sumy, plan=None):
-#     '''if import a plan, it will change the plan, if not, then add one'''
-#     if plan:
-#         plan.status = status
-#         plan.content = content
-#         plan.assignment = assignment
-#         plan.slides = slides
-#         plan.roomlink = roomlink
-#         plan.materialhtml = materialhtml
-#         plan.materiallinks = materiallinks
-#         plan.voc = voc
-#         plan.copy_from = copy_from
-#         plan.sumy = sumy
-#         result = "OK, Plan: " + sku.provider.name + " & " + topic.name + " modified!"
-#         ds_noti_tobuyer_planmodified(plan)
-#     else:
-#         plan = Plan(
-#             sku=sku,
-#             topic=topic,
-#             status=status,
-#             content=content,
-#             assignment=assignment,
-#             slides=slides,
-#             roomlink=roomlink,
-#             materialhtml=materialhtml,
-#             materiallinks=materiallinks,
-#             voc=voc,
-#             copy_from=copy_from,
-#             sumy=sumy,
-#             )
-#         plan.save()
-#         sku.status = 5
-#         sku.save()
-#         result = "OK, Plan: " + sku.provider.name + " & " + topic.name + " added!"
-#         ds_noti_tobuyer_newplan(plan)
-#     return result
-
 def act_addrtp(provider_id, buyer_id, sku_id, questionnaire, score):
     '''it will add a ReviewToProvider'''
     provider = Provider.objects.get(id=provider_id)
@@ -293,8 +257,6 @@ def act_addrts(user, type, content, reply_to, sku):
     result = "OK, " + user.username + " left a message of" + content
     return result
 
-def act_updatewallet():
-    pass
 
 def act_showuser(id):
     '''it will show User information'''
@@ -315,7 +277,7 @@ def act_addorder(user, skus, buyer, skus_topic=None):
     cny_price = ds_get_order_cny_price(skus)
     order = Order(cny_price=cny_price, buyer=buyer, type=OrderType.objects.get(id=1), skus_topic=skus_topic)
     order.save()
-    if isinstance(skus, Sku):
+    if isinstance(skus, Sku):  # 这里为何是isinstance 为何要这么用啊？
         order.skus.add(skus)
     else:
         order.skus = skus
@@ -369,9 +331,6 @@ def act_showtc(id):
     """it will show a topiccategory"""
     tc = TopicCategory.objects.get(id=id)
     return tc
-
-def act_signtopic(provider, topic):
-    pass
 
 def act_upgrade_hp(self, theset):
     """unavailable in Models!:
@@ -687,28 +646,10 @@ def act_alipay_trade_page(subject, total_amount):
         )
     return order_string
 
-def test_alipay_trade_page():
-    subject = u"测试订单".encode("utf8")
-    order_string = alipay.api_alipay_trade_page_pay(
-        out_trade_no="20161112",
-        total_amount=0.01,
-        subject=subject,
-        return_url="https://example.com",
-        notify_url="https://example.com/notify" # 可选, 不填则使用默认notify url
-        )
-    return order_string
-
-def act_provider_activity(provider):
+def act_provider_activity(provider, days=7):
     '''计算教师活跃度，希望包含是否每日登录，每周登录次数，据结算周期内每周登录频度，结算周期内可上课时长，结算周期内上课时长'''
-    days = 7
-
     if provider.status != 0:
         log_info = provider.user.log_set.filter(created__gte=(timezone.now() - datetime.timedelta(days=days)))
 
     logrates = ds_lograte(log_info, days)
     return logrates
-
-def act_pay_provider(provider):
-    amount = 0
-    result = amount if amount else False
-    return result
