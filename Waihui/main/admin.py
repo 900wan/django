@@ -3,6 +3,21 @@ from django.contrib import admin
 from main.models import *
 class ProviderInfo(admin.ModelAdmin):
     list_display = ('id', 'user', 'name', 'status', 'fee_rate')
+
+# @admin.register(Log)
+class LogAdmin(admin.ModelAdmin):
+    '''Admin View for Log'''
+
+    list_display = ('created', 'id', 'user', 'client', 'action')
+    # list_filter = ('',)
+    # # inlines = [
+    # #     Inline,
+    # # ]
+    # raw_id_fields = ('',)
+    # readonly_fields = ('',)
+    # search_fields = ('',)
+    # date_hierarchy = ''
+    # ordering = ('',)
     
 
 # Register your models here.
@@ -12,7 +27,7 @@ admin.site.register(Language)
 admin.site.register(Topic)
 admin.site.register(Sku)
 admin.site.register(TopicCategory)
-admin.site.register(Log)
+admin.site.register(Log, LogAdmin)
 admin.site.register(Wallet)
 admin.site.register(ReplyToSku)
 admin.site.register(Plan)

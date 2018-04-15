@@ -74,8 +74,8 @@ class Provider(models.Model):
         )
     name = models.CharField(max_length=50, )
     weekday_pattern = models.CharField(max_length=200, blank=True, null=True, validators=[validate_comma_separated_integer_list])
-    fee_rate = models.FloatField(default=1)
-    hp = models.FloatField(default=100)
+    fee_rate = models.FloatField(default=1) 
+    hp = models.FloatField(default=100) #教师活跃度
     teaching_language = models.ManyToManyField(Language, blank=True)
     bio = models.TextField(blank=True)
     video = models.TextField(blank=True, null=True)
@@ -489,11 +489,15 @@ class Log(models.Model):
         (1, '登出'),
         (2, '下单'),
         (3, '修改'),
-        (4, '取消')
+        (4, '取消'),
+        (5, '计算劳资'),
+        (6, '提取工资')
     )
     action = models.IntegerField(choices=TYPE_OF_ACTION)
     user = models.ForeignKey(User)
     order = models.ForeignKey(Order, null=True, blank=True)
+    sku = models.ForeignKey(Sku, on_delete=models.CASCADE, null=True, blank=True)
+    info_json = models.TextField(null=True, blank=True)
     TYPE_OF_CHARACTER = (
         (0, 'buyer'),
         (1, 'provider'))

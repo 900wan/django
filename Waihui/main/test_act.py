@@ -74,3 +74,32 @@ def act_pay_provider(provider, date=timezone.now()):
         result['error'] = str('No available SKU')
     result['amount'] = amount if amount else False
     return result
+
+def act_count_sku_earning(sku):
+    '''Count provider sku earning right after a sku was finished
+    if the interval between two sku is less than 7 days, 
+    then the logrates will be count user recenly 7 days log information.
+    else will count days log information between two sku 
+    '''
+    previous_skus = Sku.objects.filter(Q(provider=sku.provider)&Q(start_time__lte=sku.start_time)).order_by('-start_time')[:2:-1]
+    previous_sku = previous_skus[0]
+    interval_days = (previous_skus[1].start_time - previous_skus[0].start_time).days
+    if interval_days < 7:
+        logrates = act_user_activity(sku.provider.user, sku.start_time)
+    else:
+        logrates = act_user_activity(sku.provider.user, sku.start_time, interval_days)
+    return logrates
+
+def act_user_activity(user, set_date=timezone.now(), days=7):
+    '''默认返回用户7天内的活跃度，
+    ###目前只涉及教师，如非教师 不返回值。###
+    希望包含是否每日登录，每周登录次数，
+    据结算周期内每周登录频度，结算周期内可上课时长，结算周期内上课时长'''
+    set_date = set_date.date()
+    if user.provider.status != 0:
+        from_date = set_date - datetime.timedelta(days=days)
+        log_info = user.log_set.filter(Q(created__gte=from_date)&Q(created__lte=set_date))
+        log_info = log_info.order_by('created').reverse()[::-1]    
+        logrates = ds_lograte(set_date, log_info, days)
+    
+    return logrates

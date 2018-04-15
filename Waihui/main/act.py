@@ -646,10 +646,3 @@ def act_alipay_trade_page(subject, total_amount):
         )
     return order_string
 
-def act_provider_activity(provider, days=7):
-    '''计算教师活跃度，希望包含是否每日登录，每周登录次数，据结算周期内每周登录频度，结算周期内可上课时长，结算周期内上课时长'''
-    if provider.status != 0:
-        log_info = provider.user.log_set.filter(created__gte=(timezone.now() - datetime.timedelta(days=days)))
-
-    logrates = ds_lograte(log_info, days)
-    return logrates

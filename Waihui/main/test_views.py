@@ -35,6 +35,25 @@ def index(request):
     a = 'this is a test page'
     amount = 100
     offset = 10
+    provider = get_object_or_404(Provider, id=1)
+    sku = Sku.objects.filter(provider=provider).order_by('-start_time')[:2][::-1]
+    sku1 = sku[0]
+    sku2 = sku[1]
+    sku2_provider = sku2.provider
+    interval = sku2.start_time - sku1.start_time
+    interval_days = interval.days
+    interval_minutes = interval.seconds//60
+    interval_microseconds = interval.microseconds
+    interval_totalseconds = interval.total_seconds()//60
+    typesku = type(sku)
+    td7 = datetime.timedelta(days=7)
+    nowdatet = timezone.now()
+    nowdated = datetime.datetime.utcnow()
+    now_dt7 = timezone.now() - datetime.timedelta(days=7)
+    now_dt7 = now_dt7.date()
+    # previous_sku = sku2.get_previous_by_start_time()
+    previous_sku = act_count_sku_earning(sku2)    
+    # assert False
     return render(request, 'test/test.html', locals())
 
 def test_home(request):
@@ -84,13 +103,6 @@ def test_addlanguage(set):
         local_name="英语")
     return result
 
-
-def test_addtopic(set):
-    if set == 0:
-        result = act_addtopic(
-            name='支付宝',
-            category='')
-
 def test_modelformfk(request):
     ''''''
     info = act_getinfo(request)
@@ -102,18 +114,12 @@ def test_modelformfk(request):
         uf = TestModelformFKForm()
     return render(request, "main/test_form.html", locals())
 
-
-
 def url_test(request):
     info = act_getinfo(request)
     infos = ds_getanoti(Notification.objects.get(id=68))
     typeofinfos = type(info)
     typeofnotis = type(Notification.objects.get(id=68))
     return render(request, "main/mytest.html", locals())
-
-def url_idtest(request, set_id):
-    result = Test_skufunction(set_id)
-    return render(request, "main/mytest", {'result':result})
 
 def url_modelformfk(request):
     ''''''
@@ -170,5 +176,3 @@ def url_alipay_webtrade_return(request):
         out_trade_no = request.out_trade_no
         version = request.version
     return render(request, "main/alipay_webtrade_return.html", locals())
-
-

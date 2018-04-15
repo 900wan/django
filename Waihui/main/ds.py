@@ -245,16 +245,39 @@ def ds_get_review_score(ufq):
     score = ((ufq['satisfaction']-1)*20+round((3*4-(ufq['plan']+ufq['teaching']+ufq['continuing']))*100/3))/4
     return round(score)
 
-def ds_lograte(log_info, days):
+def ds_lograte(start_from, log_info, days):
+    '''读取log_info,返回指定时间段内的登陆次数的比例，即活跃度：登陆的天数/指定时间段 
+    算法可改进，循坏开始中后自动跳出并从上一个记录值开始循环（已实现）
+    start_info需要date()
+    '''
     inday = {}
     logrates = 0
+    lt = []
+    li = []
+    lo = []
+    f = {}
+    a = 1
+    begin_date = (start_from - datetime.timedelta(days=days-1))
     for i in log_info:
         i = i.created
-        for x in xrange(1, days):
-            a = x if i >= timezone.now() - datetime.timedelta(days=(x)) and i < timezone.now() - datetime.timedelta(days=x-1) else 0
-            if a != 0:
+        
+        for x in xrange(a, days+1): 
+            lo.append(x)
+            if i.date() < begin_date+datetime.timedelta(days=x-1):
+                break
+            elif i.date() == begin_date+datetime.timedelta(days=x-1):
+                a = x    
+                li.append(x)
+                
                 inday[x] = 1
+                
+                n = begin_date+datetime.timedelta(days=x-1)
+                f = {'x':x, 'date':i, 'n':n}
+                lt.append(f)
+                break
+
     logrates = float(sum(inday.values()))/days
+    assert False
     return logrates
 
 def ds_get_payoff_amount():
