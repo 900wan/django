@@ -360,6 +360,8 @@ def act_showindividual(id, c):
 def act_htmllogin(user):
     '''用于记录用户浏览器登录日志'''
     log = ds_addlog(client=0, action=0, user=user)
+    pre_log = log.get_previous_act_log()
+    log_act = log.act_log_check()
     result = True if log else False
     return result
 
@@ -384,6 +386,9 @@ def act_getinfo(request):
         }
         info['anotis'] =        act_getanotis(Notification.objects.filter(user=request.user, open_time__lte=timezone.now(), close_time__gte=timezone.now()).order_by('-open_time'))
         info['unread_anotis'] = act_getanotis(Notification.objects.filter(user=request.user, open_time__lte=timezone.now(), close_time__gte=timezone.now(), read=0).order_by('-open_time'))
+        current_user = request.user
+        current_user.buyer.last_activity = timezone.now()
+        current_user.buyer.save()
         if request.user.provider.status == 0:
             info['is_provider'] = False
         else:

@@ -82,6 +82,9 @@ class Provider(models.Model):
     avatar = models.ImageField(upload_to="provider_avatars/%Y/%m/%d/", default='/media/none/a.png', blank=True, null=True)
     assigned_location = models.TextField(blank=True, null=True)
     assigned_nationality = models.TextField(blank=True, null=True)
+    active_daily = models.IntegerField(default=0, blank=True, null=True)
+    active_course = models.IntegerField(default=0, blank=True, null=True)
+    active_community = models.IntegerField(default=0, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
@@ -140,6 +143,8 @@ class Buyer(models.Model):
     nationality = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
+    last_activity = models.DateTimeField(auto_now_add=True)
+    last_activity.editable = True
     def set_provider(self, provider):
         new_provider = provider
         self.provider = new_provider
@@ -494,6 +499,28 @@ class Log(models.Model):
         (6, '提取工资')
     )
     action = models.IntegerField(choices=TYPE_OF_ACTION)
+    TYPE_OF_ACTIVITY_ACTION = (
+        (10, _(u"登陆(+1)")),
+        (-10, _(u"超24h未登陆(-2)")),
+        (20, _(u"星期五24点前更新下周课表(+1)")),
+        (21, _(u"1h内确认接单（+1）")),
+        (22, _(u"上完课（+1）")),
+        (23, _(u"上完课15分钟内完成教师评价（+1）")),
+        (24, _(u"结束课程后1h内更新病例（+1）")),
+        (25, _(u"trial lesson后首次编写学生病例（+1）")),
+        (26, _(u"抢单（+5）")),
+        (-20, _(u"未及时更新课表（-5）")),
+        (-21, _(u"5小时内未接单或取消订单（-15）")),
+        (-22, _(u"放弃订单（-20）")),
+        (-23, _(u"抢单除外没提前24小时备课（-10）")),
+        (-24, _(u"没去上课（-30）")),
+        (-25, _(u"迟到（-5）")),
+        (30, _(u"30min内回答学生问题（+1）")),
+        (-30, _(u"未回答学生问题（-2）")),
+        
+    )
+    activity_action = models.IntegerField(choices=TYPE_OF_ACTIVITY_ACTION, null=True, blank=True)
+    activity_change = models.IntegerField(null=True, blank=True)
     user = models.ForeignKey(User)
     order = models.ForeignKey(Order, null=True, blank=True)
     sku = models.ForeignKey(Sku, on_delete=models.CASCADE, null=True, blank=True)
@@ -503,6 +530,29 @@ class Log(models.Model):
         (1, 'provider'))
     character = models.IntegerField(choices=TYPE_OF_CHARACTER, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
+
+    def get_previous_act_log(self):
+        '''return the previous log info of this very user'''
+        try:
+            pre_act_log = self.get_previous_by_created(user=self.user)
+        except:
+            pre_act_log = None
+        return pre_act_log
+
+    def act_log_check(self):
+        if self.get_previous_act_log() == None:
+            return None
+        pre_act_log_time = self.get_previous_act_log().created
+        interval_time = self.created - pre_act_log_time 
+        if interval_time <= datetime.timedelta(days=1):
+            self.activity_action = 10
+            self.activity_change = 1
+            self.save()
+        else:
+            self.activity_action = -10
+            self.activity_change = -1
+        # assert False
+        return self.activity_action
 
 class ProviderPayoff(models.Model):
     '''the record of paying the provider'''

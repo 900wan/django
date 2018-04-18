@@ -103,3 +103,8 @@ def act_user_activity(user, set_date=timezone.now(), days=7):
         logrates = ds_lograte(set_date, log_info, days)
     
     return logrates
+
+def act_wallet_trans(user, set_date=timezone.now(), forward_days=7):
+    '''默认返回用户从现在到7天前的钱包转账情况，可定义开始时间，向前天数'''
+    set_date = set_date.date()
+    log_wallet = user.log_set.filter(Q())

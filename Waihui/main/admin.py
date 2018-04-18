@@ -2,13 +2,13 @@
 from django.contrib import admin
 from main.models import *
 class ProviderInfo(admin.ModelAdmin):
-    list_display = ('id', 'user', 'name', 'status', 'fee_rate')
+    list_display = ('__unicode__', 'id', 'user', 'name', 'status', 'fee_rate')
 
 # @admin.register(Log)
 class LogAdmin(admin.ModelAdmin):
     '''Admin View for Log'''
 
-    list_display = ('created', 'id', 'user', 'client', 'action')
+    list_display = ('__unicode__', 'created', 'id', 'user', 'client', 'action')
     # list_filter = ('',)
     # # inlines = [
     # #     Inline,
