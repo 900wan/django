@@ -16,7 +16,7 @@ from main.act import act_addlanguage
 from main.act import act_showuser
 from main.act import act_showindividual
 from main.act import act_addtopic
-from main.act import act_htmllogin
+from main.act import act_htmllogin_log
 from main.act import act_getlanguage
 from main.act import act_addsku
 from main.act import act_addrts
@@ -39,7 +39,7 @@ from main.act import act_upload_provider_avatar
 from main.act import act_buyer_feedback_sku
 from main.act import act_provider_feedback_sku
 from main.act import act_buyer_cancel_order
-from main.act import act_htmllogout
+from main.act import act_htmllogout_log
 from main.act import act_orderpaid
 
 from main.ds import ds_getanoti

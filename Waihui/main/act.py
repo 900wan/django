@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import pytz, json, datetime 
+import pytz, json, datetime
 from alipay import AliPay, ISVAliPay
 from django.utils import translation, timezone
 from django.shortcuts import get_object_or_404
@@ -41,6 +41,7 @@ from main.ds import ds_noti_toprovider_lostbuyer
 from main.ds import ds_c_provider_in_sku
 from main.ds import ds_get_review_score
 from main.ds import ds_lograte
+from main.ds import ds_login_check
 
 from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_lazy as l_
@@ -71,14 +72,14 @@ def act_getlanguage(request):
 
 def act_signup(email, password, nickname, http_language, time_zone):
     '''signup a user'''
-    
+
     language = http_language
     try:
         ulanguage = Language.objects.get(english_name=language)
     except Language.DoesNotExist:
         ulanguage = Language(english_name=language)
         ulanguage.save()
-    
+
     user = User.objects.create_user(
         username=email,
         email=email,
@@ -113,8 +114,7 @@ def act_userlogin(request, username, password):
     if user is not None:
         if user.is_active:
             login(request, user)
-            info = act_getinfo(request)
-            return info.get('current_user')
+            return user
         else:
             return "not_active"
     else:
@@ -158,9 +158,9 @@ def act_addsku(provider, start_time, end_time, topic=None, buyer=None, status=0)
     if start_time>=end_time:
         result = 'Opps, end_time must be later than start_time!'
     elif Sku.objects.filter(
-        Q(provider=provider) & ~Q(status = 10), 
-        Q(start_time__lte=start_time, end_time__gt=start_time) 
-        | Q(start_time__lt=end_time, end_time__gte=end_time) 
+        Q(provider=provider) & ~Q(status = 10),
+        Q(start_time__lte=start_time, end_time__gt=start_time)
+        | Q(start_time__lt=end_time, end_time__gte=end_time)
         | Q(start_time__gt=start_time, end_time__lt=end_time)
         ):
         result = 'Opps, Time[%s] to [%s] is not available for %s!'  % (start_time, end_time, provider)
@@ -252,7 +252,7 @@ def act_addrts(user, type, content, reply_to, sku):
             ds_noti_newreply(reply=rts, user=noti_buyer.user, type=1)
     elif rts.type == 0:
         ds_noti_newreply(reply=rts, user=sku.provider.user, type=0)
-    
+
 
     result = "OK, " + user.username + " left a message of" + content
     return result
@@ -357,15 +357,16 @@ def act_showindividual(id, c):
     #     r = ds_showtopic(id, bywhat)
     return r
 
-def act_htmllogin(user):
+def act_htmllogin_log(user):
     '''用于记录用户浏览器登录日志'''
     log = ds_addlog(client=0, action=0, user=user)
-    pre_log = log.get_previous_act_log()
+    pre_log = log.get_pre_act_log()
     log_act = log.act_log_check()
     result = True if log else False
+    # assert False
     return result
 
-def act_htmllogout(user):
+def act_htmllogout_log(user):
     '''用于记录用户浏览器登出日志'''
     log = ds_addlog(client=0, action=1, user=user)
     result = True if log else False
@@ -381,12 +382,24 @@ def act_make_log(log, client):
 def act_getinfo(request):
     if request.user.is_authenticated():
         info = {
-        'is_login': True,
-        'current_user': request.user
+            'is_login': True,
+            'current_user': request.user
         }
-        info['anotis'] =        act_getanotis(Notification.objects.filter(user=request.user, open_time__lte=timezone.now(), close_time__gte=timezone.now()).order_by('-open_time'))
-        info['unread_anotis'] = act_getanotis(Notification.objects.filter(user=request.user, open_time__lte=timezone.now(), close_time__gte=timezone.now(), read=0).order_by('-open_time'))
+        info['anotis'] = act_getanotis(
+            Notification.objects.filter(
+                user=request.user,
+                open_time__lte=timezone.now(),
+                close_time__gte=timezone.now()
+                ).order_by('-open_time'))
+        info['unread_anotis'] = act_getanotis(
+            Notification.objects.filter(
+                user=request.user,
+                open_time__lte=timezone.now(),
+                close_time__gte=timezone.now(),
+                read=0
+                ).order_by('-open_time'))
         current_user = request.user
+        ds_login_check(current_user)
         current_user.buyer.last_activity = timezone.now()
         current_user.buyer.save()
         if request.user.provider.status == 0:
@@ -395,8 +408,8 @@ def act_getinfo(request):
             info['is_provider'] = True
     else:
         info = {
-        'is_login': False,
-        'current_user': None
+            'is_login': False,
+            'current_user': None
         }
     info['now_tz'] = timezone.localtime()
     info['timezone_name'] = timezone.get_current_timezone_name()
@@ -514,7 +527,7 @@ def act_expand_skus(skus):
     skus_result = []
     for sku in skus:
         setattr(sku, 'is_start_later', (sku.time_to_start() > START_SOON_TIME)) # 这节课是不是距离开始还早着呢
-        setattr(sku, 'is_start_soon', (datetime.timedelta() < sku.time_to_start() < START_SOON_TIME)) 
+        setattr(sku, 'is_start_soon', (datetime.timedelta() < sku.time_to_start() < START_SOON_TIME))
         # 这节课是不是马上就要开始啦？目前是30分钟内
         setattr(sku, 'is_should_in_progress', (sku.start_time < timezone.now() < sku.end_time)) # 这节
         # 课是不是应该在进行中
@@ -650,4 +663,3 @@ def act_alipay_trade_page(subject, total_amount):
         notify_url="http://127.0.0.1:8000/alipay/notify/"
         )
     return order_string
-

@@ -28,7 +28,14 @@ def ds_showtopic(id=0, bywhat=0):
         topic = "error"
     return topic
 
-def ds_addlog(client, action, user, order=None, character=None):
+
+def ds_addlog(action,
+              user,
+              client=0,
+              order=None,
+              character=None,
+              activity_action=None,
+              activity_change=None):
     '''增加日志记录
     TYPE_OF_CLIENT = (
         (0, '网页端'),
@@ -43,12 +50,14 @@ def ds_addlog(client, action, user, order=None, character=None):
         (3, '修改'),
         (4, '取消')
     )'''
-    log = Log(client=client,
-              action=action,
-              user=user,
-              order=order,
-              character=character,
-             )
+    log = Log(
+        client=client,
+        action=action,
+        user=user,
+        order=order,
+        character=character,
+        activity_action=activity_action,
+        activity_change=activity_change)
     log.save()
     return log
 
@@ -260,17 +269,17 @@ def ds_lograte(start_from, log_info, days):
     begin_date = (start_from - datetime.timedelta(days=days-1))
     for i in log_info:
         i = i.created
-        
-        for x in xrange(a, days+1): 
+
+        for x in xrange(a, days+1):
             lo.append(x)
             if i.date() < begin_date+datetime.timedelta(days=x-1):
                 break
             elif i.date() == begin_date+datetime.timedelta(days=x-1):
-                a = x    
+                a = x
                 li.append(x)
-                
+
                 inday[x] = 1
-                
+
                 n = begin_date+datetime.timedelta(days=x-1)
                 f = {'x':x, 'date':i, 'n':n}
                 lt.append(f)
@@ -282,3 +291,61 @@ def ds_lograte(start_from, log_info, days):
 
 def ds_get_payoff_amount():
     pass
+
+def ds_login_check(user):
+    '''compare the created time of lastest log, if '''
+    new_log = None
+    prov_lc = user.buyer.last_activity
+    interval_time = timezone.now() - prov_lc
+    lth24 = interval_time <= datetime.timedelta(hours=24)
+    gth24 = interval_time > datetime.timedelta(hours=24)
+    result = False
+    if lth24:
+        try:
+            log = Log.objects.filter(
+                activity_action=10, user=user).order_by('-created')[:1][0]
+        except:
+            log = None
+        try:
+            mlog = Log.objects.filter(
+                activity_action=-10, user=user).order_by('-created')[:1][0]
+        except:
+            mlog = None
+        # 与非门没掌握好...
+        if log is not None:
+            istoday = log.created.date() >= timezone.now().date()
+            if not istoday:
+                result = True
+        if mlog is not None:
+            mistoday = mlog.created.date() >= timezone.now().date()
+            if not mistoday:
+                result = True
+
+    elif gth24:
+        istoday = False
+        mistoday = False
+        try:
+            log = Log.objects.filter(
+                activity_action=10, user=user).order_by('-created')[:1][0]
+            istoday = log.created.date() >= timezone.now().date()
+        except:
+            log = None
+
+        try:
+            mlog = Log.objects.filter(
+                activity_action=-10, user=user).order_by('-created')[:1][0]
+            mistoday = mlog.created.date() >= timezone.now().date()
+        except:
+            mlog = None
+
+        if (not istoday) or (not mistoday):
+            i = interval_time.total_seconds() // (24*3600)
+            activity_change = -2*i
+            new_log = ds_addlog(
+                user=user, action=7, activity_action=-10, activity_change=activity_change)
+
+    if result:
+        new_log = ds_addlog(
+            user=user, action=7, activity_action=10, activity_change=1)
+    # assert False
+    return new_log

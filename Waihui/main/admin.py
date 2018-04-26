@@ -8,7 +8,8 @@ class ProviderInfo(admin.ModelAdmin):
 class LogAdmin(admin.ModelAdmin):
     '''Admin View for Log'''
 
-    list_display = ('__unicode__', 'created', 'id', 'user', 'client', 'action')
+    list_display = ('__unicode__', 'created', 'id', 'user', 'client', 'action',
+                    'activity_action', 'activity_change')
     # list_filter = ('',)
     # # inlines = [
     # #     Inline,
@@ -18,7 +19,7 @@ class LogAdmin(admin.ModelAdmin):
     # search_fields = ('',)
     # date_hierarchy = ''
     # ordering = ('',)
-    
+
 
 # Register your models here.
 admin.site.register(Provider, ProviderInfo)
@@ -28,6 +29,7 @@ admin.site.register(Topic)
 admin.site.register(Sku)
 admin.site.register(TopicCategory)
 admin.site.register(Log, LogAdmin)
+admin.site.register(ActLog)
 admin.site.register(Wallet)
 admin.site.register(ReplyToSku)
 admin.site.register(Plan)

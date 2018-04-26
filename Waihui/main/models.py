@@ -7,7 +7,10 @@ from django.core.validators import validate_comma_separated_integer_list
 from django.utils import timezone
 from django.utils.translation import get_language
 from django.utils.translation import ugettext as _
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 import datetime
+
 # from main.act import act_upgrade_hp
 # 无法导入acts
 BEFORE_COURSE_TIME = datetime.timedelta(minutes=15)
@@ -36,7 +39,7 @@ class Language(models.Model):
         return u'%s' % self.english_name
     chinese_name = models.CharField(max_length=50)
     english_name = models.CharField(max_length=50)
-    # 需要修改english_name为系统可识别 
+    # 需要修改english_name为系统可识别
     local_name = models.CharField(max_length=50)
     def autoaddlanguage(self, language_name):
         self.english_name = get_language()
@@ -44,7 +47,7 @@ class Language(models.Model):
         return self.english_name
 
 
-        
+
 
 # index 2
 class Provider(models.Model):
@@ -52,7 +55,7 @@ class Provider(models.Model):
     There are user(o2o), status(mc), name(mc), weekday_pattern(mcoseint), fee_rate(mfloat), hp(mfloat),hp(mfloat)
     and get_fee_rate(), upgrade_status(int), upgrade_hp(int), set_weekday_pattern()
     in Provider model
-    """ 
+    """
     class Meta:
         verbose_name = "Provider"
         verbose_name_plural = "Providers"
@@ -74,7 +77,7 @@ class Provider(models.Model):
         )
     name = models.CharField(max_length=50, )
     weekday_pattern = models.CharField(max_length=200, blank=True, null=True, validators=[validate_comma_separated_integer_list])
-    fee_rate = models.FloatField(default=1) 
+    fee_rate = models.FloatField(default=1)
     hp = models.FloatField(default=100) #教师活跃度
     teaching_language = models.ManyToManyField(Language, blank=True)
     bio = models.TextField(blank=True)
@@ -82,11 +85,33 @@ class Provider(models.Model):
     avatar = models.ImageField(upload_to="provider_avatars/%Y/%m/%d/", default='/media/none/a.png', blank=True, null=True)
     assigned_location = models.TextField(blank=True, null=True)
     assigned_nationality = models.TextField(blank=True, null=True)
-    active_daily = models.IntegerField(default=0, blank=True, null=True)
-    active_course = models.IntegerField(default=0, blank=True, null=True)
+    active_daily = models.IntegerField(default=10, blank=True, null=True)
+    active_course = models.IntegerField(default=60, blank=True, null=True)
     active_community = models.IntegerField(default=0, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
+    def clean(self, *args, **kwargs):
+        # add custom validation here
+        if self.active_daily > 10:
+            self.active_daily = 10
+        elif self.active_daily <0:
+            self.active_daily = 0
+
+        elif self.active_course > 90:
+            self.active_course =90
+        elif self.active_course < 0:
+            self.active_course = 0
+
+        elif self.active_community > 5:
+            self.active_community =5
+        elif self.active_community < 0:
+            self.active_community = 0
+
+        super(Provider, self).clean(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super(Provider, self).save(*args, **kwargs)
 
     def get_fee_rate(self):
         """对该老师的fee_rate进行更新（在需要时）"""
@@ -178,7 +203,7 @@ class Topic(models.Model):
     status = models.IntegerField()
     creator = models.ForeignKey(User)
     created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)    
+    modified = models.DateTimeField(auto_now=True)
 
 # index 6
 class Sku(models.Model):
@@ -241,7 +266,7 @@ class Sku(models.Model):
     def further(self):
         if self.start_time > timezone.now():
             return self
-        
+
 # index 7
 class Plan(models.Model):
 
@@ -253,11 +278,11 @@ class Plan(models.Model):
         return u'Plan of %s' % self.sku
     sku = models.OneToOneField(Sku, blank=True, null=True)
     topic = models.ForeignKey(Topic)
-# 给sku：
-# 已备课；已上完；
-# 给topic：
-# 待审核；成功通过；失败待修改
-# 2018.3.6:提出修改建议，简化至4个状态，不做对于Topic的区分。
+    # 给sku：
+    # 已备课；已上完；
+    # 给topic：
+    # 待审核；成功通过；失败待修改
+    # 2018.3.6:提出修改建议，简化至4个状态，不做对于Topic的区分。
     CHOICES_OF_STATUS = (
         (0, _(u'未备课')),
         (1, _(u'待审核')),
@@ -439,7 +464,7 @@ class Order(models.Model):
     paidbacktime = models.DateTimeField(null=True, blank=True) #退款日期
     modified = models.DateTimeField(auto_now=True, null=True, blank=True)
 
-# 不可支付、未支付、已支付、已完成、申请退款、已退款……
+    # 不可支付、未支付、已支付、已完成、申请退款、已退款……
 
     STATUS_OF_ORDER_TYPE = (
         (0, '不可支付'),
@@ -496,7 +521,8 @@ class Log(models.Model):
         (3, '修改'),
         (4, '取消'),
         (5, '计算劳资'),
-        (6, '提取工资')
+        (6, '提取工资'),
+        (7, _(u'浏览'))
     )
     action = models.IntegerField(choices=TYPE_OF_ACTION)
     TYPE_OF_ACTIVITY_ACTION = (
@@ -517,10 +543,11 @@ class Log(models.Model):
         (-25, _(u"迟到（-5）")),
         (30, _(u"30min内回答学生问题（+1）")),
         (-30, _(u"未回答学生问题（-2）")),
-        
+
     )
     activity_action = models.IntegerField(choices=TYPE_OF_ACTIVITY_ACTION, null=True, blank=True)
     activity_change = models.IntegerField(null=True, blank=True)
+    pre_value = models.IntegerField(null=True, blank=True)
     user = models.ForeignKey(User)
     order = models.ForeignKey(Order, null=True, blank=True)
     sku = models.ForeignKey(Sku, on_delete=models.CASCADE, null=True, blank=True)
@@ -531,28 +558,145 @@ class Log(models.Model):
     character = models.IntegerField(choices=TYPE_OF_CHARACTER, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
 
-    def get_previous_act_log(self):
-        '''return the previous log info of this very user'''
+
+    def get_pre_act_log(self, activity_action=None, activity_change=None):
+        '''return pre log under spec activity of this very user'''
         try:
-            pre_act_log = self.get_previous_by_created(user=self.user)
+            pre_log = self.get_previous_by_created(activity_action=activity_action, user=self.user,
+                                                   activity_change=activity_change)
+            # if pre_log.created.date() == timezone.now().date():
+            #     pre_log = None
+            #     assert False
         except:
-            pre_act_log = None
-        return pre_act_log
+            pre_log = None
+
+        return pre_log
+
+    def log_auto_save(self):
+        pass
 
     def act_log_check(self):
-        if self.get_previous_act_log() == None:
-            return None
-        pre_act_log_time = self.get_previous_act_log().created
-        interval_time = self.created - pre_act_log_time 
-        if interval_time <= datetime.timedelta(days=1):
-            self.activity_action = 10
-            self.activity_change = 1
-            self.save()
+        '''return activity action by checked the static'''
+        activity_action = None
+        istoday10 = None
+        mistoday10 = None
+        istoday = False
+        prov_lc = self.user.buyer.last_activity
+        interval_time = timezone.now() - prov_lc
+        gth24 = interval_time > datetime.timedelta(hours=24)
+        try:
+            pre_10_log = self.get_pre_act_log(activity_action=10)
+            pre_10_log = self.get_previous_by_created(activity_action=10, user=self.user)
+            istoday10 = pre_10_log.created.date() == timezone.now().date()
+        except:
+            pre_10_log = None
+
+        try:
+            pre_m10_log = self.get_pre_act_log(activity_action=-10)
+            pre_m10_log = self.get_previous_by_created(activity_action=-10, user=self.user)
+            mistoday10 = pre_m10_log.created.date() == timezone.now().date()
+        except:
+            pre_m10_log = None
+        if mistoday10 or istoday10:
+            istoday = True
+        if gth24:
+            activity_action = -10
+            i = interval_time.total_seconds() // (24*3600)
+            j = interval_time.total_seconds() //3600
+            k = j //24
+            activity_change = -2*i
+            if pre_m10_log is not None:
+                if istoday:
+                    activity_action = None
         else:
-            self.activity_action = -10
-            self.activity_change = -1
+            if pre_10_log is not None:
+                if not istoday:
+                    activity_action = 10
+                    activity_change = 1
+                else:
+                    activity_action = None
+            if pre_m10_log is not None:
+                if istoday:
+                    activity_action = None
+        if activity_action is None:
+            return None
+        self.activity_action = activity_action
+        self.activity_change = activity_change
+        log = self.save()
         # assert False
-        return self.activity_action
+        return log
+
+    # def act_log_check(self):
+    #     '''return activity action by checked the static'''
+    #     try:
+    #         pre_log = self.get_previous_by_created(user=self.user)
+    #         interval_time = self.created - pre_log.created
+    #     except:
+    #         pre_log = None
+    #     try:
+    #         pre_m10_log = self.get_pre_act_log(activity_action=-10)
+    #         pre_m10_log = self.get_previous_by_created(activity_action=-10, user=self.user)
+    #     except:
+    #         pre_m10_log = None
+    #     activity_action = None
+    #     pre_10_log = self.get_pre_act_log(
+    #         activity_action=10, activity_change=1)
+    #     if pre_10_log is not None:
+    #         nowdate = timezone.now().date()
+    #         pre10_date = pre_10_log.created.date()
+    #         interval_act_time = nowdate - pre10_date
+    #         dt24 = datetime.timedelta(hours=24)
+    #         t1 = interval_time <= dt24
+    #         t2 = interval_act_time == 1
+    #         t3 = interval_time > dt24
+    #         if interval_time <= dt24:
+    #             # 这里怎么简化些呢？
+    #             if pre_m10_log is not None:
+    #                 pre_m10_date = pre_m10_log.created.date()
+    #                 interval_mact_date = nowdate - pre_m10_date
+    #                 activity_action = None
+    #                 if interval_act_time.days < 1:
+    #                     activity_action = None
+    #                 elif interval_act_time.days == 1 or interval_mact_date.days == 0:
+    #                     activity_action = 10
+    #                     activity_change = 1
+    #             else:
+    #                 if interval_act_time.days < 1:
+    #                     activity_action = None
+    #                 elif interval_act_time.days == 1:
+    #                     activity_action = 10
+    #                     activity_change = 1
+    #         elif interval_time > dt24:
+    #             activity_action = -10
+    #             i = interval_time.total_seconds() // (24*3600)
+    #             j = interval_time.total_seconds() //3600
+    #             k = j //24
+    #             activity_change = -2*i
+
+    #     else:
+    #         activity_action = 10
+    #         activity_change = 1
+    #         assert False
+    #     # if pre_log is None:
+    #     #     return None
+
+    #     # if pre_login_log is None:
+    #     #     return None
+    #     # else:
+    #     #     interval_days = (self.created - pre_login_log.created).days
+    #     #     if interval_days == 1:
+    #     #         activity_action = 10
+    #     #         activity_change = 1
+    #     #     elif interval_days >1:
+    #     #         activity_action = -10
+    #     #         activity_change = -1
+    #     if activity_action is None:
+    #         return None
+    #     self.activity_action = activity_action
+    #     self.activity_change = activity_change
+    #     self.save()
+
+    #     return self.activity_action
 
 class ProviderPayoff(models.Model):
     '''the record of paying the provider'''
@@ -608,7 +752,46 @@ class Notification(models.Model):
     read = models.IntegerField(choices=STATUS_OF_READ, default=0)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
-    
+
+class ActLog(models.Model):
+    """Model definition for ActLog."""
+
+    # TODO: Define fields here
+
+    class Meta:
+        """Meta definition for ActLog."""
+
+        verbose_name = 'ActLog'
+        verbose_name_plural = 'ActLogs'
+
+    def __unicode__(self):
+        """Unicode representation of ActLog."""
+        return u'%s' % str(self.buyer_hp)
+
+    log = models.OneToOneField(Log, on_delete=models.CASCADE)
+    buyer_hp = models.IntegerField()
+    provider_hp = models.IntegerField(blank=True, null=True)
+    provider_active_daily = models.IntegerField(blank=True, null=True)
+    provider_active_course = models.IntegerField(blank=True, null=True)
+    provider_active_community = models.IntegerField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    @receiver(post_save, sender=Log)
+    def log_save(sender, instance, created, **kwargs):
+        if created:
+            actlog = ActLog(
+                log=instance,
+                buyer_hp=instance.user.buyer.hp,
+                provider_active_daily=instance.user.provider.active_daily,
+                provider_active_course=instance.user.provider.active_course,
+                provider_active_community=instance.user.provider.
+                active_community)
+            actlog.save()
+
+    # def save(self, *args, **kwargs):
+    #     self.full_clean()
+    #     super(ActLog, self).save(*args, **kwargs)
+
 
 #upload path methods:
 
@@ -623,7 +806,7 @@ def provider_avatar_path(instance, filename):
 # 添加日期、修改日期回头统一给每一个 model 加
 # 最后再根据文档过一遍，看看还有哪里有遗漏
 
-# TODO 添加方法（coolgene 将写出文档）    
+# TODO 添加方法（coolgene 将写出文档）
 
 
 # TEST
