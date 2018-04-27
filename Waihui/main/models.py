@@ -137,6 +137,19 @@ class Provider(models.Model):
     def set_weekday_pattern(self, theset):
         pass
 
+    # @receiver(post_save, sender=Log)
+    # def log_save(sender, instance, created, **kwargs):
+    #     if created:
+    #         log = instance
+    #         log.activity_change
+    #         actlog = ActLog(
+    #             log=instance,
+    #             buyer_hp=instance.user.buyer.hp,
+    #             provider_active_daily=instance.user.provider.active_daily,
+    #             provider_active_course=instance.user.provider.active_course,
+    #             provider_active_community=instance.user.provider.
+    #             active_community)
+    #         actlog.save()
 
 # index 3
 class Buyer(models.Model):
@@ -620,11 +633,20 @@ class Log(models.Model):
                     activity_action = None
         if activity_action is None:
             return None
+
         self.activity_action = activity_action
         self.activity_change = activity_change
         log = self.save()
         # assert False
         return log
+
+    def save(self, *args, **kwargs):
+        provider = self.user.provider
+        if 10 >= self.activity_action >= -10:
+            provider.active_daily = self.activity_change
+            provider.save()
+
+        super(Log, self).save(*args, **kwargs)
 
     # def act_log_check(self):
     #     '''return activity action by checked the static'''

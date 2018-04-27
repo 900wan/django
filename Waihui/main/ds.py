@@ -293,7 +293,11 @@ def ds_get_payoff_amount():
     pass
 
 def ds_login_check(user):
-    '''compare the created time of lastest log, if '''
+    '''for a html browse log which compare the created time of lastest log, 
+    if the interval between buyer's activity and timezone.now is less than
+    24H and this date has no any activty log.
+    then regard the buyer has logined(log:10) once
+    '''
     new_log = None
     prov_lc = user.buyer.last_activity
     interval_time = timezone.now() - prov_lc
