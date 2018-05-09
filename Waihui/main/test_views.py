@@ -52,13 +52,27 @@ def index(request):
     now_dt7 = timezone.now() - datetime.timedelta(days=7)
     now_dt7 = now_dt7.date()
     # previous_sku = sku2.get_previous_by_start_time()
-    previous_sku = act_count_sku_earning(sku2)    
-    # assert False
+    # previous_sku = act_count_sku_earning(sku2)    
+
+    lt = timezone.localdate().weekday()
+    ltn = timezone.localtime(timezone.now())
+    assert False
     return render(request, 'test/test.html', locals())
 
-def test_home(request):
-    output = _("Welcome to my site.")
-    return HttpResponse(output)
+@login_required
+def test_home_logined(request):
+    info = act_getinfo(request)
+    current_user = info['current_user']
+    this_week = timezone.now().isocalendar()[1]
+    next_week = this_week + 1
+    log1 = act_addlog_schedule(current_user, this_week)
+    log2 = act_addlog_schedule(current_user, next_week)
+    if log1 is not None:
+        log = log1
+    elif log2 is not None:
+        log = log2
+    result = 'log:%s, log2:%s, log3:%s' %(log, log1, log2)
+    return HttpResponse(result)
 
 def get_language(request):
     i = request.META.get('HTTP_ACCEPT_LANGUAGE')
@@ -176,3 +190,5 @@ def url_alipay_webtrade_return(request):
         out_trade_no = request.out_trade_no
         version = request.version
     return render(request, "main/alipay_webtrade_return.html", locals())
+
+

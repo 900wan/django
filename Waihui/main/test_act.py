@@ -108,3 +108,26 @@ def act_wallet_trans(user, set_date=timezone.now(), forward_days=7):
     '''默认返回用户从现在到7天前的钱包转账情况，可定义开始时间，向前天数'''
     set_date = set_date.date()
     log_wallet = user.log_set.filter(Q())
+
+def act_addlog_dailyacti(parameter_list):
+    '''TODO:Try to make a def can handle all daily activity change
+    '''
+    pass
+
+def add_addlog_provacti(parameter_list):
+    '''TODO:Try to make a def handle all provider acti change
+    by passing the sub def such as act_addlog_dailyacti'''
+    pass
+
+def act_addlog_schedule(user, last_schdule_weeknum, client=0):
+    '''Add a log of adding a schedule'''
+    addtional_content = "last_schdule_weeknum"
+    addtional_value = last_schdule_weeknum
+    log = ds_addlog(action=8,
+        user=user,
+        client=client,
+        addtional_content=addtional_content,
+        addtional_value=addtional_value)
+    # check星期五24点前更新下周课表(+1)
+    log = ds_log_addacti(log, 20)
+    return log

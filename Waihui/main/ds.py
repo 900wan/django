@@ -2,6 +2,7 @@
 from django.utils import translation, timezone, html
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from main.models import User
 from main.models import Language
 from main.models import Provider
@@ -35,7 +36,10 @@ def ds_addlog(action,
               order=None,
               character=None,
               activity_action=None,
-              activity_change=None):
+              activity_change=None,
+              addtional_content=None,
+              addtional_value=None,
+              ):
     '''增加日志记录
     TYPE_OF_CLIENT = (
         (0, '网页端'),
@@ -57,7 +61,9 @@ def ds_addlog(action,
         order=order,
         character=character,
         activity_action=activity_action,
-        activity_change=activity_change)
+        activity_change=activity_change,
+        addtional_content=addtional_content,
+        addtional_value=addtional_value,)
     log.save()
     return log
 
@@ -353,3 +359,71 @@ def ds_login_check(user):
             user=user, action=7, activity_action=10, activity_change=1)
     # assert False
     return new_log
+
+def ds_log_addacti(log, action):
+    '''for add activity imformation to param log'''
+    change = 0
+    if action==20:
+    # 周五前24点更新下周课表+1
+    # 未及时更新课表（-5）
+        isocal =  timezone.now().isocalendar()
+        this_weeknum = isocal[1]
+        this_weekday = isocal[2]
+        action = None
+        
+        if log.addtional_content=='last_schdule_weeknum':
+            last_schdule_weeknum = log.addtional_value
+            gt_this_weeknum = last_schdule_weeknum > this_weeknum
+            # check the weeknum of log, wether is the next week schedule
+            lte_friday = this_weekday < 6
+            #  check the whether less than friday. 
+            if lte_friday and gt_this_weeknum:
+                action = 20
+            elif not gt_this_weeknum and not lte_friday:
+                action =-20
+            else:
+                return False
+            try:
+                fit_log = Log.objects.filter(
+                    Q(activity_action=action)
+                    &Q(addtional_content='last_schdule_weeknum')
+                    &Q(addtional_value__gte=this_weeknum))
+            except:
+                fit_log = None
+            test1 = fit_log.exists()
+            if test1:
+                fit_log_exists = fit_log.order_by('-created')[:1][0].created.isocalendar()[1] == this_weeknum
+                if fit_log_exists:
+                    action = None
+                    result = "fit_log_exists"
+    # try:
+    #     last_same_log = Log.objects.filter(
+    #         Q(activity_action=action)).order_by('-created')[:1][0]
+    # except:
+    #     last_same_log = None
+    # if last_same_log is not None:
+    #     is_today = last_same_log.created.date() == timezone.now().date()
+    #     is_same = last_same_log is log
+    # else:
+    #     is_today = False
+    #     is_same = False
+    # if action==None:
+    #     return None
+    if action==(20 or 21 or 22 or 23 or 24 or 25):
+        change = 1
+    elif action==26:
+        change = 5
+    if action is not None:
+        log.activity_action = action
+        log.activity_change = change
+        log.save()
+        result = '%s, %s' %(action, change)
+    # if not is_today and not is_same:
+    #     log.activity_action = action
+    #     log.activity_change = change
+    #     log.save()
+    # else:
+    #     # assert False
+    #     return None
+
+    return log, result

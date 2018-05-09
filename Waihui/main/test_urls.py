@@ -9,6 +9,8 @@ urlpatterns = [
     url(r'^info/$', test_views.test_infolist, name='info'),
     url(r'^language/$', test_views.get_language, name='get_language'),
     url(r'^mytest/$', test_views.url_test, name="mytest"),
+    url(r'^loginedtest/$', test_views.test_home_logined, name="mytest"),
+    
 ]
 
 # test_patterns = [

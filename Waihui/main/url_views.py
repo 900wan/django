@@ -20,7 +20,8 @@ from main.act import act_userlogin
 from main.act import act_addlanguage
 from main.act import act_showindividual
 from main.act import act_addtopic
-from main.act import act_htmllogin_log
+from main.act import act_addlog_htmllogin
+# from main.act import act_addlog_schedule
 from main.act import act_getlanguage
 from main.act import act_addsku
 from main.act import act_addrts
@@ -44,7 +45,7 @@ from main.act import act_upload_provider_avatar
 from main.act import act_buyer_feedback_sku
 from main.act import act_provider_feedback_sku
 from main.act import act_buyer_cancel_order
-from main.act import act_htmllogout_log
+from main.act import act_addlog_htmllogout
 from main.act import act_orderpaid
 from main.act import act_feedback_questionnaire
 from main.act import act_provider_finished_sku
@@ -136,7 +137,7 @@ def url_login_new(request):
             elif result == "none_user":
                 msg = _(u'Guess what? Login failed.')
             else:
-                act_htmllogin_log(result)
+                act_addlog_htmllogin(result)
                 result = HttpResponseRedirect(reverse('main:home')) if next == '' else HttpResponseRedirect(next)
                 return result
             return render(request, "main/login.html", {'info':info, 'uf':uf, 'msg':msg, 'next':next})
@@ -162,7 +163,7 @@ def url_login_new(request):
 #                 if user.is_active:
 #                     login(request, user)
 #                     info = act_getinfo(request)
-#                     act_htmllogin_log(user)
+#                     act_addlog_htmllogin(user)
 #                     if next == '':
 #                         return render(request, "main/right.html", {'info':info, 'username':username})
 #                     else:
@@ -187,7 +188,7 @@ def url_logout(request):
     info = act_getinfo(request)
     logout(request)
     if info['current_user']:
-        act_htmllogout_log(info['current_user'])
+        act_addlog_htmllogout(info['current_user'])
     return HttpResponseRedirect(reverse('main:home'))
 
 def url_tc(request, offset_id):
@@ -590,7 +591,6 @@ def url_bookresult(request):
 
 @login_required
 def url_schedule(request):
-    info = act_getinfo(request)
     # tz = timezone.get_current_timezone()
     tz = pytz.timezone("Asia/Shanghai")
     # 开发过程中这个函数已经在代码中写明用北京时间，而schedule.html的前台javascript是使用的当前电脑默认时区，我们目前使用的本机时区都是北京时间没问题，但是未来如果给其他时区的用户使用就有可能出问题，未来再处理。
@@ -625,6 +625,9 @@ def url_schedule(request):
                         raise e
                 # msg=schedule
                 msg=act_generate_skus(provider, schedule)
+                if msg != []:
+                    last_schdule_weeknum = 1
+                    # schedule_log = act_addlog_schedule(client=0, user=current_user, last_schdule_weeknum=)
         else:
             uf = ScheduleForm(initial = {'provider': provider })
         return render(request,"main/schedule.html", locals())

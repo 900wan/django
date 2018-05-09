@@ -2,6 +2,7 @@
 from django.contrib import admin
 from main.models import *
 class ProviderInfo(admin.ModelAdmin):
+    # Provider.last_activity.editable = True
     list_display = ('__unicode__', 'id', 'user', 'name', 'status', 'fee_rate')
 
 # @admin.register(Log)

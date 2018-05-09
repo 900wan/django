@@ -42,6 +42,7 @@ from main.ds import ds_c_provider_in_sku
 from main.ds import ds_get_review_score
 from main.ds import ds_lograte
 from main.ds import ds_login_check
+from main.ds import ds_log_addacti
 
 from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_lazy as l_
@@ -357,7 +358,7 @@ def act_showindividual(id, c):
     #     r = ds_showtopic(id, bywhat)
     return r
 
-def act_htmllogin_log(user):
+def act_addlog_htmllogin(user):
     '''用于记录用户浏览器登录日志'''
     log = ds_addlog(client=0, action=0, user=user)
     pre_log = log.get_pre_act_log()
@@ -366,7 +367,7 @@ def act_htmllogin_log(user):
     # assert False
     return result
 
-def act_htmllogout_log(user):
+def act_addlog_htmllogout(user):
     '''用于记录用户浏览器登出日志'''
     log = ds_addlog(client=0, action=1, user=user)
     result = True if log else False

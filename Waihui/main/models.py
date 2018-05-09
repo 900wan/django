@@ -182,7 +182,7 @@ class Buyer(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     last_activity = models.DateTimeField(auto_now_add=True)
-    last_activity.editable = True
+    # last_activity.editable = True
     def set_provider(self, provider):
         new_provider = provider
         self.provider = new_provider
@@ -535,7 +535,8 @@ class Log(models.Model):
         (4, '取消'),
         (5, '计算劳资'),
         (6, '提取工资'),
-        (7, _(u'浏览'))
+        (7, _(u'浏览')),
+        (8, _(u'更新课表'))
     )
     action = models.IntegerField(choices=TYPE_OF_ACTION)
     TYPE_OF_ACTIVITY_ACTION = (
@@ -561,6 +562,8 @@ class Log(models.Model):
     activity_action = models.IntegerField(choices=TYPE_OF_ACTIVITY_ACTION, null=True, blank=True)
     activity_change = models.IntegerField(null=True, blank=True)
     pre_value = models.IntegerField(null=True, blank=True)
+    addtional_content = models.CharField(null=True, blank=True, max_length=50)
+    addtional_value = models.CharField(null=True, blank=True, max_length=50)
     user = models.ForeignKey(User)
     order = models.ForeignKey(Order, null=True, blank=True)
     sku = models.ForeignKey(Sku, on_delete=models.CASCADE, null=True, blank=True)
@@ -776,7 +779,9 @@ class Notification(models.Model):
     modified = models.DateTimeField(auto_now=True)
 
 class ActLog(models.Model):
-    """Model definition for ActLog."""
+    """Model definition for ActLog.
+    for recording provider activity log
+    """
 
     # TODO: Define fields here
 
