@@ -43,6 +43,7 @@ from main.ds import ds_get_review_score
 from main.ds import ds_lograte
 from main.ds import ds_login_check
 from main.ds import ds_log_addacti
+from main.ds import ds_log_skubooked
 
 from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_lazy as l_
@@ -179,10 +180,12 @@ def act_addsku(provider, start_time, end_time, topic=None, buyer=None, status=0)
         result = "OK, Sku:" + provider.name + "'s " + str(start_time) + " added!"
     return result
 
-def act_addplan(sku, topic,\
-    new_plan=None, plan=None, status=None, content=None, assignment=None, slides=None,\
-    roomlink=None, materialhtml=None, materiallinks=None, voc=None, copy_from=None, sumy=None,\
-    ):
+def act_addplan(sku, topic,
+                new_plan=None, plan=None,
+                status=None, content=None, assignment=None, slides=None,
+                roomlink=None, materialhtml=None, materiallinks=None,
+                voc=None, copy_from=None, sumy=None,
+               ):
     '''Receive a ModelForm of new_plan'''
     if plan:
         plan.status = status
@@ -640,6 +643,7 @@ def act_orderpaid(order, buyer):
         sku.status = 1
         sku.save()
         ds_noti_toprovider_skubooked(sku)
+        ds_log_skubooked(buyer, sku)
     order.status = 2
     order.save()
     return True

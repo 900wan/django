@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import pytz, json, datetime 
+import pytz, json, datetime
 from alipay import AliPay, ISVAliPay
 from django.utils import translation, timezone
 from django.shortcuts import get_object_or_404
@@ -99,9 +99,9 @@ def act_user_activity(user, set_date=timezone.now(), days=7):
     if user.provider.status != 0:
         from_date = set_date - datetime.timedelta(days=days)
         log_info = user.log_set.filter(Q(created__gte=from_date)&Q(created__lte=set_date))
-        log_info = log_info.order_by('created').reverse()[::-1]    
+        log_info = log_info.order_by('created').reverse()[::-1]
         logrates = ds_lograte(set_date, log_info, days)
-    
+
     return logrates
 
 def act_wallet_trans(user, set_date=timezone.now(), forward_days=7):
@@ -119,15 +119,28 @@ def add_addlog_provacti(parameter_list):
     by passing the sub def such as act_addlog_dailyacti'''
     pass
 
-def act_addlog_schedule(user, last_schdule_weeknum, client=0):
+
+def act_addlog_schedule(user, lastest_schedule_weeknum, schedule, client=0):
     '''Add a log of adding a schedule'''
-    addtional_content = "last_schdule_weeknum"
-    addtional_value = last_schdule_weeknum
-    log = ds_addlog(action=8,
+    addtional_title = "lastest_schedule_weeknum"
+    addtional_value = lastest_schedule_weeknum
+    addtional_content = schedule
+    log = ds_addlog(
+        action=8,
         user=user,
         client=client,
-        addtional_content=addtional_content,
-        addtional_value=addtional_value)
+        addtional_title=addtional_title,
+        addtional_value=addtional_value,
+        addtional_content=addtional_content
+        )
     # check星期五24点前更新下周课表(+1)
     log = ds_log_addacti(log, 20)
     return log
+
+def act_accept_sku(sku):
+    '''for provider accept a sku, with the actlog method'''
+    if sku.status != 5: sku.status = 4  #将完成接单
+    booked_time = Log.objects.filter(Q(sku=sku) & Q(action=9)).created
+    interval = timezone.now() - booked_time
+    if interval.hours < 1:
+        ds_log_addacti(log, 21)

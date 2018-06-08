@@ -1,4 +1,4 @@
- # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import pytz, json, datetime
 from urllib import unquote
 from django.shortcuts import get_object_or_404, render
@@ -49,6 +49,8 @@ from main.act import act_addlog_htmllogout
 from main.act import act_orderpaid
 from main.act import act_feedback_questionnaire
 from main.act import act_provider_finished_sku
+
+from main.test_act import act_addlog_schedule
 
 from main.ds import ds_getanoti
 from main.ds import ds_c_provider_in_sku
@@ -212,7 +214,7 @@ def url_orderlist(request):
     orders_to_pay_list = []
     for order in orders:
         if not hasattr(order, 'sku_is_past') and order.status == 1:
-                orders_to_pay_list.append(order)
+            orders_to_pay_list.append(order)
     return render(request, "main/orderlist.html", locals())
 
 
@@ -303,6 +305,7 @@ def url_replytosku(request, sku_id):
 
 @login_required
 def url_addplan(request, sku_id):
+    '''Accept this Sku, and add plan on it'''
     info = act_getinfo(request)
     current_user = request.user
     sku = get_object_or_404(Sku, id=sku_id)
@@ -324,7 +327,7 @@ def url_addplan(request, sku_id):
                 msg = "GOOD"
         else:
             uf = AddPlanForm()
-            if sku.status != 5: sku.status = 4
+
         sku.save()
     return render(request, "main/addplan.html", {'info':info, 'uf':uf, 'msg':msg, 'heading':"Add a plan on SKU", 'sku':sku})
 
@@ -431,7 +434,7 @@ def url_notification_go(request, noti_id):
             noti.save()
         return HttpResponseRedirect(ds_getanoti(noti)['link'])
     else:
-    # 这说明这条noti不属于当前用户，无权查看的
+        # 这说明这条noti不属于当前用户，无权查看的
         return HttpResponse('这条消息不属于当前用户，无权查看。')
 
 @login_required
@@ -611,28 +614,37 @@ def url_schedule(request):
                     try:
                         if raw_item.get('topic_id'):
                             item['topic'] = Topic.objects.get(id=int(raw_item.get('topic_id')))
-                        item['start_time'] = tz.localize(datetime.datetime.strptime(\
-                            raw_item['start_time'], "%Y-%m-%d %H:%M:%S"))
+                        item['start_time'] = tz.localize(datetime.datetime.strptime(
+                            raw_item['start_time'],
+                            "%Y-%m-%d %H:%M:%S"))
                         if raw_item.get('end_time'):
-                            item['end_time'] = tz.localize(datetime.datetime.strptime(\
-                                raw_item['end_time'], "%Y-%m-%d %H:%M:%S"))
+                            item['end_time'] = tz.localize(datetime.datetime.strptime(
+                                raw_item['end_time'],
+                                "%Y-%m-%d %H:%M:%S"))
                         else:
-                            item['end_time'] = tz.localize(datetime.datetime.strptime(\
-                                raw_item['start_time'], "%Y-%m-%d %H:%M:%S") + datetime.timedelta(minutes=30))
-                        if item['start_time'] and (item['start_time']>now_tz):
+                            item['end_time'] = tz.localize(datetime.datetime.strptime(
+                                raw_item['start_time'],
+                                "%Y-%m-%d %H:%M:%S") + datetime.timedelta(minutes=30))
+                        if item['start_time'] and (item['start_time'] > now_tz):
                             schedule.append(item)
                     except Exception, e:
                         raise e
                 # msg=schedule
-                msg=act_generate_skus(provider, schedule)
+                msg = act_generate_skus(provider, schedule)
                 if msg != []:
-                    last_schdule_weeknum = 1
-                    # schedule_log = act_addlog_schedule(client=0, user=current_user, last_schdule_weeknum=)
+                    thisweeknum = timezone.now().isocalendar()[1]
+                    start_time = schedule[0].get('start_time')
+                    lastest_schedule_weeknum = start_time.isocalendar()[1]
+                    schedule_log = act_addlog_schedule(
+                        client=0,
+                        user=current_user,
+                        lastest_schedule_weeknum=lastest_schedule_weeknum,
+                        schedule=schedule)
         else:
             uf = ScheduleForm(initial = {'provider': provider })
         return render(request,"main/schedule.html", locals())
     else:
-    # 这说明这个人不是老师
+        # 这说明这个人不是老师
         return HttpResponse('You are not an authenticated tutor. 你不是教师，无权访问此页')
 
 @login_required
@@ -875,4 +887,3 @@ def url_payment_result(request):
     amount = request.POST['amount']
     wallet = info.get('current_user').wallet
     return render(request, "main/paymentResult.html", locals())
-

@@ -30,17 +30,19 @@ def ds_showtopic(id=0, bywhat=0):
     return topic
 
 
-def ds_addlog(action,
-              user,
-              client=0,
-              order=None,
-              character=None,
-              activity_action=None,
-              activity_change=None,
-              addtional_content=None,
-              addtional_value=None,
-              ):
-    '''增加日志记录
+def ds_addlog(
+    action,
+    user,
+    client=0,
+    order=None,
+    sku=None,
+    character=None,
+    activity_action=None,
+    activity_change=None,
+    addtional_title=None,
+    addtional_value=None,
+    addtional_content=None):
+    '''只有增加日志记录功能,
     TYPE_OF_CLIENT = (
         (0, '网页端'),
         (1, '移动网页端'),
@@ -52,18 +54,25 @@ def ds_addlog(action,
         (1, '登出'),
         (2, '下单'),
         (3, '修改'),
-        (4, '取消')
+        (4, '取消'),
+        (5, '计算劳资'),
+        (6, '提取工资'),
+        (7, _(u'浏览')),
+        (8, _(u'更新课表')),
+        (9, _(u'学生订课')), #认为时完成订单支付以后
     )'''
     log = Log(
         client=client,
         action=action,
         user=user,
         order=order,
+        sku=sku,
         character=character,
         activity_action=activity_action,
         activity_change=activity_change,
-        addtional_content=addtional_content,
-        addtional_value=addtional_value,)
+        addtional_title=addtional_title,
+        addtional_value=addtional_value,
+        addtional_content=addtional_content)
     log.save()
     return log
 
@@ -364,19 +373,19 @@ def ds_log_addacti(log, action):
     '''for add activity imformation to param log'''
     change = 0
     if action==20:
-    # 周五前24点更新下周课表+1
-    # 未及时更新课表（-5）
+        # 周五前24点更新下周课表+1
+        # 未及时更新课表（-5）
         isocal =  timezone.now().isocalendar()
         this_weeknum = isocal[1]
         this_weekday = isocal[2]
         action = None
-        
-        if log.addtional_content=='last_schdule_weeknum':
-            last_schdule_weeknum = log.addtional_value
-            gt_this_weeknum = last_schdule_weeknum > this_weeknum
+
+        if log.addtional_title == 'lastest_schedule_weeknum':
+            lastest_schedule_weeknum = log.addtional_value
+            gt_this_weeknum = lastest_schedule_weeknum > this_weeknum
             # check the weeknum of log, wether is the next week schedule
             lte_friday = this_weekday < 6
-            #  check the whether less than friday. 
+            #  check the whether less than friday.
             if lte_friday and gt_this_weeknum:
                 action = 20
             elif not gt_this_weeknum and not lte_friday:
@@ -386,8 +395,8 @@ def ds_log_addacti(log, action):
             try:
                 fit_log = Log.objects.filter(
                     Q(activity_action=action)
-                    &Q(addtional_content='last_schdule_weeknum')
-                    &Q(addtional_value__gte=this_weeknum))
+                    & Q(addtional_title='lastest_schedule_weeknum')
+                    & Q(addtional_value__gte=this_weeknum))
             except:
                 fit_log = None
             test1 = fit_log.exists()
@@ -427,3 +436,11 @@ def ds_log_addacti(log, action):
     #     return None
 
     return log, result
+
+def ds_log_skubooked(user, sku):
+    '''add a log which record a sku has been booked'''
+    log = ds_addlog(9, user, sku=sku)
+    return log
+
+def ds_log_skuaccepted(parameter_list):
+    pass

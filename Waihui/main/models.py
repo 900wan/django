@@ -536,7 +536,9 @@ class Log(models.Model):
         (5, '计算劳资'),
         (6, '提取工资'),
         (7, _(u'浏览')),
-        (8, _(u'更新课表'))
+        (8, _(u'更新课表')),
+        (9, _(u'学生订课')), #认为时完成订单支付以后
+        (10, _(u'教师接单')),
     )
     action = models.IntegerField(choices=TYPE_OF_ACTION)
     TYPE_OF_ACTIVITY_ACTION = (
@@ -562,8 +564,9 @@ class Log(models.Model):
     activity_action = models.IntegerField(choices=TYPE_OF_ACTIVITY_ACTION, null=True, blank=True)
     activity_change = models.IntegerField(null=True, blank=True)
     pre_value = models.IntegerField(null=True, blank=True)
-    addtional_content = models.CharField(null=True, blank=True, max_length=50)
+    addtional_title = models.CharField(null=True, blank=True, max_length=50)
     addtional_value = models.CharField(null=True, blank=True, max_length=50)
+    addtional_content = models.TextField(null=True, blank=True)
     user = models.ForeignKey(User)
     order = models.ForeignKey(Order, null=True, blank=True)
     sku = models.ForeignKey(Sku, on_delete=models.CASCADE, null=True, blank=True)
