@@ -19,6 +19,9 @@ Finished 课程增加结束功能
 Pay截止至何时16个小时，
 repickpool的激励机制
 【--SKU是否是相关人才能看？--】
+(2018-6-8)
+Finished 周五前24点更新下周课表+1
+测试下git上能不能输入github的description
 (2017-7-10)
 Log功能要记录操作时间（用model的创建时间就可以我觉得）、操作IP（url_home里写了取ip的方法）等必要信息。
 
