@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 from main.ds import *
 from main.models import *
-from main.act import *
+
 
 # def act_addplan(sku, topic, status, content, assignment, slides, roomlink, materiallinks, materialhtml, voc, copy_from, sumy, plan=None):
 #     '''if import a plan, it will change the plan, if not, then add one'''
@@ -121,7 +121,10 @@ def add_addlog_provacti(parameter_list):
 
 
 def act_addlog_schedule(user, lastest_schedule_weeknum, schedule, client=0):
-    '''Add a log of adding a schedule'''
+    '''
+    TEST:PASS
+    Add a log of adding a schedule
+    '''
     addtional_title = "lastest_schedule_weeknum"
     addtional_value = lastest_schedule_weeknum
     addtional_content = schedule
@@ -137,10 +140,45 @@ def act_addlog_schedule(user, lastest_schedule_weeknum, schedule, client=0):
     log = ds_log_addacti(log, 20)
     return log
 
-def act_accept_sku(sku):
-    '''for provider accept a sku, with the actlog method'''
-    if sku.status != 5: sku.status = 4  #将完成接单
-    booked_time = Log.objects.filter(Q(sku=sku) & Q(action=9)).created
-    interval = timezone.now() - booked_time
-    if interval.hours < 1:
-        ds_log_addacti(log, 21)
+def act_addlog_provider_conform_order(parameter_list):
+    '''
+    Add a logacti when Provider conform order which belongs to addlog series
+    '''
+
+def act_addlog_skubooked(user, sku):
+    '''
+    add a log when buyer booked a sku
+    '''
+    log = ds_addlog(9, user, sku=sku)
+    return log
+
+
+def act_accept_sku(user, sku):
+    '''
+    TEST:PASS
+    for provider accept a sku, with the actlog method'''
+    result = None
+    if sku.status == 1:
+        sku.status = 4  #将完成接单
+        sku.save()
+        # Adding a log
+        result = act_addlog_accept_sku(user, sku)
+    return result
+
+def act_addlog_accept_sku(user, sku):
+    '''
+    TEST:PASS
+    Add log of provider accept sku'''
+    result = None
+    log = ds_addlog(10, sku.provider.user, character=1, sku=sku)
+    # 直接调用ds中ds_log_addacti，给出大概分类在其内部判断
+    result = ds_log_addacti(log, 21)
+    
+    # 或者采取将判断分散在具体addlog的act方法中
+    # booked_time = Log.objects.filter(Q(sku=sku) & Q(action=9))[0].created
+    # interval = timezone.now() - booked_time
+    # if interval.seconds/3600 < 1:
+    #     result = ds_log_addacti(log, 21)
+    # elif interval.seconds/3600 > 5:
+    #     result = ds_log_addacti(log, -21)
+    return result

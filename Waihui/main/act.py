@@ -6,6 +6,9 @@ from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
+
+from main.test_act import *
+
 from main.models import User
 from main.models import Language
 from main.models import Provider
@@ -23,6 +26,7 @@ from main.models import ReviewToBuyer
 from main.models import Log
 from main.models import Notification
 from main.models import ProviderPayoff
+
 from main.forms import OrderForm
 
 from main.ds import ds_addlog
@@ -43,7 +47,6 @@ from main.ds import ds_get_review_score
 from main.ds import ds_lograte
 from main.ds import ds_login_check
 from main.ds import ds_log_addacti
-from main.ds import ds_log_skubooked
 
 from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_lazy as l_
@@ -643,7 +646,7 @@ def act_orderpaid(order, buyer):
         sku.status = 1
         sku.save()
         ds_noti_toprovider_skubooked(sku)
-        ds_log_skubooked(buyer, sku)
+        act_addlog_skubooked(buyer.user, sku)
     order.status = 2
     order.save()
     return True

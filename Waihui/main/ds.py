@@ -372,6 +372,7 @@ def ds_login_check(user):
 def ds_log_addacti(log, action):
     '''for add activity imformation to param log'''
     change = 0
+    # 进行预处理
     if action==20:
         # 周五前24点更新下周课表+1
         # 未及时更新课表（-5）
@@ -405,6 +406,15 @@ def ds_log_addacti(log, action):
                 if fit_log_exists:
                     action = None
                     result = "fit_log_exists"
+
+    if action == 21:
+        booked_time = Log.objects.filter(Q(sku=log.sku) & Q(action=9))[0].created
+        # 这里有坑，因为book时间是按照sku生成时间计算的，如果出现该sku重新订购的情况，则产生bug
+        interval = timezone.now() - booked_time
+        if interval.seconds / 3600 < 1:
+            action = 21
+        elif interval.seconds/3600 > 5:
+            action = -21
     # try:
     #     last_same_log = Log.objects.filter(
     #         Q(activity_action=action)).order_by('-created')[:1][0]
@@ -418,10 +428,13 @@ def ds_log_addacti(log, action):
     #     is_same = False
     # if action==None:
     #     return None
-    if action==(20 or 21 or 22 or 23 or 24 or 25):
+    if action == 20 or 21 or 22 or 23 or 24 or 25:
         change = 1
-    elif action==26:
+    elif action == 26:
         change = 5
+    elif action == -20 or -21:
+        change = -5
+
     if action is not None:
         log.activity_action = action
         log.activity_change = change
@@ -437,10 +450,7 @@ def ds_log_addacti(log, action):
 
     return log, result
 
-def ds_log_skubooked(user, sku):
-    '''add a log which record a sku has been booked'''
-    log = ds_addlog(9, user, sku=sku)
-    return log
+
 
 def ds_log_skuaccepted(parameter_list):
     pass

@@ -51,6 +51,7 @@ from main.act import act_feedback_questionnaire
 from main.act import act_provider_finished_sku
 
 from main.test_act import act_addlog_schedule
+from main.test_act import act_accept_sku
 
 from main.ds import ds_getanoti
 from main.ds import ds_c_provider_in_sku
@@ -309,21 +310,20 @@ def url_addplan(request, sku_id):
     info = act_getinfo(request)
     current_user = request.user
     sku = get_object_or_404(Sku, id=sku_id)
+    act_accept_sku(current_user, sku)
     # if request.method = "POST":
     if current_user != sku.provider.user:
         msg = _(u'您不是这节课的老师')
         msg += _(u'不能备课')
     else:
         msg = request.method
-        # if :
-        #     pass
-        topic = sku.topic
         if request.method == 'POST':
             uf = AddPlanForm(request.POST)
             if uf.is_valid():
                 new_plan = uf.save(commit=False)
-                # new_plan = new_plan(sku=sku, topic=topic, status=1) 这里没有办法写成单行嘛？？
-                result = act_addplan(new_plan=new_plan, sku=sku, topic=topic)
+                result = act_addplan(
+                    new_plan=new_plan,
+                    sku=sku, topic=sku.topic)
                 msg = "GOOD"
         else:
             uf = AddPlanForm()
@@ -355,10 +355,11 @@ def url_modifyplan(request, plan_id):
                 voc = uf.cleaned_data['voc']
                 copy_from = uf.cleaned_data['copy_from']
                 sumy = uf.cleaned_data['sumy']
-                result = act_addplan(sku=plan.sku, topic=plan.sku.topic, status=status, content=content,
-                                     assignment=assignment, slides=slides, roomlink=roomlink,
-                                     materialhtml=materialhtml, materiallinks=materiallinks, voc=voc,
-                                     copy_from=copy_from, sumy=sumy, plan=plan)
+                result = act_addplan(
+                    sku=plan.sku, topic=plan.sku.topic, status=status, content=content,
+                    assignment=assignment, slides=slides, roomlink=roomlink,
+                    materialhtml=materialhtml, materiallinks=materiallinks, voc=voc,
+                    copy_from=copy_from, sumy=sumy, plan=plan)
                 msg = result
         else:
             uf = AddPlanForm(initial={

@@ -90,7 +90,11 @@ class Provider(models.Model):
     active_community = models.IntegerField(default=0, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
+
     def clean(self, *args, **kwargs):
+        '''setting the limitation of 
+        provider active series value
+        '''
         # add custom validation here
         if self.active_daily > 10:
             self.active_daily = 10
@@ -541,6 +545,7 @@ class Log(models.Model):
         (10, _(u'教师接单')),
     )
     action = models.IntegerField(choices=TYPE_OF_ACTION)
+
     TYPE_OF_ACTIVITY_ACTION = (
         (10, _(u"登陆(+1)")),
         (-10, _(u"超24h未登陆(-2)")),
@@ -562,6 +567,7 @@ class Log(models.Model):
 
     )
     activity_action = models.IntegerField(choices=TYPE_OF_ACTIVITY_ACTION, null=True, blank=True)
+
     activity_change = models.IntegerField(null=True, blank=True)
     pre_value = models.IntegerField(null=True, blank=True)
     addtional_title = models.CharField(null=True, blank=True, max_length=50)
@@ -577,7 +583,6 @@ class Log(models.Model):
     character = models.IntegerField(choices=TYPE_OF_CHARACTER, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
 
-
     def get_pre_act_log(self, activity_action=None, activity_change=None):
         '''return pre log under spec activity of this very user'''
         try:
@@ -590,9 +595,6 @@ class Log(models.Model):
             pre_log = None
 
         return pre_log
-
-    def log_auto_save(self):
-        pass
 
     def act_log_check(self):
         '''return activity action by checked the static'''
@@ -647,11 +649,17 @@ class Log(models.Model):
         return log
 
     def save(self, *args, **kwargs):
-        provider = self.user.provider
-        if 10 >= self.activity_action >= -10:
-            provider.active_daily = self.activity_change
+        if self.activity_action:
+            provider = self.user.provider
+            series_num = str(abs(self.activity_action))[0]
+            # the series number(first charactor) of action is sorted
+            if series_num == 1:
+                provider.active_daily += self.activity_change
+            elif series_num == 2:
+                provider.active_course += self.activity_change
+            elif series_num == 3:
+                provider.active_community += self.activity_change
             provider.save()
-
         super(Log, self).save(*args, **kwargs)
 
     # def act_log_check(self):
