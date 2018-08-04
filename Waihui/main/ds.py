@@ -252,13 +252,7 @@ def ds_noti_tobuyer_skustart(sku):
         notification.save()
     return True
 
-def ds_c_provider_in_sku(info, sku):
-    '''Check whether the curent user is provider'''
-    return bool(info['current_user'].provider == sku.provider)
 
-def ds_c_buyer_in_sku(info, sku):
-    '''Check whether the curent user is buyer'''
-    return bool(info.get('current_user').buyer in sku.buyer.all())
 
 def ds_c_buyer_in_sku_1(info, sku):
     '''Check whether the curent user is buyer version 1'''
@@ -390,7 +384,7 @@ def ds_log_addacti(log, action):
             if lte_friday and gt_this_weeknum:
                 action = 20
             elif not gt_this_weeknum and not lte_friday:
-                action =-20
+                action = -20
             else:
                 return False
             try:
@@ -454,3 +448,15 @@ def ds_log_addacti(log, action):
 
 def ds_log_skuaccepted(parameter_list):
     pass
+
+
+def ds_c_profile_in_sku(info, sku):
+    '''return whether the curent user is provider or buyer
+    |||if Provider turn "provider" or "buyer
+    '''
+    if info['current_user'].provider == sku.provider:
+        return "provider"
+    elif info.get('current_user').buyer in sku.buyer.all():
+        return "buyer"
+    else:
+        return False

@@ -11,7 +11,14 @@
 {% endblock title %}
 
 {% block content %}
-    <h1>{{heading}}</h1>
+    <h1>
+    {% if heading %}
+        {{heading}}
+    {% else %}
+        一定出了什么问题
+    {% endif %}
+    </h1>
+        
     <p>================================</p>
     <p>{{msg}}</p>
     <p>================================</p>

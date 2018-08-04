@@ -85,51 +85,115 @@
             </tbody>
         </table>
         {% if is_provider %}
-        <a href="{% url 'main:modifyplan' sku.plan.id %}">{% trans "Modify this plan" %}</a>
+        <a href="{% url 'main:makeplan' sku.id %}">{% trans "Modify this plan" %}</a>
         {% endif %}
     {% elif is_provider %}
-    <a href="{% url 'main:addplan' sku.id %}">{% trans "Accept this sku, Add a Plan to this SKU" %}</a>
+    <a href="{% url 'main:makeplan' sku.id %}">{% trans "Accept this sku, Add a Plan to this SKU" %}</a>
     <a href="{% url 'main:provider_cancel_sku' sku.id %}">{% trans "Reject it" %}</a>
     {% else %}
     <p>No Plans right now</p>
     {% trans "Waiting an unique plan fits buyer's level" %}
     {% endif %}
+    {% if r2bs %}
     <p>================================</p>
-    {% if rtss %}
+    <h2>
+        {% trans "Teacher's advice on afterclass" %}
+    </h2>
+    <table>
+            <thead>
+                <tr>
+                    <th>Questionnaire</th>
+                    <th>Comment</th>
+                    <th>Created</th>
+                    <th>Modified</th>
+                    {% if is_provider %}
+                        <th>For</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for r2b in r2bs %}
+                    <tr>
+                        <td>{{r2b.questionnaire}}</td>
+                        <td>{{r2b.comment}}</td>
+                        <td>{{r2b.created}}</td>
+                        <td>{{r2b.modified}}</td>                         
+                        {% if is_provider %}
+                            <td>{{r2b.buyer}}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody> 
+        </table>
         
-    <h2>Replys to This SKU</h2>
-
+    {% endif %}   
+    
+    {% if r2ps %}
+    <p>================================</p>  
+    <h2>Review to provider</h2>
         <table>
             <thead>
                 <tr>
-                    <th>User</th>
-                    <th>Type</th>
-                    <th>Content</th>
+                    <th>Questionnaire</th>
+                    <th>Comment</th>
                     <th>Created</th>
                     <th>Modified</th>
-                </tr>  
+                    {% if is_provider %}
+                        <th>From</th>
+                    {% endif %}
+                </tr>
             </thead>
             <tbody>
-                {% for rts in rtss %}    
-                <tr>
-                    <td>{{rts.user}}</td>
-                    <td>{{rts.type}}</td>
-                    <td>{{rts.content}}</td>
-                    <td>{{rts.created}}</td>
-                    <td>{{rts.modified}}</td>
-                </tr>
+                {% for r2p in r2ps %}
+                    <tr>
+                        <td>{{r2p.questionnaire}}</td>
+                        <td>{{r2p.comment}}</td>
+                        <td>{{r2p.created}}</td>
+                        <td>{{r2p.modified}}</td>                         
+                        {% if is_provider %}
+                            <td>{{r2p.buyer}}</td>
+                        {% endif %}
+                    </tr>
                 {% endfor %}
             </tbody>
-        </table>
+        </table> 
+    {% endif %}
+
+    <p>================================</p>  
+    {% if rtss %}
+        <h2>Replys to This SKU</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Type</th>
+                        <th>Content</th>
+                        <th>Created</th>
+                        <th>Modified</th>
+                    </tr>  
+                </thead>
+                <tbody>
+                    {% for rts in rtss %}    
+                    <tr>
+                        <td>{{rts.user}}</td>
+                        <td>{{rts.type}}</td>
+                        <td>{{rts.content}}</td>
+                        <td>{{rts.created}}</td>
+                        <td>{{rts.modified}}</td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
     {% else %}
-    <p>No comments right now</p>
+        <p>No comments right now</p>
         {% if is_involved %}
         <a href="{% url 'main:replyrts' sku.id %}">{% trans "Add a reply" %}</a>
         {% else %}
         {% trans "You are not involved in this class, so you can't leave comments" %}
         {% endif %}
     {% endif %}
-
+        
     <p>================================</p>
     {% if not sku.is_past %}
         {% if is_provider %}
@@ -141,7 +205,7 @@
         {% endif %}
         {% if sku.has_plan and sku.status == 6 and is_buyer %}
             <strong><a href="{% url 'main:buyer_ready_sku' sku.id%}">Ready to learn</a></strong>    
-        {% elif sku.status == 8 and is_involved %}
+        {% elif sku.status == 8 and is_buyer %}
             <p><a href="{% url 'main:feedback_sku' sku.id %}">Give a Feedback</a></p>
         {% endif %}
     {% endif %}

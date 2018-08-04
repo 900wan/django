@@ -9,16 +9,16 @@ class ProviderInfo(admin.ModelAdmin):
 class LogAdmin(admin.ModelAdmin):
     '''Admin View for Log'''
 
-    list_display = ('__unicode__', 'created', 'id', 'user', 'client', 'action',
-                    'activity_action', 'activity_change')
-    # list_filter = ('',)
+    list_display = ('__unicode__', 'created', 'id', 'user', 'client', 'action', 'activity_action', 'activity_change')
+
+    list_filter = ('action',)
+    search_fields = ('activity_change', )
+    date_hierarchy = 'created'
     # # inlines = [
     # #     Inline,
     # # ]
     # raw_id_fields = ('',)
     # readonly_fields = ('',)
-    # search_fields = ('',)
-    # date_hierarchy = ''
     # ordering = ('',)
 
 

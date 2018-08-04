@@ -42,7 +42,6 @@ from main.ds import ds_noti_tobuyer_newplan
 from main.ds import ds_noti_tobuyer_planmodified
 from main.ds import ds_noti_toprovider_skubooked
 from main.ds import ds_noti_toprovider_lostbuyer
-from main.ds import ds_c_provider_in_sku
 from main.ds import ds_get_review_score
 from main.ds import ds_lograte
 from main.ds import ds_login_check
@@ -185,13 +184,12 @@ def act_addsku(provider, start_time, end_time, topic=None, buyer=None, status=0)
 
 def act_addplan(sku, topic,
                 new_plan=None, plan=None,
-                status=None, content=None, assignment=None, slides=None,
+    content=None, assignment=None, slides=None,
                 roomlink=None, materialhtml=None, materiallinks=None,
                 voc=None, copy_from=None, sumy=None,
                ):
     '''Receive a ModelForm of new_plan'''
     if plan:
-        plan.status = status
         plan.content = content
         plan.assignment = assignment
         plan.slides = slides
@@ -201,6 +199,7 @@ def act_addplan(sku, topic,
         plan.voc = voc
         plan.copy_from = copy_from
         plan.sumy = sumy
+        plan.save()
         result = "OK, Plan: " + sku.provider.name + " & " + topic.name + " modified!"
         ds_noti_tobuyer_planmodified(plan)
     if new_plan:
@@ -445,7 +444,6 @@ def act_booksku(sku_id, topic, buyer):
     '''原则上为付款之后将sku状态定为booked'''
     sku = Sku.objects.get(id=sku_id)
     sku.topic = topic
-    # sku.status = 1
     sku.save()
     sku.buyer.add(buyer)
     # ds_noti_toprovider_skubooked(sku)
@@ -545,7 +543,7 @@ def act_expand_skus(skus):
 
 def act_provider_ready_sku(sku, roomlink):
     '''设定sku中status为6（教师ready），传入最新的roomlink'''
-    if sku.status == 5 or sku.status == 6:
+    if sku.status == (5 or 6):
         sku.status = 6
         sku.save()
         sku.plan.roomlink = roomlink
@@ -567,7 +565,7 @@ def act_provider_finished_sku(sku):
         sku.save()
         result = True
     else:
-        result = _(u'对不起') +"，"+ _(u'不允许结束')
+        result = _(u'对不起') +","+ _(u'不允许结束')
     return result
 
 
@@ -589,7 +587,7 @@ def act_provider_feedback_sku(questionnaire, comment, sku, buyer):
     '''提交provider对于sku向buyer的feedback'''
     rtp = ReviewToBuyer(sku=sku, questionnaire=questionnaire, comment=comment, buyer=buyer, provider=sku.provider)
     rtp.save()
-    sku.status = 9
+    sku.status = 8
     sku.save()
     return True
 

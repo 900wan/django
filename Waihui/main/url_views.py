@@ -54,9 +54,8 @@ from main.test_act import act_addlog_schedule
 from main.test_act import act_accept_sku
 
 from main.ds import ds_getanoti
-from main.ds import ds_c_provider_in_sku
-from main.ds import ds_c_buyer_in_sku
 from main.ds import ds_c_buyer_in_sku_1
+from main.ds import ds_c_profile_in_sku
 
 from main.models import User
 from main.models import Language
@@ -68,6 +67,8 @@ from main.models import ReplyToSku
 from main.models import Plan
 from main.models import Notification
 from main.models import Order
+from main.models import ReviewToBuyer
+from main.models import ReviewToProvider
 
 from main.forms import LoginForm
 from main.forms import SignupForm
@@ -305,87 +306,104 @@ def url_replytosku(request, sku_id):
     return render(request, "main/addrts.html", {'info':info, 'uf':uf, 'msg':msg, 'heading':"Reply to Sku", 'sku_id':sku.id, 'is_involved':is_involved})
 
 @login_required
-def url_addplan(request, sku_id):
-    '''Accept this Sku, and add plan on it'''
+def url_makeplan(request, sku_id):
     info = act_getinfo(request)
     current_user = request.user
-    sku = get_object_or_404(Sku, id=sku_id)
-    act_accept_sku(current_user, sku)
-    # if request.method = "POST":
-    if current_user != sku.provider.user:
-        msg = _(u'您不是这节课的老师')
-        msg += _(u'不能备课')
-    else:
-        msg = request.method
-        if request.method == 'POST':
-            uf = AddPlanForm(request.POST)
-            if uf.is_valid():
-                new_plan = uf.save(commit=False)
-                result = act_addplan(
-                    new_plan=new_plan,
-                    sku=sku, topic=sku.topic)
-                msg = "GOOD"
+    sku = get_object_or_404(Sku, id = sku_id) 
+    errormsg1 = str(sku.provider) + ' & ' + str(current_user.provider) + _(u'不是一个用户')
+    if sku.status in [1, 4]:  # Not confirm yet
+        if current_user != sku.provider.user:
+            heading = _(u'您不是这节课的老师')
+            msg = _(u'不能备课')
+            msg += errormsg1
+            return render(request, "main/error.html", locals())
         else:
-            uf = AddPlanForm()
-
-        sku.save()
-    return render(request, "main/addplan.html", {'info':info, 'uf':uf, 'msg':msg, 'heading':"Add a plan on SKU", 'sku':sku})
-
-@login_required
-def url_modifyplan(request, plan_id):
-    info = act_getinfo(request)
-    current_user = info['current_user']
-    plan = get_object_or_404(Plan, id=plan_id)
-    result = None
-    if plan.sku.provider != current_user.provider:
-        heading = _(u'教案也是有版权的，只有老师能改，别人不行哟')
-        msg = str(plan.sku.provider) + ' & ' + str(current_user.provider) + _(u'不是一个用户')
-        return render(request, "main/error.html", locals())
-    else:
-        if request.method == 'POST':
-            uf = AddPlanForm(request.POST)
-            if uf.is_valid():
-                status = uf.cleaned_data['status']
-                content = uf.cleaned_data['content']
-                assignment = uf.cleaned_data['assignment']
-                slides = uf.cleaned_data['slides']
-                roomlink = uf.cleaned_data['roomlink']
-                materiallinks = uf.cleaned_data['materiallinks']
-                materialhtml = uf.cleaned_data['materialhtml']
-                voc = uf.cleaned_data['voc']
-                copy_from = uf.cleaned_data['copy_from']
-                sumy = uf.cleaned_data['sumy']
-                result = act_addplan(
-                    sku=plan.sku, topic=plan.sku.topic, status=status, content=content,
-                    assignment=assignment, slides=slides, roomlink=roomlink,
-                    materialhtml=materialhtml, materiallinks=materiallinks, voc=voc,
-                    copy_from=copy_from, sumy=sumy, plan=plan)
+            msg = request.method
+            act_accept_sku(current_user, sku)
+            if not hasattr(sku, 'plan'): # No plan, make a new
+                if request.method == 'POST':
+                    uf = AddPlanForm(request.POST)
+                    if uf.is_valid():
+                        new_plan = uf.save(commit=False)
+                        result = act_addplan(
+                            new_plan=new_plan,
+                            sku=sku, topic=sku.topic)
+                        msg = "GOOD, You just add a new plan."
+                else:
+                    uf = AddPlanForm()
+                sku.save()
+                return render(request, "main/addplan.html", {'info':info, 'uf':uf, 'msg':msg, 'heading':"Add a plan on SKU", 'sku':sku})
+            else:
+                msg = _(u'还没有定下来的课程是没有教案的呀！')
+                return render(request, "main/error.html", locals())
+    elif sku.status ==  5:
+        if current_user != sku.provider.user:
+            heading = _(u'教案也是有版权的，只有老师能改，别人不行哟')
+            msg = _(u'不能改教案')
+            msg += errormsg1
+            return render(request, "main/error.html", locals())
+        else:
+            if not hasattr(sku, 'plan'):
+                msg = _(u'教师已确定的课程是有教案的呀！')
+                return render(request, "main/error.html", locals())
+            else:
+                if request.method == 'POST':
+                    uf = AddPlanForm(request.POST)
+                    if uf.is_valid():
+                        content = uf.cleaned_data['content']
+                        assignment = uf.cleaned_data['assignment']
+                        slides = uf.cleaned_data['slides']
+                        roomlink = uf.cleaned_data['roomlink']
+                        materiallinks = uf.cleaned_data['materiallinks']
+                        materialhtml = uf.cleaned_data['materialhtml']
+                        voc = uf.cleaned_data['voc']
+                        copy_from = uf.cleaned_data['copy_from']
+                        sumy = uf.cleaned_data['sumy']
+                        result = act_addplan(
+                            sku=sku, topic=sku.topic, content=content,
+                            assignment=assignment, slides=slides, roomlink=roomlink,
+                            materialhtml=materialhtml, materiallinks=materiallinks, voc=voc,
+                            copy_from=copy_from, sumy=sumy, plan=sku.plan)
+                else:
+                    uf = AddPlanForm(initial={
+                        'content':sku.plan.content,
+                        'assignment':sku.plan.assignment,
+                        'slides':sku.plan.slides,
+                        'roomlink':sku.plan.roomlink,
+                        'materialhtml':sku.plan.materialhtml,
+                        'materiallinks':sku.plan.materiallinks,
+                        'voc':sku.plan.voc,
+                        'copy_from':sku.plan.copy_from,
+                        'sumy':sku.plan.sumy})
+                    result = "Original plan is blow"
                 msg = result
-        else:
-            uf = AddPlanForm(initial={
-                'status':plan.status,
-                'content':plan.content,
-                'assignment':plan.assignment,
-                'slides':plan.slides,
-                'roomlink':plan.roomlink,
-                'materialhtml':plan.materialhtml,
-                'materiallinks':plan.materiallinks,
-                'voc':plan.voc,
-                'copy_from':plan.copy_from,
-                'sumy':plan.sumy})
-            msg = result
-        sku = plan.sku
-    return render(request, "main/addplan.html", locals())
+                return render(request, "main/addplan.html", locals())
+    else:
+        heading = _(u'一定出了什么问题')
+        msg = _(u'这个课程既不是没有教师定，也不是已经定下来。那会是怎样呢？Sku.status:') + sku.get_status_display()+"("+str(sku.status)+")"
+        return render(request, "main/error.html", locals())
+
 
 @login_required
 def url_showsku(request, sku_id):
     info = act_getinfo(request)
     current_user = info.get('current_user')
     sku = get_object_or_404(Sku, id=sku_id)
-    is_provider = ds_c_provider_in_sku(info, sku)
-    is_buyer = ds_c_buyer_in_sku_1(info, sku)
+    if sku.end_time:
+        endtime = sku.end_time
+    else:
+        endtime = sku.start_time + datetime.datetime(hours=0.5)
+    is_passed = True if timezone.now() > endtime else False
+    # plan_status = sku.plan.statusField.verbose_name
+    is_provider = True if ds_c_profile_in_sku(info, sku) == 'provider' else False
+    is_buyer = True if ds_c_profile_in_sku(info, sku) == 'buyer' else False
     is_involved = is_provider or is_buyer
     rtss = ReplyToSku.objects.filter(sku=sku)
+    r2ps = ReviewToProvider.objects.filter(Q(sku=sku))
+    if is_provider:
+        r2bs = ReviewToBuyer.objects.filter(Q(sku=sku))
+    elif is_buyer:
+        r2bs = ReviewToBuyer.objects.filter(Q(sku=sku), Q(buyer=current_user.buyer))
     msg = str(request)
     heading = _(u'SKU #') + str(sku.id)
     return render(request, "main/showsku.html", locals())
@@ -735,22 +753,7 @@ def url_buyer_ready_sku(request, sku_id):
         msg = _(u"诶，你不是这节课的学生呀")
     return render(request, "main/bready.html", locals())
 
-@login_required
-def url_provider_finished_sku(request, sku_id):
-    '''用于教师表示已完成课程
-    会判断当前用户是否为本节课的教师，无虞运行则设定课程状态为已完成（Sku.status = 8 已结束待评价)'''
-    info = act_getinfo(request)
-    this_sku = Sku.objects.get(id=sku_id)
-    heading = _(u'要结束课程吗？')
-    if ds_c_provider_in_sku(info, this_sku):
-        result = act_provider_finished_sku(this_sku)
-        if result is True:
-            return HttpResponseRedirect(reverse('main:showsku', args=[this_sku.id]))
-        else:
-            msg = result
-    else:
-        msg = _(u"诶，你不是这节课的老师呀")
-    return render(request, "main/onlygetmsg.html", locals())
+
 
 
 
@@ -814,13 +817,17 @@ def url_providers(request):
 
 @login_required
 def url_feedback_sku(request, sku_id):
-    '''Rating the skus after the course'''
+    '''
+    New version
+    Rating the skus after the course, combine provider and buyer actions
+    '''
     info = act_getinfo(request)
     sku = get_object_or_404(Sku, id=sku_id)
-    result = "Hi there, I can't tell the info"
-    if ds_c_provider_in_sku(info, sku):
-        identity = "provider"
+    result = ""
+    profile = ds_c_profile_in_sku(info, sku)
+    if profile == 'provider':
         if request.method == 'POST':
+            heading = _(u'课上完了，指点一下学生的课后学习')
             uf = ProviderFeedbackSkuForm(request.POST)
             uf.fields.get('buyer').queryset = sku.buyer.all()
             if uf.is_valid():
@@ -828,16 +835,20 @@ def url_feedback_sku(request, sku_id):
                 comment = uf.cleaned_data['comment']
                 buyer = uf.cleaned_data['buyer']
                 result = act_provider_feedback_sku(questionnaire=questionnaire, comment=comment, sku=sku, buyer=buyer)
+                result = act_provider_finished_sku(sku)
+            result = "You have give your student a kindly advise"
         else:
-            if sku.buyer.all().count == 1:
-                uf = ProviderFeedbackSkuForm(initial={'buyer':sku.buyer.all()[0]})
-                # uf.fields.get('buyer').queryset = sku.buyer.all()
+            if sku.buyer.all().count() == 1:
+                buyer = sku.buyer
+                uf = ProviderFeedbackSkuForm()
+                uf.fields.get('buyer').queryset = sku.buyer.all()
+                result += str(sku.buyer.all().count()) + " buyer "
             else:
                 uf = ProviderFeedbackSkuForm()
                 uf.fields.get('buyer').queryset = sku.buyer.all()
-            result = "You sure are the provider of this cousrs "
-    elif ds_c_buyer_in_sku(info, sku):
-        identity = "buyer"
+                result += str(sku.buyer.all().count())
+            result += "You sure are the provider of this course "
+    elif profile == "buyer":
         js_questionnaire = act_feedback_questionnaire("b2s")
         if request.method == 'POST':
             method = 'POST'
@@ -888,3 +899,18 @@ def url_payment_result(request):
     amount = request.POST['amount']
     wallet = info.get('current_user').wallet
     return render(request, "main/paymentResult.html", locals())
+
+
+
+@login_required
+def url_provider_finished_sku(request, sku_id):
+    '''用于教师表示已完成课程
+    会判断当前用户是否为本节课的教师，无虞运行则跳转到教师评价课程页面'''
+    info = act_getinfo(request)
+    this_sku = Sku.objects.get(id=sku_id)
+    if ds_c_profile_in_sku(info, this_sku) == 'provider':
+        return HttpResponseRedirect(
+            reverse('main:feedback_sku', args=[this_sku.id]))
+    else:
+        msg = _(u"诶，你不是这节课的老师呀")
+    return render(request, "main/onlygetmsg.html", locals())

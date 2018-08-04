@@ -250,6 +250,7 @@ class Sku(models.Model):
         (8, '待评价'), #学生评价老师
         (9, '已结束 '),
         (10, '学生取消'),
+        # (11, '教师完成课后作业') #接下来学生评价老师，接8
     )
 
     status = models.IntegerField(
@@ -258,7 +259,7 @@ class Sku(models.Model):
     )
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
-    topic = models.ForeignKey(Topic, blank=True, null=True)
+    topic = models.ForeignKey(Topic, verbose_name=_(u'话题'), blank=True, null=True)
     # payoff = models.ForeignKey(ProviderPayoff, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -286,7 +287,9 @@ class Sku(models.Model):
 
 # index 7
 class Plan(models.Model):
-
+    '''
+    
+    '''
     class Meta:
         verbose_name = "Plan"
         verbose_name_plural = "Plans"
@@ -346,7 +349,7 @@ class Wallet(models.Model):
 
 # index 9
 class ReviewToProvider(models.Model):
-
+    '''用于学生评价教师。同时，存在多个学生评价同一个课程的情况'''
     class Meta:
         verbose_name = "ReviewToProvider"
         verbose_name_plural = "ReviewToProviders"
@@ -355,7 +358,7 @@ class ReviewToProvider(models.Model):
         return u'%s' % 'ReviewToProvider SkuID:[' + str(self.sku.id) + ']' + ' Score:[' + str(self.score) + '] ' +str(self.buyer.nickname) + ' reviews to ' + str(self.provider.name) + ' on SkuID:[' + str(self.sku.id) + ']'
     provider = models.ForeignKey(Provider)
     buyer = models.ForeignKey(Buyer)
-    sku = models.OneToOneField(Sku)
+    sku = models.ForeignKey(Sku)
     questionnaire = models.CharField(max_length=50, blank=True, null=True)
     comment = models.CharField(max_length=250, blank=True, null=True) #此处倾向于记录后台对教师的评语
     score = models.FloatField()
